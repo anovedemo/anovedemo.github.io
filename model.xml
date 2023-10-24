@@ -434,7 +434,7 @@ if snapshot.isDeleted != '':
 			<activity type="mutation" id="EvM97b" path="Control.update" description="Update control">
 				<input name="company" type="String" value="#company#"></input>
 				<input name="controls" type="Nested" value="#controls#"></input>
-				<expected-trace command="Customer.Company.UpdateControl" status="success"></expected-trace>
+				<expected-trace command="Customer.Company.UpdateControls" status="success"></expected-trace>
 			</activity>
 			<activity type="query" id="BLFTzM" description="Assert control" path="Control.get" view="Control">
 				<input name="key" type="String" value="#controlKey#"></input>
