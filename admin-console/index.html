@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta name="description" content=""/>
+    <title>Component showcase</title>
+    <script src="/js/configuration.js"></script>
+    <script src="/js/draftsman.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css"
+          integrity="sha512-SbiR/eusphKoMVVXysTKG/7VseWii+Y3FdHrt0EpKgpToZeemhqHeZeLWLhJutz/2ut2Vw1uQEj2MbRF+TVBUA=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Draftsman.set_query_mode("on-demand");
+            Draftsman.contains_teleports = true;
+        });
+    </script>
+</head>
+<body class="d-flex flex-column h-100" x-data="{search: $persist('').using(sessionStorage),
+        query: $persist('').using(sessionStorage)}" x-import="utils/basic-form;utils/basic-modal;utils/view-query-form;utils/tables;commands/Control/update;commands/ControlTemplate/create;commands/Company/linkRegulation;commands/Company/create;commands/Regulation/addRequirement;commands/Regulation/create;views/LinkedRegulation/get;views/Requirement/get;views/Control/get;views/ControlTemplate/get;views/Company/get;views/Regulation/filter;views/Regulation/get">
+<main class="flex-shrink-0">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light" x-transition>
+        <div class="container px-5">
+            <a class="navbar-brand" href="/">
+                <img src="/assets/draftsman-logo.png" height="40px" alt="logo"/>
+                <b>Component showcase</b>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" target="_blank" href="/admin-console/graphiql">API</a></li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" @click="Draftsman.clear_cache();location.reload()">Clear cache</a>
+                    </li>
+                </ul>
+                <form class="d-flex" role="search">
+                    <input class="form-control me-2" type="search"
+                           x-model="search"
+                           placeholder="Search" aria-label="Search">
+                </form>
+            </div>
+        </div>
+    </nav>
+    <br>
+
+    <div class="container px-4">
+        <div class="row gx-5">
+            <div class="col-3">
+                <h1>Commands</h1>
+                <center>
+                
+                    <h6>Control</h6>
+                    <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
+                        
+                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" x-show="'updatecontrol'.includes(search.toLowerCase())"
+                                    data-bs-target="#modal_updatecontrol">
+                                UpdateControl
+                            </button>
+                            <ui-update-control command="updatecontrol"></ui-update-control>
+                            <ui-basic-modal
+                                        title="Command: UpdateControl"
+                                        alias="updatecontrol"></ui-basic-modal>
+                            <ui-trace-table target="#modal_body_updatecontrol"></ui-trace-table>
+                            <ui-basic-form alias="updatecontrol" target="#modal_body_updatecontrol"></ui-basic-form>
+                        
+                    </div>
+                    <hr>
+                
+                    <h6>ControlTemplate</h6>
+                    <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
+                        
+                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" x-show="'createcontroltemplate'.includes(search.toLowerCase())"
+                                    data-bs-target="#modal_createcontroltemplate">
+                                CreateControlTemplate
+                            </button>
+                            <ui-create-control-template command="createcontroltemplate"></ui-create-control-template>
+                            <ui-basic-modal
+                                        title="Command: CreateControlTemplate"
+                                        alias="createcontroltemplate"></ui-basic-modal>
+                            <ui-trace-table target="#modal_body_createcontroltemplate"></ui-trace-table>
+                            <ui-basic-form alias="createcontroltemplate" target="#modal_body_createcontroltemplate"></ui-basic-form>
+                        
+                    </div>
+                    <hr>
+                
+                    <h6>Company</h6>
+                    <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
+                        
+                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" x-show="'linkregulationcompany'.includes(search.toLowerCase())"
+                                    data-bs-target="#modal_linkregulationcompany">
+                                LinkRegulationCompany
+                            </button>
+                            <ui-link-regulation-company command="linkregulationcompany"></ui-link-regulation-company>
+                            <ui-basic-modal
+                                        title="Command: LinkRegulationCompany"
+                                        alias="linkregulationcompany"></ui-basic-modal>
+                            <ui-trace-table target="#modal_body_linkregulationcompany"></ui-trace-table>
+                            <ui-basic-form alias="linkregulationcompany" target="#modal_body_linkregulationcompany"></ui-basic-form>
+                        
+                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" x-show="'createcompany'.includes(search.toLowerCase())"
+                                    data-bs-target="#modal_createcompany">
+                                CreateCompany
+                            </button>
+                            <ui-create-company command="createcompany"></ui-create-company>
+                            <ui-basic-modal
+                                        title="Command: CreateCompany"
+                                        alias="createcompany"></ui-basic-modal>
+                            <ui-trace-table target="#modal_body_createcompany"></ui-trace-table>
+                            <ui-basic-form alias="createcompany" target="#modal_body_createcompany"></ui-basic-form>
+                        
+                    </div>
+                    <hr>
+                
+                    <h6>Regulation</h6>
+                    <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
+                        
+                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" x-show="'addrequirementregulation'.includes(search.toLowerCase())"
+                                    data-bs-target="#modal_addrequirementregulation">
+                                AddRequirementRegulation
+                            </button>
+                            <ui-add-requirement-regulation command="addrequirementregulation"></ui-add-requirement-regulation>
+                            <ui-basic-modal
+                                        title="Command: AddRequirementRegulation"
+                                        alias="addrequirementregulation"></ui-basic-modal>
+                            <ui-trace-table target="#modal_body_addrequirementregulation"></ui-trace-table>
+                            <ui-basic-form alias="addrequirementregulation" target="#modal_body_addrequirementregulation"></ui-basic-form>
+                        
+                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" x-show="'createregulation'.includes(search.toLowerCase())"
+                                    data-bs-target="#modal_createregulation">
+                                CreateRegulation
+                            </button>
+                            <ui-create-regulation command="createregulation"></ui-create-regulation>
+                            <ui-basic-modal
+                                        title="Command: CreateRegulation"
+                                        alias="createregulation"></ui-basic-modal>
+                            <ui-trace-table target="#modal_body_createregulation"></ui-trace-table>
+                            <ui-basic-form alias="createregulation" target="#modal_body_createregulation"></ui-basic-form>
+                        
+                    </div>
+                    <hr>
+                
+                </center>
+            </div>
+            <div class="col-7">
+                
+                <div x-show="query == 'LinkedRegulation.get'" x-cloak>
+                    <center id="linkedregulationget-header">
+                        <h1>LinkedRegulation.get</h1>
+                        <ui-view-query-form alias="linkedregulationget" target="#linkedregulationget-header"></ui-view-query-form>
+                    </center>
+                    <hr>
+                    <ui-linkedregulation-get alias="linkedregulationget"></ui-linkedregulation-get>
+
+                    <div id="linkedregulationget-container"></div>
+                    
+                    <ui-item-table alias="linkedregulationget"
+                                   path="get"
+                                   target="#linkedregulationget-container"></ui-item-table>
+                    
+                </div>
+                
+                <div x-show="query == 'Requirement.get'" x-cloak>
+                    <center id="requirementget-header">
+                        <h1>Requirement.get</h1>
+                        <ui-view-query-form alias="requirementget" target="#requirementget-header"></ui-view-query-form>
+                    </center>
+                    <hr>
+                    <ui-requirement-get alias="requirementget"></ui-requirement-get>
+
+                    <div id="requirementget-container"></div>
+                    
+                    <ui-item-table alias="requirementget"
+                                   path="get"
+                                   target="#requirementget-container"></ui-item-table>
+                    
+                </div>
+                
+                <div x-show="query == 'Control.get'" x-cloak>
+                    <center id="controlget-header">
+                        <h1>Control.get</h1>
+                        <ui-view-query-form alias="controlget" target="#controlget-header"></ui-view-query-form>
+                    </center>
+                    <hr>
+                    <ui-control-get alias="controlget"></ui-control-get>
+
+                    <div id="controlget-container"></div>
+                    
+                    <ui-item-table alias="controlget"
+                                   path="get"
+                                   target="#controlget-container"></ui-item-table>
+                    
+                </div>
+                
+                <div x-show="query == 'ControlTemplate.get'" x-cloak>
+                    <center id="controltemplateget-header">
+                        <h1>ControlTemplate.get</h1>
+                        <ui-view-query-form alias="controltemplateget" target="#controltemplateget-header"></ui-view-query-form>
+                    </center>
+                    <hr>
+                    <ui-controltemplate-get alias="controltemplateget"></ui-controltemplate-get>
+
+                    <div id="controltemplateget-container"></div>
+                    
+                    <ui-item-table alias="controltemplateget"
+                                   path="get"
+                                   target="#controltemplateget-container"></ui-item-table>
+                    
+                </div>
+                
+                <div x-show="query == 'Company.get'" x-cloak>
+                    <center id="companyget-header">
+                        <h1>Company.get</h1>
+                        <ui-view-query-form alias="companyget" target="#companyget-header"></ui-view-query-form>
+                    </center>
+                    <hr>
+                    <ui-company-get alias="companyget"></ui-company-get>
+
+                    <div id="companyget-container"></div>
+                    
+                    <ui-item-table alias="companyget"
+                                   path="get"
+                                   target="#companyget-container"></ui-item-table>
+                    
+                </div>
+                
+                <div x-show="query == 'Regulation.filter'" x-cloak>
+                    <center id="regulationfilter-header">
+                        <h1>Regulation.filter</h1>
+                        <ui-view-query-form alias="regulationfilter" target="#regulationfilter-header"></ui-view-query-form>
+                    </center>
+                    <hr>
+                    <ui-regulation-filter alias="regulationfilter"></ui-regulation-filter>
+
+                    <div id="regulationfilter-container"></div>
+                    
+                    <ui-raw-data-list
+                            target="#regulationfilter-container"
+                            alias="regulationfilter"
+                            path="filter.resultset"></ui-raw-data-list>
+                    
+                </div>
+                
+                <div x-show="query == 'Regulation.get'" x-cloak>
+                    <center id="regulationget-header">
+                        <h1>Regulation.get</h1>
+                        <ui-view-query-form alias="regulationget" target="#regulationget-header"></ui-view-query-form>
+                    </center>
+                    <hr>
+                    <ui-regulation-get alias="regulationget"></ui-regulation-get>
+
+                    <div id="regulationget-container"></div>
+                    
+                    <ui-item-table alias="regulationget"
+                                   path="get"
+                                   target="#regulationget-container"></ui-item-table>
+                    
+                </div>
+                
+            </div>
+            <div class="col-2">
+                <h1>Queries</h1>
+                <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'linkedregulation.get'.includes(search.toLowerCase())"
+                            @click="query = 'LinkedRegulation.get'">LinkedRegulation.get</button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'requirement.get'.includes(search.toLowerCase())"
+                            @click="query = 'Requirement.get'">Requirement.get</button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'control.get'.includes(search.toLowerCase())"
+                            @click="query = 'Control.get'">Control.get</button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'controltemplate.get'.includes(search.toLowerCase())"
+                            @click="query = 'ControlTemplate.get'">ControlTemplate.get</button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'company.get'.includes(search.toLowerCase())"
+                            @click="query = 'Company.get'">Company.get</button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'regulation.filter'.includes(search.toLowerCase())"
+                            @click="query = 'Regulation.filter'">Regulation.filter</button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'regulation.get'.includes(search.toLowerCase())"
+                            @click="query = 'Regulation.get'">Regulation.get</button>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

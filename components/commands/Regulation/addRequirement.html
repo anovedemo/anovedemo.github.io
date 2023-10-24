@@ -1,0 +1,45 @@
+<!--
+This file is managed by the tracepaper modeler, if you want to customize this command
+please make sure you rename the file first.
+-->
+<template x-component="add-requirement-regulation">
+  <div>
+    <draftsman-mutation :command="$prop('command')"  authenticated>
+     mutation AddRequirement($name: String = "", $description: String = "", $regulation: String = "") {
+       Regulation{
+         addRequirement(input: {name: $name,description: $description,regulation: $regulation}) {
+            correlationId
+         }
+       }
+     }
+    </draftsman-mutation>
+    <div x-init="$store.forms[$prop('command')] = $el.innerHTML" style="display:none;">
+[
+  {
+    "name": "name",
+    "title": "Name",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "description",
+    "title": "Description",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "regulation",
+    "title": "Regulation",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  }
+]
+    </div>
+  </div>
+</template>
