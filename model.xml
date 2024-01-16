@@ -3,6 +3,10 @@
 	<global>
 	</global>
 	<events>
+		<event graphql-namespace="ControlTemplate" graphql-name="create" name="CreateControlTemplateRequested" authorization="authenticated" type="ActorEvent">
+			<field name="arn" type="String"></field>
+			<field name="description" type="String"></field>
+		</event>
 		<event graphql-namespace="Control" graphql-name="update" name="UpdateControlRequested" authorization="authenticated" type="ActorEvent">
 			<field name="company" type="String"></field>
 			<nested-object name="controls">
@@ -10,14 +14,6 @@
 				<field name="linkedRequirements" type="String"></field>
 				<field name="description" type="String"></field>
 			</nested-object>
-		</event>
-		<event graphql-namespace="ControlTemplate" graphql-name="create" name="CreateControlTemplateRequested" authorization="authenticated" type="ActorEvent">
-			<field name="arn" type="String"></field>
-			<field name="description" type="String"></field>
-		</event>
-		<event graphql-namespace="Company" graphql-name="linkRegulation" name="LinkRegulationCompanyRequested" authorization="authenticated" type="ActorEvent">
-			<field name="companyName" type="String"></field>
-			<field name="regulationName" type="String"></field>
 		</event>
 		<event graphql-namespace="Regulation" graphql-name="addRequirement" name="AddRequirementRegulationRequested" authorization="authenticated" type="ActorEvent">
 			<field name="name" type="String"></field>
@@ -30,6 +26,14 @@
 		<event graphql-namespace="Regulation" graphql-name="create" name="CreateRegulationRequested" authorization="authenticated" type="ActorEvent" role="domainexpert">
 			<field name="name" type="String"></field>
 		</event>
+		<event graphql-namespace="Company" graphql-name="linkRegulation" name="LinkRegulationCompanyRequested" authorization="authenticated" type="ActorEvent">
+			<field name="companyName" type="String"></field>
+			<field name="regulationName" type="String"></field>
+		</event>
+		<event name="ControlTemplateCreated" source="Regulations.ControlTemplate" type="DomainEvent">
+			<field name="arn" type="String"></field>
+			<field name="description" type="String"></field>
+		</event>
 		<event name="RegulationCreated" source="Regulations.Regulation" type="DomainEvent">
 			<field name="name" type="String"></field>
 		</event>
@@ -38,17 +42,6 @@
 			<nested-object name="requirements">
 				<field name="name" type="String"></field>
 				<field name="description" type="String"></field>
-			</nested-object>
-		</event>
-		<event name="ControlTemplateCreated" source="Regulations.ControlTemplate" type="DomainEvent">
-			<field name="arn" type="String"></field>
-			<field name="description" type="String"></field>
-		</event>
-		<event name="LinkedRegulation" source="Customer.Company" type="DomainEvent">
-			<field name="name" type="String"></field>
-			<nested-object name="regulations">
-				<field name="name" type="String"></field>
-				<field name="link" type="String"></field>
 			</nested-object>
 		</event>
 		<event name="CompanyCreated" source="Customer.Company" type="DomainEvent">
@@ -62,71 +55,16 @@
 				<field name="name" type="String"></field>
 			</nested-object>
 		</event>
+		<event name="LinkedRegulation" source="Customer.Company" type="DomainEvent">
+			<field name="name" type="String"></field>
+			<nested-object name="regulations">
+				<field name="name" type="String"></field>
+				<field name="link" type="String"></field>
+			</nested-object>
+		</event>
 	</events>
 	<domain>
 		<subdomain name="Regulations">
-			<aggregate name="Regulation" business-key="name" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
-				<field name="name" type="String"></field>
-				<command name="AddRequirement">
-					<trigger source="AddRequirementRegulationRequested" key-field="regulation">
-						<mapping target="name" value="name"></mapping>
-						<mapping target="description" value="description"></mapping>
-						<mapping target="regulation" value="regulation"></mapping>
-					</trigger>
-					<processor type="code" id="XFXrqI" file="" handler="" code='flow.requirements = [{|LB|    "name": flow.name,|LB|    "description": flow.description|LB|}]'></processor>
-					<processor type="emit-event" id="unHTRT" ref="RequirementAdded">
-						<mapping target="name" value="#flow.regulation"></mapping>
-						<mapping target="requirements" value="#flow.requirements"></mapping>
-					</processor>
-					<test-case name="HappyFlow" trigger-event="AddRequirementRegulationRequested">
-						<input name="name" value="req1" type="String"></input>
-						<input name="description" value="description" type="String"></input>
-						<input name="regulation" value="gdpr" type="String"></input>
-						<expected domain-event="RequirementAdded">
-							<field value="gdpr" name="name" type="String"></field>
-						</expected>
-						<expected-state pk="gdpr">{
-  "requirements": {
-    "req1": {
-      "name": "req1",
-      "description": "description"
-    }
-  }
-}</expected-state>
-					</test-case>
-				</command>
-				<command name="Create" create-command="true">
-					<trigger source="CreateRegulationRequested" key-field="name">
-						<mapping target="name" value="name"></mapping>
-					</trigger>
-					<processor type="emit-event" id="vlDm8P" ref="RegulationCreated">
-						<mapping target="name" value="#flow.name"></mapping>
-					</processor>
-					<test-case name="HappyFlow" trigger-event="CreateRegulationRequested">
-						<input name="name" value="gdpr" type="String"></input>
-						<expected domain-event="RegulationCreated">
-							<field value="gdpr" name="name" type="String"></field>
-						</expected>
-						<expected-state pk="gdpr">{
-  "name": "gdpr",
-  "requirements": {}
-}</expected-state>
-					</test-case>
-				</command>
-				<event-handler on="RegulationCreated">
-					<mapping target="name" operand="set" value="name"></mapping>
-				</event-handler>
-				<event-handler on="RequirementAdded">
-					<nested-mapping source="requirements" target="requirements" business-key="name">
-						<mapping target="name" operand="set" value="name"></mapping>
-						<mapping target="description" operand="set" value="description"></mapping>
-					</nested-mapping>
-				</event-handler>
-				<nested-object name="requirements" business-key="name">
-					<field name="name" type="String"></field>
-					<field name="description" type="String"></field>
-				</nested-object>
-			</aggregate>
 			<aggregate name="ControlTemplate" business-key="arn" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
 				<field name="arn" type="String"></field>
 				<field name="description" type="String"></field>
@@ -157,10 +95,104 @@
 					<mapping target="description" operand="set" value="description"></mapping>
 				</event-handler>
 			</aggregate>
+			<aggregate name="Regulation" business-key="name" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
+				<field name="name" type="String"></field>
+				<command name="Create" create-command="true">
+					<trigger source="CreateRegulationRequested" key-field="name">
+						<mapping target="name" value="name"></mapping>
+					</trigger>
+					<processor type="emit-event" id="vlDm8P" ref="RegulationCreated">
+						<mapping target="name" value="#flow.name"></mapping>
+					</processor>
+					<test-case name="HappyFlow" trigger-event="CreateRegulationRequested">
+						<input name="name" value="gdpr" type="String"></input>
+						<expected domain-event="RegulationCreated">
+							<field value="gdpr" name="name" type="String"></field>
+						</expected>
+						<expected-state pk="gdpr">{
+  "name": "gdpr",
+  "requirements": {}
+}</expected-state>
+					</test-case>
+				</command>
+				<command name="AddRequirement">
+					<trigger source="AddRequirementRegulationRequested" key-field="regulation">
+						<mapping target="name" value="name"></mapping>
+						<mapping target="description" value="description"></mapping>
+						<mapping target="regulation" value="regulation"></mapping>
+					</trigger>
+					<processor type="code" id="XFXrqI" file="" handler="" code='flow.requirements = [{|LB|    "name": flow.name,|LB|    "description": flow.description|LB|}]'></processor>
+					<processor type="emit-event" id="unHTRT" ref="RequirementAdded">
+						<mapping target="name" value="#flow.regulation"></mapping>
+						<mapping target="requirements" value="#flow.requirements"></mapping>
+					</processor>
+					<test-case name="HappyFlow" trigger-event="AddRequirementRegulationRequested">
+						<input name="name" value="req1" type="String"></input>
+						<input name="description" value="description" type="String"></input>
+						<input name="regulation" value="gdpr" type="String"></input>
+						<expected domain-event="RequirementAdded">
+							<field value="gdpr" name="name" type="String"></field>
+						</expected>
+						<expected-state pk="gdpr">{
+  "requirements": {
+    "req1": {
+      "name": "req1",
+      "description": "description"
+    }
+  }
+}</expected-state>
+					</test-case>
+				</command>
+				<event-handler on="RegulationCreated">
+					<mapping target="name" operand="set" value="name"></mapping>
+				</event-handler>
+				<event-handler on="RequirementAdded">
+					<nested-mapping source="requirements" target="requirements" business-key="name">
+						<mapping target="name" operand="set" value="name"></mapping>
+						<mapping target="description" operand="set" value="description"></mapping>
+					</nested-mapping>
+				</event-handler>
+				<nested-object name="requirements" business-key="name">
+					<field name="name" type="String"></field>
+					<field name="description" type="String"></field>
+				</nested-object>
+			</aggregate>
 		</subdomain>
 		<subdomain name="Customer">
 			<aggregate name="Company" business-key="name" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
 				<field name="name" type="String"></field>
+				<command name="UpdateControls">
+					<trigger source="UpdateControlRequested" key-field="company">
+						<mapping target="company" value="company"></mapping>
+						<mapping target="controls" value="controls"></mapping>
+					</trigger>
+					<processor type="emit-event" id="G8hyQG" ref="UpdatedControl">
+						<mapping target="name" value="#flow.company"></mapping>
+						<mapping target="controls" value="#flow.controls"></mapping>
+					</processor>
+					<test-case name="HappyFlow" trigger-event="UpdateControlRequested">
+						<input name="company" value="draftsman" type="String"></input>
+						<input name="controls" type="NestedObject">[
+  {
+    "name": "hello",
+    "linkedRequirements": "gdpr:req1",
+    "description": "Hello World"
+  }
+]</input>
+						<expected domain-event="UpdatedControl">
+							<field value="draftsman" name="name" type="String"></field>
+						</expected>
+						<expected-state pk="draftsman">{
+  "controls": {
+    "hello": {
+      "description": "Hello World",
+      "linkedRequirements": "gdpr:req1",
+      "name": "hello"
+    }
+  }
+}</expected-state>
+					</test-case>
+				</command>
 				<command name="Create">
 					<trigger source="CreateCompanyRequested" key-field="name">
 						<mapping target="name" value="name"></mapping>
@@ -204,44 +236,6 @@
 }</expected-state>
 					</test-case>
 				</command>
-				<command name="UpdateControls">
-					<trigger source="UpdateControlRequested" key-field="company">
-						<mapping target="company" value="company"></mapping>
-						<mapping target="controls" value="controls"></mapping>
-					</trigger>
-					<processor type="emit-event" id="G8hyQG" ref="UpdatedControl">
-						<mapping target="name" value="#flow.company"></mapping>
-						<mapping target="controls" value="#flow.controls"></mapping>
-					</processor>
-					<test-case name="HappyFlow" trigger-event="UpdateControlRequested">
-						<input name="company" value="draftsman" type="String"></input>
-						<input name="controls" type="NestedObject">[
-  {
-    "name": "hello",
-    "linkedRequirements": "gdpr:req1",
-    "description": "Hello World"
-  }
-]</input>
-						<expected domain-event="UpdatedControl">
-							<field value="draftsman" name="name" type="String"></field>
-						</expected>
-						<expected-state pk="draftsman">{
-  "controls": {
-    "hello": {
-      "description": "Hello World",
-      "linkedRequirements": "gdpr:req1",
-      "name": "hello"
-    }
-  }
-}</expected-state>
-					</test-case>
-				</command>
-				<event-handler on="LinkedRegulation">
-					<nested-mapping source="regulations" target="regulations" business-key="name">
-						<mapping target="name" operand="set" value="name"></mapping>
-						<mapping target="link" operand="set" value="link"></mapping>
-					</nested-mapping>
-				</event-handler>
 				<event-handler on="CompanyCreated">
 					<mapping target="name" operand="set" value="name"></mapping>
 				</event-handler>
@@ -250,6 +244,12 @@
 						<mapping target="description" operand="set" value="description"></mapping>
 						<mapping target="linkedRequirements" operand="set" value="linkedRequirements"></mapping>
 						<mapping target="name" operand="set" value="name"></mapping>
+					</nested-mapping>
+				</event-handler>
+				<event-handler on="LinkedRegulation">
+					<nested-mapping source="regulations" target="regulations" business-key="name">
+						<mapping target="name" operand="set" value="name"></mapping>
+						<mapping target="link" operand="set" value="link"></mapping>
 					</nested-mapping>
 				</event-handler>
 				<nested-object name="regulations" business-key="name">
@@ -265,20 +265,6 @@
 		</subdomain>
 	</domain>
 	<views>
-		<view name="LinkedRegulation" data-retention-days="-1" exclude-notification="false">
-			<field name="companyName" type="String"></field>
-			<field name="link" type="String" pk="true"></field>
-			<field name="regulationName" type="String"></field>
-			<field name="company" type="ManyToOne" ref="Company" authorization="authenticated" foreign-key="company"></field>
-			<field name="regulation" type="ManyToOne" ref="Regulation" authorization="authenticated" foreign-key="regulationName"></field>
-			<custom-handler id="IObrtF" sub-domain="Customer" aggregate="Company">for link in snapshot.regulations.values():
-    entity = EntityManager.get(type="LinkedRegulation", key=link.link)
-    entity.companyName = snapshot.name
-    entity.regulationName = link.name
-    if snapshot.isDeleted != '':
-        entity.mark_for_deletion = True</custom-handler>
-			<query graphql-namespace="LinkedRegulation" field-name="get" type="get" authorization="authenticated"></query>
-		</view>
 		<view name="Requirement" data-retention-days="-1" exclude-notification="false">
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
@@ -296,6 +282,43 @@
     if snapshot.isDeleted != '':
         entity.mark_for_deletion = True</custom-handler>
 			<query graphql-namespace="Requirement" field-name="get" type="get" authorization="authenticated"></query>
+		</view>
+		<view name="LinkedRegulation" data-retention-days="-1" exclude-notification="false">
+			<field name="companyName" type="String"></field>
+			<field name="link" type="String" pk="true"></field>
+			<field name="regulationName" type="String"></field>
+			<field name="company" type="ManyToOne" ref="Company" authorization="authenticated" foreign-key="company"></field>
+			<field name="regulation" type="ManyToOne" ref="Regulation" authorization="authenticated" foreign-key="regulationName"></field>
+			<custom-handler id="IObrtF" sub-domain="Customer" aggregate="Company">for link in snapshot.regulations.values():
+    entity = EntityManager.get(type="LinkedRegulation", key=link.link)
+    entity.companyName = snapshot.name
+    entity.regulationName = link.name
+    if snapshot.isDeleted != '':
+        entity.mark_for_deletion = True</custom-handler>
+			<query graphql-namespace="LinkedRegulation" field-name="get" type="get" authorization="authenticated"></query>
+		</view>
+		<view name="ControlTemplate" data-retention-days="-1" exclude-notification="false">
+			<field name="arn" type="String" pk="true"></field>
+			<field name="description" type="String"></field>
+			<field name="parent" type="String"></field>
+			<field name="requirement" type="ManyToOne" ref="Requirement" authorization="authenticated" foreign-key="parent"></field>
+			<custom-handler id="bq3rtY" sub-domain="Regulations" aggregate="ControlTemplate">entity = EntityManager.get(type="ControlTemplate", key=snapshot.arn)
+entity.arn = snapshot.arn
+entity.description = snapshot.description
+entity.parent = ":".join(entity.arn.split(":")[:2])
+if snapshot.isDeleted != '':
+    entity.mark_for_deletion = True</custom-handler>
+			<query graphql-namespace="ControlTemplate" field-name="get" type="get" authorization="authenticated"></query>
+		</view>
+		<view name="Regulation" data-retention-days="-1" exclude-notification="false">
+			<field name="name" type="String" pk="true"></field>
+			<field name="requirements" type="OneToMany" ref="Requirement" authorization="authenticated" foreign-key="#canonical"></field>
+			<snapshot-handler id="YIkRKr" sub-domain="Regulations" aggregate="Regulation" key-mapping="name" processor="item">
+				<mapping target="name" operand="set" value="name"></mapping>
+				<delete condition="#snapshot.isDeleted != ''"></delete>
+			</snapshot-handler>
+			<query graphql-namespace="Regulation" field-name="filter" type="filter" authorization="authenticated"></query>
+			<query graphql-namespace="Regulation" field-name="get" type="get" authorization="authenticated"></query>
 		</view>
 		<view name="Control" data-retention-days="-1" exclude-notification="false">
 			<field name="description" type="String"></field>
@@ -317,19 +340,6 @@
         entity.mark_for_deletion = True</custom-handler>
 			<query graphql-namespace="Control" field-name="get" type="get" authorization="authenticated"></query>
 		</view>
-		<view name="ControlTemplate" data-retention-days="-1" exclude-notification="false">
-			<field name="arn" type="String" pk="true"></field>
-			<field name="description" type="String"></field>
-			<field name="parent" type="String"></field>
-			<field name="requirement" type="ManyToOne" ref="Requirement" authorization="authenticated" foreign-key="parent"></field>
-			<custom-handler id="bq3rtY" sub-domain="Regulations" aggregate="ControlTemplate">entity = EntityManager.get(type="ControlTemplate", key=snapshot.arn)
-entity.arn = snapshot.arn
-entity.description = snapshot.description
-entity.parent = ":".join(entity.arn.split(":")[:2])
-if snapshot.isDeleted != '':
-    entity.mark_for_deletion = True</custom-handler>
-			<query graphql-namespace="ControlTemplate" field-name="get" type="get" authorization="authenticated"></query>
-		</view>
 		<view name="Company" data-retention-days="-1" exclude-notification="false">
 			<field name="name" type="String" pk="true"></field>
 			<field name="linkedRegulation" type="OneToMany" ref="LinkedRegulation" authorization="authenticated" foreign-key="#canonical"></field>
@@ -339,16 +349,6 @@ if snapshot.isDeleted != '':
 				<delete condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="Company" field-name="get" type="get" authorization="authenticated"></query>
-		</view>
-		<view name="Regulation" data-retention-days="-1" exclude-notification="false">
-			<field name="name" type="String" pk="true"></field>
-			<field name="requirements" type="OneToMany" ref="Requirement" authorization="authenticated" foreign-key="#canonical"></field>
-			<snapshot-handler id="YIkRKr" sub-domain="Regulations" aggregate="Regulation" key-mapping="name" processor="item">
-				<mapping target="name" operand="set" value="name"></mapping>
-				<delete condition="#snapshot.isDeleted != ''"></delete>
-			</snapshot-handler>
-			<query graphql-namespace="Regulation" field-name="filter" type="filter" authorization="authenticated"></query>
-			<query graphql-namespace="Regulation" field-name="get" type="get" authorization="authenticated"></query>
 		</view>
 	</views>
 	<projections>

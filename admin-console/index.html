@@ -20,7 +20,7 @@
     </script>
 </head>
 <body class="d-flex flex-column h-100" x-data="{search: $persist('').using(sessionStorage),
-        query: $persist('').using(sessionStorage)}" x-import="utils/basic-form;utils/basic-modal;utils/view-query-form;utils/tables;commands/Control/update;commands/ControlTemplate/create;commands/Company/linkRegulation;commands/Company/create;commands/Regulation/addRequirement;commands/Regulation/create;views/LinkedRegulation/get;views/Requirement/get;views/Control/get;views/ControlTemplate/get;views/Company/get;views/Regulation/filter;views/Regulation/get">
+        query: $persist('').using(sessionStorage)}" x-import="utils/basic-form;utils/basic-modal;utils/view-query-form;utils/tables;commands/ControlTemplate/create;commands/Control/update;commands/Regulation/addRequirement;commands/Regulation/create;commands/Company/create;commands/Company/linkRegulation;views/Requirement/get;views/LinkedRegulation/get;views/ControlTemplate/get;views/Regulation/filter;views/Regulation/get;views/Control/get;views/Company/get">
 <main class="flex-shrink-0">
     <nav class="navbar navbar-expand-lg navbar-light bg-light" x-transition>
         <div class="container px-5">
@@ -56,23 +56,6 @@
                 <h1>Commands</h1>
                 <center>
                 
-                    <h6>Control</h6>
-                    <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
-                        
-                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" x-show="'updatecontrol'.includes(search.toLowerCase())"
-                                    data-bs-target="#modal_updatecontrol">
-                                UpdateControl
-                            </button>
-                            <ui-update-control command="updatecontrol"></ui-update-control>
-                            <ui-basic-modal
-                                        title="Command: UpdateControl"
-                                        alias="updatecontrol"></ui-basic-modal>
-                            <ui-trace-table target="#modal_body_updatecontrol"></ui-trace-table>
-                            <ui-basic-form alias="updatecontrol" target="#modal_body_updatecontrol"></ui-basic-form>
-                        
-                    </div>
-                    <hr>
-                
                     <h6>ControlTemplate</h6>
                     <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
                         
@@ -90,30 +73,19 @@
                     </div>
                     <hr>
                 
-                    <h6>Company</h6>
+                    <h6>Control</h6>
                     <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
                         
-                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" x-show="'linkregulationcompany'.includes(search.toLowerCase())"
-                                    data-bs-target="#modal_linkregulationcompany">
-                                LinkRegulationCompany
+                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" x-show="'updatecontrol'.includes(search.toLowerCase())"
+                                    data-bs-target="#modal_updatecontrol">
+                                UpdateControl
                             </button>
-                            <ui-link-regulation-company command="linkregulationcompany"></ui-link-regulation-company>
+                            <ui-update-control command="updatecontrol"></ui-update-control>
                             <ui-basic-modal
-                                        title="Command: LinkRegulationCompany"
-                                        alias="linkregulationcompany"></ui-basic-modal>
-                            <ui-trace-table target="#modal_body_linkregulationcompany"></ui-trace-table>
-                            <ui-basic-form alias="linkregulationcompany" target="#modal_body_linkregulationcompany"></ui-basic-form>
-                        
-                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" x-show="'createcompany'.includes(search.toLowerCase())"
-                                    data-bs-target="#modal_createcompany">
-                                CreateCompany
-                            </button>
-                            <ui-create-company command="createcompany"></ui-create-company>
-                            <ui-basic-modal
-                                        title="Command: CreateCompany"
-                                        alias="createcompany"></ui-basic-modal>
-                            <ui-trace-table target="#modal_body_createcompany"></ui-trace-table>
-                            <ui-basic-form alias="createcompany" target="#modal_body_createcompany"></ui-basic-form>
+                                        title="Command: UpdateControl"
+                                        alias="updatecontrol"></ui-basic-modal>
+                            <ui-trace-table target="#modal_body_updatecontrol"></ui-trace-table>
+                            <ui-basic-form alias="updatecontrol" target="#modal_body_updatecontrol"></ui-basic-form>
                         
                     </div>
                     <hr>
@@ -146,25 +118,37 @@
                     </div>
                     <hr>
                 
+                    <h6>Company</h6>
+                    <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
+                        
+                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" x-show="'createcompany'.includes(search.toLowerCase())"
+                                    data-bs-target="#modal_createcompany">
+                                CreateCompany
+                            </button>
+                            <ui-create-company command="createcompany"></ui-create-company>
+                            <ui-basic-modal
+                                        title="Command: CreateCompany"
+                                        alias="createcompany"></ui-basic-modal>
+                            <ui-trace-table target="#modal_body_createcompany"></ui-trace-table>
+                            <ui-basic-form alias="createcompany" target="#modal_body_createcompany"></ui-basic-form>
+                        
+                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" x-show="'linkregulationcompany'.includes(search.toLowerCase())"
+                                    data-bs-target="#modal_linkregulationcompany">
+                                LinkRegulationCompany
+                            </button>
+                            <ui-link-regulation-company command="linkregulationcompany"></ui-link-regulation-company>
+                            <ui-basic-modal
+                                        title="Command: LinkRegulationCompany"
+                                        alias="linkregulationcompany"></ui-basic-modal>
+                            <ui-trace-table target="#modal_body_linkregulationcompany"></ui-trace-table>
+                            <ui-basic-form alias="linkregulationcompany" target="#modal_body_linkregulationcompany"></ui-basic-form>
+                        
+                    </div>
+                    <hr>
+                
                 </center>
             </div>
             <div class="col-7">
-                
-                <div x-show="query == 'LinkedRegulation.get'" x-cloak>
-                    <center id="linkedregulationget-header">
-                        <h1>LinkedRegulation.get</h1>
-                        <ui-view-query-form alias="linkedregulationget" target="#linkedregulationget-header"></ui-view-query-form>
-                    </center>
-                    <hr>
-                    <ui-linkedregulation-get alias="linkedregulationget"></ui-linkedregulation-get>
-
-                    <div id="linkedregulationget-container"></div>
-                    
-                    <ui-item-table alias="linkedregulationget"
-                                   path="get"
-                                   target="#linkedregulationget-container"></ui-item-table>
-                    
-                </div>
                 
                 <div x-show="query == 'Requirement.get'" x-cloak>
                     <center id="requirementget-header">
@@ -182,19 +166,19 @@
                     
                 </div>
                 
-                <div x-show="query == 'Control.get'" x-cloak>
-                    <center id="controlget-header">
-                        <h1>Control.get</h1>
-                        <ui-view-query-form alias="controlget" target="#controlget-header"></ui-view-query-form>
+                <div x-show="query == 'LinkedRegulation.get'" x-cloak>
+                    <center id="linkedregulationget-header">
+                        <h1>LinkedRegulation.get</h1>
+                        <ui-view-query-form alias="linkedregulationget" target="#linkedregulationget-header"></ui-view-query-form>
                     </center>
                     <hr>
-                    <ui-control-get alias="controlget"></ui-control-get>
+                    <ui-linkedregulation-get alias="linkedregulationget"></ui-linkedregulation-get>
 
-                    <div id="controlget-container"></div>
+                    <div id="linkedregulationget-container"></div>
                     
-                    <ui-item-table alias="controlget"
+                    <ui-item-table alias="linkedregulationget"
                                    path="get"
-                                   target="#controlget-container"></ui-item-table>
+                                   target="#linkedregulationget-container"></ui-item-table>
                     
                 </div>
                 
@@ -211,22 +195,6 @@
                     <ui-item-table alias="controltemplateget"
                                    path="get"
                                    target="#controltemplateget-container"></ui-item-table>
-                    
-                </div>
-                
-                <div x-show="query == 'Company.get'" x-cloak>
-                    <center id="companyget-header">
-                        <h1>Company.get</h1>
-                        <ui-view-query-form alias="companyget" target="#companyget-header"></ui-view-query-form>
-                    </center>
-                    <hr>
-                    <ui-company-get alias="companyget"></ui-company-get>
-
-                    <div id="companyget-container"></div>
-                    
-                    <ui-item-table alias="companyget"
-                                   path="get"
-                                   target="#companyget-container"></ui-item-table>
                     
                 </div>
                 
@@ -263,30 +231,54 @@
                     
                 </div>
                 
+                <div x-show="query == 'Control.get'" x-cloak>
+                    <center id="controlget-header">
+                        <h1>Control.get</h1>
+                        <ui-view-query-form alias="controlget" target="#controlget-header"></ui-view-query-form>
+                    </center>
+                    <hr>
+                    <ui-control-get alias="controlget"></ui-control-get>
+
+                    <div id="controlget-container"></div>
+                    
+                    <ui-item-table alias="controlget"
+                                   path="get"
+                                   target="#controlget-container"></ui-item-table>
+                    
+                </div>
+                
+                <div x-show="query == 'Company.get'" x-cloak>
+                    <center id="companyget-header">
+                        <h1>Company.get</h1>
+                        <ui-view-query-form alias="companyget" target="#companyget-header"></ui-view-query-form>
+                    </center>
+                    <hr>
+                    <ui-company-get alias="companyget"></ui-company-get>
+
+                    <div id="companyget-container"></div>
+                    
+                    <ui-item-table alias="companyget"
+                                   path="get"
+                                   target="#companyget-container"></ui-item-table>
+                    
+                </div>
+                
             </div>
             <div class="col-2">
                 <h1>Queries</h1>
                 <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
                     
                     <button type="button" class="btn btn-outline-primary"
-                            x-show="'linkedregulation.get'.includes(search.toLowerCase())"
-                            @click="query = 'LinkedRegulation.get'">LinkedRegulation.get</button>
-                    
-                    <button type="button" class="btn btn-outline-primary"
                             x-show="'requirement.get'.includes(search.toLowerCase())"
                             @click="query = 'Requirement.get'">Requirement.get</button>
                     
                     <button type="button" class="btn btn-outline-primary"
-                            x-show="'control.get'.includes(search.toLowerCase())"
-                            @click="query = 'Control.get'">Control.get</button>
+                            x-show="'linkedregulation.get'.includes(search.toLowerCase())"
+                            @click="query = 'LinkedRegulation.get'">LinkedRegulation.get</button>
                     
                     <button type="button" class="btn btn-outline-primary"
                             x-show="'controltemplate.get'.includes(search.toLowerCase())"
                             @click="query = 'ControlTemplate.get'">ControlTemplate.get</button>
-                    
-                    <button type="button" class="btn btn-outline-primary"
-                            x-show="'company.get'.includes(search.toLowerCase())"
-                            @click="query = 'Company.get'">Company.get</button>
                     
                     <button type="button" class="btn btn-outline-primary"
                             x-show="'regulation.filter'.includes(search.toLowerCase())"
@@ -295,6 +287,14 @@
                     <button type="button" class="btn btn-outline-primary"
                             x-show="'regulation.get'.includes(search.toLowerCase())"
                             @click="query = 'Regulation.get'">Regulation.get</button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'control.get'.includes(search.toLowerCase())"
+                            @click="query = 'Control.get'">Control.get</button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'company.get'.includes(search.toLowerCase())"
+                            @click="query = 'Company.get'">Company.get</button>
                     
                 </div>
             </div>
