@@ -1,8 +1,0 @@
-# This file is managed by Tracepaper
-mutation Add($arn: String = "", $description: String = "", $name: String = "", $category: String = "", $edition: String = "", $unit: String = "", $acronym: String = "", $active: Boolean = false, $requirements: [AddControlFramework_Requirements!] = []) {
-  ControlFramework{
-    add(input: {arn: $arn,description: $description,name: $name,category: $category,edition: $edition,unit: $unit,acronym: $acronym,active: $active,requirements: $requirements}) {
-       correlationId
-    }
-  }
-}
