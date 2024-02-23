@@ -7,15 +7,15 @@
                     <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
                         
                         <button type="button" class="btn btn-outline-primary"
-                                @click="Draftsman.empty_track_and_trace_log();component = 'AddControlFramework'"
-                                x-show="'addcontrolframework'.includes(search.toLowerCase())">
-                            AddControlFramework
+                                @click="Draftsman.empty_track_and_trace_log();component = 'AddIndustry'"
+                                x-show="'AddIndustry'.includes(search.toLowerCase())">
+                            AddIndustry
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
-                                @click="Draftsman.empty_track_and_trace_log();component = 'AddIndustry'"
-                                x-show="'addindustry'.includes(search.toLowerCase())">
-                            AddIndustry
+                                @click="Draftsman.empty_track_and_trace_log();component = 'AddControlFramework'"
+                                x-show="'AddControlFramework'.includes(search.toLowerCase())">
+                            AddControlFramework
                         </button>
                         
                     </div>
@@ -23,18 +23,18 @@
             </div>
             <div class="col-6">
                 
-                <div x-show="component == 'AddControlFramework'" x-cloak x-transition>
-                    <div x-import="commands/AddControlFramework">
-                        <h6>AddControlFramework</h6>
-                        <ui-AddControlFramework></ui-AddControlFramework>
-                    </div>
-                </div>
-
-                
                 <div x-show="component == 'AddIndustry'" x-cloak x-transition>
                     <div x-import="commands/AddIndustry">
                         <h6>AddIndustry</h6>
                         <ui-AddIndustry></ui-AddIndustry>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'AddControlFramework'" x-cloak x-transition>
+                    <div x-import="commands/AddControlFramework">
+                        <h6>AddControlFramework</h6>
+                        <ui-AddControlFramework></ui-AddControlFramework>
                     </div>
                 </div>
 

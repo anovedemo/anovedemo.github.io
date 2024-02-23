@@ -87,6 +87,22 @@
         "pattern": "",
         "placeholder": "",
         "default": ""
+      },
+      {
+        "name": "mandatory",
+        "title": "Mandatory",
+        "type": "Boolean",
+        "pattern": "",
+        "placeholder": "",
+        "default": ""
+      },
+      {
+        "name": "summary",
+        "title": "Summary",
+        "type": "String",
+        "pattern": "",
+        "placeholder": "",
+        "default": ""
       }
     ]
   }

@@ -2,10 +2,15 @@
 <draftsman project-name="Demo" xmlns="https://tracepaper.draftsman.io">
 	<global>
 		<pattern name="ControlFrameworkArn" regex="^controlframework:[a-z]+$"></pattern>
-		<pattern name="ControlFrameworkType" regex="^(standard|regulation|framework)$"></pattern>
 		<pattern name="IndustryArn" regex="^industry:[a-z]+$"></pattern>
+		<pattern name="ControlFrameworkType" regex="^(standard|regulation|framework)$"></pattern>
 	</global>
 	<events>
+		<event graphql-namespace="Industry" graphql-name="add" name="AddIndustryRequested" authorization="role" type="ActorEvent" role="administrator">
+			<field name="arn" type="String" pattern="{{IndustryArn}}"></field>
+			<field name="name" type="String"></field>
+			<field name="description" type="String"></field>
+		</event>
 		<event graphql-namespace="ControlFramework" graphql-name="add" name="AddControlFrameworkRequested" authorization="role" type="ActorEvent" role="administrator">
 			<field name="arn" type="String" pattern="{{ControlFrameworkArn}}"></field>
 			<field name="description" type="String"></field>
@@ -18,10 +23,12 @@
 			<nested-object name="requirements">
 				<field name="name" type="String"></field>
 				<field name="description" type="String"></field>
+				<field name="mandatory" type="Boolean"></field>
+				<field name="summary" type="String"></field>
 			</nested-object>
 		</event>
-		<event graphql-namespace="Industry" graphql-name="add" name="AddIndustryRequested" authorization="role" type="ActorEvent" role="administrator">
-			<field name="arn" type="String" pattern="{{IndustryArn}}"></field>
+		<event name="IndustryCreated" source="Admin.Industry" type="DomainEvent">
+			<field name="arn" type="String"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
 		</event>
@@ -39,14 +46,59 @@
 				<field name="description" type="String"></field>
 			</nested-object>
 		</event>
-		<event name="IndustryCreated" source="Admin.Industry" type="DomainEvent">
-			<field name="arn" type="String"></field>
-			<field name="name" type="String"></field>
-			<field name="description" type="String"></field>
-		</event>
 	</events>
 	<domain>
 		<subdomain name="Admin">
+			<aggregate name="Industry" business-key="fieldName" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
+				<field name="arn" type="String"></field>
+				<field name="name" type="String"></field>
+				<field name="description" type="String"></field>
+				<command name="Create" create-command="true">
+					<trigger source="AddIndustryRequested" key-field="arn">
+						<mapping target="arn" value="arn"></mapping>
+						<mapping target="name" value="name"></mapping>
+						<mapping target="description" value="description"></mapping>
+					</trigger>
+					<processor type="emit-event" id="U8J057" ref="IndustryCreated">
+						<mapping target="arn" value="#flow.arn"></mapping>
+						<mapping target="name" value="#flow.name"></mapping>
+						<mapping target="description" value="#flow.description"></mapping>
+					</processor>
+					<processor type="validator" id="r8n5VM" condition='flow.name != ""' exception="Name may not be empty"></processor>
+					<processor type="validator" id="1HirZZ" condition='flow.description != ""' exception="Description may not be empty"></processor>
+					<test-case name="AddNewIndustry" trigger-event="AddIndustryRequested">
+						<input name="arn" value="industry:automotive" type="String"></input>
+						<input name="name" value="Automotive" type="String"></input>
+						<input name="description" value="The automotive industry" type="String"></input>
+						<expected domain-event="IndustryCreated">
+							<field value="industry:automotive" name="arn" type="String"></field>
+							<field value="Automotive" name="name" type="String"></field>
+							<field value="The automotive industry" name="description" type="String"></field>
+						</expected>
+						<expected-state pk="industry:automotive">{
+  "arn": "industry:automotive",
+  "name": "Automotive",
+  "description": "The automotive industry"
+}</expected-state>
+					</test-case>
+					<test-case name="AddDuplicateIndustry" trigger-event="AddIndustryRequested" expected-processing-status="error">
+						<input name="arn" value="industry:automotive" type="String"></input>
+						<input name="name" value="Hello World!" type="String"></input>
+						<input name="description" value="None" type="String"></input>
+						<state>{
+  "arn": "industry:automotive",
+  "name": "Automotive",
+  "description": "The automotive industry",
+      "version": 1
+}</state>
+					</test-case>
+				</command>
+				<event-handler on="IndustryCreated">
+					<mapping target="arn" operand="set" value="arn"></mapping>
+					<mapping target="name" operand="set" value="name"></mapping>
+					<mapping target="description" operand="set" value="description"></mapping>
+				</event-handler>
+			</aggregate>
 			<aggregate name="ControlFramework" business-key="arn" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
 				<field name="arn" type="String"></field>
 				<field name="description" type="String"></field>
@@ -153,57 +205,9 @@
 				<nested-object name="requirements" business-key="name">
 					<field name="name" type="String"></field>
 					<field name="description" type="String"></field>
+					<field name="mandatory" type="Boolean"></field>
+					<field name="summary" type="String"></field>
 				</nested-object>
-			</aggregate>
-			<aggregate name="Industry" business-key="fieldName" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
-				<field name="arn" type="String"></field>
-				<field name="name" type="String"></field>
-				<field name="description" type="String"></field>
-				<command name="Create" create-command="true">
-					<trigger source="AddIndustryRequested" key-field="arn">
-						<mapping target="arn" value="arn"></mapping>
-						<mapping target="name" value="name"></mapping>
-						<mapping target="description" value="description"></mapping>
-					</trigger>
-					<processor type="emit-event" id="U8J057" ref="IndustryCreated">
-						<mapping target="arn" value="#flow.arn"></mapping>
-						<mapping target="name" value="#flow.name"></mapping>
-						<mapping target="description" value="#flow.description"></mapping>
-					</processor>
-					<processor type="validator" id="r8n5VM" condition='flow.name != ""' exception="Name may not be empty"></processor>
-					<processor type="validator" id="1HirZZ" condition='flow.description != ""' exception="Description may not be empty"></processor>
-					<test-case name="AddNewIndustry" trigger-event="AddIndustryRequested">
-						<input name="arn" value="industry:automotive" type="String"></input>
-						<input name="name" value="Automotive" type="String"></input>
-						<input name="description" value="The automotive industry" type="String"></input>
-						<expected domain-event="IndustryCreated">
-							<field value="industry:automotive" name="arn" type="String"></field>
-							<field value="Automotive" name="name" type="String"></field>
-							<field value="The automotive industry" name="description" type="String"></field>
-						</expected>
-						<expected-state pk="industry:automotive">{
-  "arn": "industry:automotive",
-  "name": "Automotive",
-  "description": "The automotive industry"
-}</expected-state>
-					</test-case>
-					<test-case name="AddDuplicateIndustry" trigger-event="AddIndustryRequested" expected-processing-status="error">
-						<input name="arn" value="industry:automotive" type="String"></input>
-						<input name="name" value="Hello World!" type="String"></input>
-						<input name="description" value="None" type="String"></input>
-						<state>{
-  "arn": "industry:automotive",
-  "name": "Automotive",
-  "description": "The automotive industry",
-      "version": 1
-}</state>
-					</test-case>
-				</command>
-				<event-handler on="IndustryCreated">
-					<mapping target="arn" operand="set" value="arn"></mapping>
-					<mapping target="name" operand="set" value="name"></mapping>
-					<mapping target="description" operand="set" value="description"></mapping>
-				</event-handler>
 			</aggregate>
 		</subdomain>
 	</domain>
@@ -249,6 +253,8 @@
 		<view name="Requirement" data-retention-days="-1" exclude-notification="false">
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
+			<field name="mandatory" type="String"></field>
+			<field name="summary" type="String"></field>
 		</view>
 	</views>
 	<projections>
