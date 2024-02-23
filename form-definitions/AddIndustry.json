@@ -1,0 +1,30 @@
+[
+  {
+    "type": "meta",
+    "message": "This file is managed by Tracepaper"
+  },
+  {
+    "name": "arn",
+    "title": "Arn",
+    "type": "String",
+    "pattern": "^industry:[a-z]+$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "name",
+    "title": "Name",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "description",
+    "title": "Description",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  }
+]

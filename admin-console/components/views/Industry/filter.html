@@ -1,0 +1,19 @@
+<!-- This file is managed by Tracepaper -->
+<template x-component="Industry-filter">
+    <div x-import="tables;query-form">
+
+        <!-- The query object -->
+        <draftsman-query alias="Industryfilter" x-include="/prepared-statements/views/Industry/filter.txt" authenticated>
+        </draftsman-query>
+
+        <!-- The form definition -->
+        <div  style="display:none;" id="Industryfilter"
+              x-include="/form-definitions/Industry/filter.json"></div>
+
+        <!-- The query form -->
+        <ui-query-form alias="Industryfilter"></ui-query-form>
+
+        <!-- The data view --><ui-collection-table alias="Industryfilter" path="filter.resultset"></ui-collection-table>
+
+    </div>
+</template>
