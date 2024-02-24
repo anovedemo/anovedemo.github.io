@@ -1,0 +1,19 @@
+<!-- This file is managed by Tracepaper -->
+<template x-component="Company-filter">
+    <div x-import="tables;query-form">
+
+        <!-- The query object -->
+        <draftsman-query alias="Companyfilter" x-include="/prepared-statements/views/Company/filter.txt" authenticated>
+        </draftsman-query>
+
+        <!-- The form definition -->
+        <div  style="display:none;" id="Companyfilter"
+              x-include="/form-definitions/Company/filter.json"></div>
+
+        <!-- The query form -->
+        <ui-query-form alias="Companyfilter"></ui-query-form>
+
+        <!-- The data view --><ui-collection-table alias="Companyfilter" path="filter.resultset"></ui-collection-table>
+
+    </div>
+</template>

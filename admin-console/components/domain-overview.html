@@ -7,14 +7,26 @@
                     <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
                         
                         <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'AddControlFrameworkRequirement'"
+                                x-show="'addcontrolframeworkrequirement'.includes(search.toLowerCase())">
+                            AddControlFrameworkRequirement
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
                                 @click="Draftsman.empty_track_and_trace_log();component = 'AddIndustry'"
-                                x-show="'AddIndustry'.includes(search.toLowerCase())">
+                                x-show="'addindustry'.includes(search.toLowerCase())">
                             AddIndustry
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'CreateCompany'"
+                                x-show="'createcompany'.includes(search.toLowerCase())">
+                            CreateCompany
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
                                 @click="Draftsman.empty_track_and_trace_log();component = 'AddControlFramework'"
-                                x-show="'AddControlFramework'.includes(search.toLowerCase())">
+                                x-show="'addcontrolframework'.includes(search.toLowerCase())">
                             AddControlFramework
                         </button>
                         
@@ -23,10 +35,26 @@
             </div>
             <div class="col-6">
                 
+                <div x-show="component == 'AddControlFrameworkRequirement'" x-cloak x-transition>
+                    <div x-import="commands/AddControlFrameworkRequirement">
+                        <h6>AddControlFrameworkRequirement</h6>
+                        <ui-AddControlFrameworkRequirement></ui-AddControlFrameworkRequirement>
+                    </div>
+                </div>
+
+                
                 <div x-show="component == 'AddIndustry'" x-cloak x-transition>
                     <div x-import="commands/AddIndustry">
                         <h6>AddIndustry</h6>
                         <ui-AddIndustry></ui-AddIndustry>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'CreateCompany'" x-cloak x-transition>
+                    <div x-import="commands/CreateCompany">
+                        <h6>CreateCompany</h6>
+                        <ui-CreateCompany></ui-CreateCompany>
                     </div>
                 </div>
 
@@ -73,6 +101,22 @@
                 </div>
 
                 
+                <div x-show="component == 'Company/get'" x-cloak x-transition>
+                    <div x-import="views/Company/get">
+                        <h6>Company.get</h6>
+                        <ui-Company-get></ui-Company-get>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Company/filter'" x-cloak x-transition>
+                    <div x-import="views/Company/filter">
+                        <h6>Company.filter</h6>
+                        <ui-Company-filter></ui-Company-filter>
+                    </div>
+                </div>
+
+                
 
             </div>
             <div class="col-3">
@@ -97,6 +141,16 @@
                     <button type="button" class="btn btn-outline-primary"
                             x-show="'industry.filter'.includes(search.toLowerCase())"
                             @click="component = 'Industry/filter'">Industry.filter
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'company.get'.includes(search.toLowerCase())"
+                            @click="component = 'Company/get'">Company.get
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'company.filter'.includes(search.toLowerCase())"
+                            @click="component = 'Company/filter'">Company.filter
                     </button>
                     
                 </div>

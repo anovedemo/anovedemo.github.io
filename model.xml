@@ -1,15 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <draftsman project-name="Demo" xmlns="https://tracepaper.draftsman.io">
 	<global>
-		<pattern name="ControlFrameworkArn" regex="^controlframework:[a-z]+$"></pattern>
+		<pattern name="IndustryLink" regex="^{{IndustryArn}}(;{{IndustryArn}})*$"></pattern>
+		<pattern name="ControlFrameworkArn" regex="^controlframework:[a-z0-9]+$"></pattern>
+		<pattern name="CompanyArn" regex="^company:[a-z]+$"></pattern>
 		<pattern name="IndustryArn" regex="^industry:[a-z]+$"></pattern>
 		<pattern name="ControlFrameworkType" regex="^(standard|regulation|framework)$"></pattern>
 	</global>
 	<events>
+		<event graphql-namespace="ControlFramework.Requirement" graphql-name="add" name="AddControlFrameworkRequirementRequested" authorization="role" role="administrator" type="ActorEvent">
+			<field name="arn" type="String" pattern="{{ControlFrameworkArn}}"></field>
+			<nested-object name="requirements">
+				<field name="name" type="String"></field>
+				<field name="description" type="String"></field>
+				<field name="mandatory" type="Boolean"></field>
+				<field name="summary" type="String"></field>
+			</nested-object>
+		</event>
 		<event graphql-namespace="Industry" graphql-name="add" name="AddIndustryRequested" authorization="role" type="ActorEvent" role="administrator">
 			<field name="arn" type="String" pattern="{{IndustryArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
+		</event>
+		<event graphql-namespace="Company" graphql-name="create" name="CreateCompanyRequested" authorization="authenticated" type="ActorEvent">
+			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
+			<field name="name" type="String"></field>
+			<field name="description" type="String"></field>
+			<field name="companySize" type="Int"></field>
+			<field name="revenue" type="String"></field>
+			<field name="industry" type="String" pattern="{{IndustryLink}}"></field>
 		</event>
 		<event graphql-namespace="ControlFramework" graphql-name="add" name="AddControlFrameworkRequested" authorization="role" type="ActorEvent" role="administrator">
 			<field name="arn" type="String" pattern="{{ControlFrameworkArn}}"></field>
@@ -32,6 +51,15 @@
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
 		</event>
+		<event name="ControlFrameworkRequirementsAdded" source="Admin.ControlFramework" type="DomainEvent">
+			<field name="arn" type="String"></field>
+			<nested-object name="requirements">
+				<field name="name" type="String"></field>
+				<field name="description" type="String"></field>
+				<field name="mandatory" type="Boolean"></field>
+				<field name="summary" type="String"></field>
+			</nested-object>
+		</event>
 		<event name="ControlFrameworkCreated" source="Admin.ControlFramework" type="DomainEvent">
 			<field name="arn" type="String"></field>
 			<field name="description" type="String"></field>
@@ -44,7 +72,17 @@
 			<nested-object name="requirements">
 				<field name="name" type="String"></field>
 				<field name="description" type="String"></field>
+				<field name="mandatory" type="Boolean"></field>
+				<field name="summary" type="String"></field>
 			</nested-object>
+		</event>
+		<event name="CompanyCreated" source="Customer.Company" type="DomainEvent">
+			<field name="arn" type="String"></field>
+			<field name="name" type="String"></field>
+			<field name="description" type="String"></field>
+			<field name="companySize" type="Int"></field>
+			<field name="revenue" type="String"></field>
+			<field name="industry" type="String"></field>
 		</event>
 	</events>
 	<domain>
@@ -144,7 +182,9 @@
 						<input name="requirements" type="NestedObject">[
   {
     "name": "myreq",
-    "description": "Hello World"
+    "description": "Hello World",
+    "mandatory": true,
+    "summary": "hello"
   }
 ]</input>
 						<expected domain-event="ControlFrameworkCreated">
@@ -162,7 +202,9 @@
   "requirements": {
     "myreq": {
       "name": "myreq",
-      "description": "Hello World"
+      "description": "Hello World",
+      "mandatory": true,
+      "summary": "hello"
     }
   }
 }</expected-state>
@@ -188,6 +230,52 @@
 ]</input>
 					</test-case>
 				</command>
+				<command name="AddRequirements">
+					<trigger source="AddControlFrameworkRequirementRequested" key-field="arn">
+						<mapping target="arn" value="arn"></mapping>
+						<mapping target="requirements" value="requirements"></mapping>
+					</trigger>
+					<processor type="emit-event" id="VLFqeG" ref="ControlFrameworkRequirementsAdded">
+						<mapping target="arn" value="#flow.arn"></mapping>
+						<mapping target="requirements" value="#flow.requirements"></mapping>
+					</processor>
+					<processor type="validator" id="rj33T8" condition="flow.entity.version != 0" exception="Controlframework {flow.arn} is not present in the eventstore"></processor>
+					<test-case name="AddNewRequirements" trigger-event="AddControlFrameworkRequirementRequested">
+						<input name="arn" value="controlframework:framework" type="String"></input>
+						<input name="requirements" type="NestedObject">[
+  {
+    "name": "myreq",
+    "description": "123",
+    "mandatory": true,
+    "summary": "Hello world!"
+  }
+]</input>
+						<state>{
+  "version": 1
+}</state>
+						<expected domain-event="ControlFrameworkRequirementsAdded">
+							<field value="controlframework:framework" name="arn" type="String"></field>
+						</expected>
+						<expected-state pk="controlframework:framework">{
+  "requirements": {
+    "myreq":  {
+    "name": "myreq",
+    "description": "123",
+    "mandatory": true,
+    "summary": "Hello world!"
+  }
+  }
+}</expected-state>
+					</test-case>
+				</command>
+				<event-handler on="ControlFrameworkRequirementsAdded">
+					<nested-mapping source="requirements" target="requirements" business-key="name">
+						<mapping target="name" operand="set" value="name"></mapping>
+						<mapping target="description" operand="set" value="description"></mapping>
+						<mapping target="mandatory" operand="set" value="mandatory"></mapping>
+						<mapping target="summary" operand="set" value="summary"></mapping>
+					</nested-mapping>
+				</event-handler>
 				<event-handler on="ControlFrameworkCreated">
 					<mapping target="arn" operand="set" value="arn"></mapping>
 					<mapping target="description" operand="set" value="description"></mapping>
@@ -200,6 +288,8 @@
 					<nested-mapping source="requirements" target="requirements" business-key="name">
 						<mapping target="name" operand="set" value="name"></mapping>
 						<mapping target="description" operand="set" value="description"></mapping>
+						<mapping target="mandatory" operand="set" value="mandatory"></mapping>
+						<mapping target="summary" operand="set" value="summary"></mapping>
 					</nested-mapping>
 				</event-handler>
 				<nested-object name="requirements" business-key="name">
@@ -207,6 +297,57 @@
 					<field name="description" type="String"></field>
 					<field name="mandatory" type="Boolean"></field>
 					<field name="summary" type="String"></field>
+				</nested-object>
+			</aggregate>
+		</subdomain>
+		<subdomain name="Customer">
+			<aggregate name="Company" business-key="name" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
+				<field name="arn" type="String"></field>
+				<field name="name" type="String"></field>
+				<field name="description" type="String"></field>
+				<field name="companySize" type="Int"></field>
+				<field name="revenue" type="String"></field>
+				<field name="industryLink" type="StringList"></field>
+				<command name="Create">
+					<trigger source="CreateCompanyRequested" key-field="arn">
+						<mapping target="arn" value="arn"></mapping>
+						<mapping target="name" value="name"></mapping>
+						<mapping target="description" value="description"></mapping>
+						<mapping target="companySize" value="companySize"></mapping>
+						<mapping target="revenue" value="revenue"></mapping>
+						<mapping target="industry" value="industry"></mapping>
+					</trigger>
+					<processor type="emit-event" id="AqKpZH" ref="CompanyCreated">
+						<mapping target="arn" value="#flow.arn"></mapping>
+						<mapping target="name" value="#flow.name"></mapping>
+						<mapping target="description" value="#flow.description"></mapping>
+						<mapping target="companySize" value="#flow.companySize"></mapping>
+						<mapping target="revenue" value="#flow.revenue"></mapping>
+						<mapping target="industry" value="#flow.industry"></mapping>
+					</processor>
+					<test-case name="CreateNewCompany" trigger-event="CreateCompanyRequested">
+						<input name="arn" value="company:draftsman" type="String"></input>
+						<input name="name" value="Draftsman" type="String"></input>
+						<input name="description" value="--" type="String"></input>
+						<input name="companySize" value="2" type="Int"></input>
+						<input name="revenue" value="0" type="String"></input>
+						<input name="industry" value="--" type="String"></input>
+						<expected domain-event="CompanyCreated">
+							<field value="company:draftsman" name="arn" type="String"></field>
+							<field value="Draftsman" name="name" type="String"></field>
+							<field value="--" name="description" type="String"></field>
+							<field value="0" name="revenue" type="String"></field>
+						</expected>
+					</test-case>
+				</command>
+				<event-handler on="CompanyCreated" code="self.arn = event.arn|LB|self.name = event.name|LB|self.description = event.description|LB|self.companySize = event.companySize|LB|self.revenue = event.revenue|LB|self.industryLink = event.industry.split(';')"></event-handler>
+				<nested-object name="businessUnit" business-key="newField">
+					<field name="name" type="String"></field>
+					<field name="description" type="String"></field>
+				</nested-object>
+				<nested-object name="regulations" business-key="name">
+					<field name="name" type="String"></field>
+					<field name="link" type="String"></field>
 				</nested-object>
 			</aggregate>
 		</subdomain>
@@ -231,7 +372,7 @@
 				<mapping target="unit" operand="set" value="unit"></mapping>
 				<mapping target="acronym" operand="set" value="acronym"></mapping>
 				<mapping target="active" operand="set" value="active"></mapping>
-				<mapping target="requirements" operand="convert_items" value="requirements" template='{"name": value["name"],"description": value["description"]}'></mapping>
+				<mapping target="requirements" operand="convert_items" value="requirements" template='{"name": value["name"],"description": value["description"],"mandatory": value["mandatory"],"summary": value["summary"]}'></mapping>
 				<delete condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="ControlFramework" field-name="get" type="get" authorization="authenticated"></query>
@@ -250,6 +391,25 @@
 			<query graphql-namespace="Industry" field-name="get" type="get" authorization="authenticated"></query>
 			<query graphql-namespace="Industry" field-name="filter" type="filter" authorization="authenticated"></query>
 		</view>
+		<view name="Company" data-retention-days="-1" exclude-notification="false">
+			<field name="arn" type="String" pk="true"></field>
+			<field name="name" type="String"></field>
+			<field name="description" type="String"></field>
+			<field name="companySize" type="Int"></field>
+			<field name="revenue" type="String"></field>
+			<field name="industryLink" type="StringList"></field>
+			<snapshot-handler id="a8vzJw" sub-domain="Customer" aggregate="Company" key-mapping="arn" processor="item">
+				<mapping target="arn" operand="set" value="arn"></mapping>
+				<mapping target="name" operand="set" value="name"></mapping>
+				<mapping target="description" operand="set" value="description"></mapping>
+				<mapping target="companySize" operand="set" value="companySize"></mapping>
+				<mapping target="revenue" operand="set" value="revenue"></mapping>
+				<mapping target="industryLink" operand="set" value="industryLink"></mapping>
+				<delete condition="#snapshot.isDeleted != ''"></delete>
+			</snapshot-handler>
+			<query graphql-namespace="Company" field-name="get" type="get" authorization="authenticated"></query>
+			<query graphql-namespace="Company" field-name="filter" type="filter" authorization="authenticated"></query>
+		</view>
 		<view name="Requirement" data-retention-days="-1" exclude-notification="false">
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
@@ -267,6 +427,6 @@
 			<activity type="iam-create-systemuser" fail-silent="true" id="vMB9LZ"></activity>
 		</notifier>
 	</notifiers>
-	<functional-scenarios clean-db="true" clean-iam="true" minimum-event-coverage="80" minimum-view-coverage="80">
+	<functional-scenarios clean-db="true" clean-iam="false" minimum-event-coverage="80" minimum-view-coverage="80">
 	</functional-scenarios>
 </draftsman>
