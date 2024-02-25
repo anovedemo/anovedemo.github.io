@@ -13,6 +13,12 @@
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'AddRequirement'"
+                                x-show="'addrequirement'.includes(search.toLowerCase())">
+                            AddRequirement
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
                                 @click="Draftsman.empty_track_and_trace_log();component = 'AddIndustry'"
                                 x-show="'addindustry'.includes(search.toLowerCase())">
                             AddIndustry
@@ -39,6 +45,14 @@
                     <div x-import="commands/AddControlFrameworkRequirement">
                         <h6>AddControlFrameworkRequirement</h6>
                         <ui-AddControlFrameworkRequirement></ui-AddControlFrameworkRequirement>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'AddRequirement'" x-cloak x-transition>
+                    <div x-import="commands/AddRequirement">
+                        <h6>AddRequirement</h6>
+                        <ui-AddRequirement></ui-AddRequirement>
                     </div>
                 </div>
 
@@ -117,6 +131,22 @@
                 </div>
 
                 
+                <div x-show="component == 'Requirement/get'" x-cloak x-transition>
+                    <div x-import="views/Requirement/get">
+                        <h6>Requirement.get</h6>
+                        <ui-Requirement-get></ui-Requirement-get>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Requirement/filter'" x-cloak x-transition>
+                    <div x-import="views/Requirement/filter">
+                        <h6>Requirement.filter</h6>
+                        <ui-Requirement-filter></ui-Requirement-filter>
+                    </div>
+                </div>
+
+                
 
             </div>
             <div class="col-3">
@@ -151,6 +181,16 @@
                     <button type="button" class="btn btn-outline-primary"
                             x-show="'company.filter'.includes(search.toLowerCase())"
                             @click="component = 'Company/filter'">Company.filter
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'requirement.get'.includes(search.toLowerCase())"
+                            @click="component = 'Requirement/get'">Requirement.get
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'requirement.filter'.includes(search.toLowerCase())"
+                            @click="component = 'Requirement/filter'">Requirement.filter
                     </button>
                     
                 </div>

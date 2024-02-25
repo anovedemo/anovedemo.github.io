@@ -66,44 +66,5 @@
     "pattern": "",
     "placeholder": "",
     "default": ""
-  },
-  {
-    "name": "requirements",
-    "title": "Requirements",
-    "type": "nested",
-    "fields": [
-      {
-        "name": "name",
-        "title": "Name",
-        "type": "String",
-        "pattern": "",
-        "placeholder": "",
-        "default": ""
-      },
-      {
-        "name": "description",
-        "title": "Description",
-        "type": "String",
-        "pattern": "",
-        "placeholder": "",
-        "default": ""
-      },
-      {
-        "name": "mandatory",
-        "title": "Mandatory",
-        "type": "Boolean",
-        "pattern": "",
-        "placeholder": "",
-        "default": ""
-      },
-      {
-        "name": "summary",
-        "title": "Summary",
-        "type": "String",
-        "pattern": "",
-        "placeholder": "",
-        "default": ""
-      }
-    ]
   }
 ]

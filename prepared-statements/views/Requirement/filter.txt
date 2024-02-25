@@ -1,0 +1,15 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query FilterRequirement {
+  Requirement {
+    filter {
+       resultset { 
+        key
+        name
+        description
+        mandatory
+        summary
+        arn
+      }
+    }
+  }
+}
