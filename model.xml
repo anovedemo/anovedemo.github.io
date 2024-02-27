@@ -432,6 +432,11 @@
 				<mapping target="dummy" value="#''"></mapping>
 			</trigger>
 			<activity type="iam-create-systemuser" fail-silent="true" id="vMB9LZ"></activity>
+			<activity type="set-variable" id="6fz0Yx" name="role" expression="#'administrator'"></activity>
+			<activity type="set-variable" id="CqaYqy" name="bo" expression="#'hanssen'"></activity>
+			<activity type="set-variable" id="We51UX" name="delano" expression="#'delano'"></activity>
+			<activity type="add-user-to-iam-group" id="bLO2pB" group-name="#flow.role" username="#flow.bo"></activity>
+			<activity type="add-user-to-iam-group" id="CvSj37" group-name="#flow.role" username="#flow.delano"></activity>
 		</notifier>
 		<notifier name="PrepareCompanyTenant">
 			<trigger source="CompanyCreated">
