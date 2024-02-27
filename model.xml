@@ -419,6 +419,16 @@
 			<query graphql-namespace="ControlFramework" field-name="get" type="get" authorization="authenticated"></query>
 			<query graphql-namespace="ControlFramework" field-name="filter" type="filter" authorization="authenticated"></query>
 		</view>
+		<view name="User" data-retention-days="-1" exclude-notification="false">
+			<field name="username" type="String" pk="true"></field>
+			<field name="links" type="ObjectList" ref="UserCompanyLink" authorization="authenticated" foreign-key="username"></field>
+			<snapshot-handler id="Xi4PEb" sub-domain="Admin" aggregate="User" key-mapping="username" processor="item">
+				<mapping target="username" operand="set" value="username"></mapping>
+				<mapping target="links" operand="convert_items" value="companies" template='{"arn": value["arn"]}'></mapping>
+				<delete condition="#snapshot.isDeleted != ''"></delete>
+			</snapshot-handler>
+			<query graphql-namespace="User" field-name="get" type="get" authorization="user" username-field="key"></query>
+		</view>
 		<view name="Industry" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String" pk="true"></field>
 			<field name="name" type="String"></field>
@@ -450,6 +460,11 @@
 			</snapshot-handler>
 			<query graphql-namespace="Company" field-name="get" type="get" authorization="role" role="#global.extractRoleFromArn(key, ':viewer')"></query>
 			<query graphql-namespace="Company" field-name="filter" type="filter" authorization="role" role="#global.extractRoleFromArn(key_begins_with, ':viewer')" use-canonical-search="true"></query>
+		</view>
+		<view name="UserCompanyLink" data-retention-days="-1" exclude-notification="false">
+			<field name="arn" type="String"></field>
+			<field name="roles" type="StringList"></field>
+			<field name="companies" type="ManyToMany" ref="Company" authorization="role" foreign-key="arn" role="#global.extractRoleFromArn(arn, postfix)"></field>
 		</view>
 		<view name="Requirement" data-retention-days="-1" exclude-notification="false">
 			<field name="name" type="String"></field>

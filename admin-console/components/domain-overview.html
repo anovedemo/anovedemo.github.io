@@ -85,6 +85,14 @@
                 </div>
 
                 
+                <div x-show="component == 'User/get'" x-cloak x-transition>
+                    <div x-import="views/User/get">
+                        <h6>User.get</h6>
+                        <ui-User-get></ui-User-get>
+                    </div>
+                </div>
+
+                
                 <div x-show="component == 'Industry/get'" x-cloak x-transition>
                     <div x-import="views/Industry/get">
                         <h6>Industry.get</h6>
@@ -147,6 +155,11 @@
                     <button type="button" class="btn btn-outline-primary"
                             x-show="'controlframework.filter'.includes(search.toLowerCase())"
                             @click="component = 'ControlFramework/filter'">ControlFramework.filter
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'user.get'.includes(search.toLowerCase())"
+                            @click="component = 'User/get'">User.get
                     </button>
                     
                     <button type="button" class="btn btn-outline-primary"
