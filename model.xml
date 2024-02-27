@@ -48,6 +48,10 @@
 			<field name="mandatory" type="Boolean"></field>
 			<field name="summary" type="String"></field>
 		</event>
+		<event name="CompanyAdministratorCreated" source="Admin.User" type="DomainEvent">
+			<field name="username" type="String"></field>
+			<field name="companyArn" type="String"></field>
+		</event>
 		<event name="IndustryCreated" source="Admin.Industry" type="DomainEvent">
 			<field name="arn" type="String"></field>
 			<field name="name" type="String"></field>
@@ -136,6 +140,46 @@
 					<mapping target="mandatory" operand="set" value="mandatory"></mapping>
 					<mapping target="summary" operand="set" value="summary"></mapping>
 				</event-handler>
+			</aggregate>
+			<aggregate name="User" business-key="username" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
+				<field name="username" type="String"></field>
+				<command name="CreateFirstCompanyUser">
+					<trigger source="CompanyCreated" key-field="user">
+						<mapping target="arn" value="arn"></mapping>
+						<mapping target="user" value="user"></mapping>
+					</trigger>
+					<processor type="emit-event" id="YLK80V" ref="CompanyAdministratorCreated">
+						<mapping target="username" value="#flow.user"></mapping>
+						<mapping target="companyArn" value="#flow.arn"></mapping>
+					</processor>
+					<test-case name="CreateNewUser" trigger-event="CompanyCreated">
+						<input name="arn" value="company:draftsman" type="String"></input>
+						<input name="name" value="dummy" type="String"></input>
+						<input name="description" value="dummy" type="String"></input>
+						<input name="companySize" value="2" type="Int"></input>
+						<input name="revenue" value="dummy" type="String"></input>
+						<input name="industry" value="dummy" type="String"></input>
+						<input name="user" value="j.doe" type="String"></input>
+						<expected domain-event="CompanyAdministratorCreated">
+							<field value="j.doe" name="username" type="String"></field>
+							<field value="company:draftsman" name="companyArn" type="String"></field>
+						</expected>
+						<expected-state pk="j.doe">{
+  "username": "j.doe",
+  "companies": {
+    "company:draftsman": {
+      "arn": "company:draftsman",
+      "roles": ["viewer","administrator"]
+    }
+  }
+}</expected-state>
+					</test-case>
+				</command>
+				<event-handler on="CompanyAdministratorCreated" code='self.username = event.username|LB|self.companies[event.companyArn] = {|LB|    "arn": event.companyArn,|LB|    "roles": ["viewer","administrator"]|LB|}|LB|print(self.__dict__,"!!!")'></event-handler>
+				<nested-object name="companies" business-key="arn">
+					<field name="arn" type="String"></field>
+					<field name="roles" type="StringList"></field>
+				</nested-object>
 			</aggregate>
 			<aggregate name="Industry" business-key="fieldName" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
 				<field name="arn" type="String"></field>
@@ -428,16 +472,21 @@
 	<projections>
 	</projections>
 	<notifiers>
+		<notifier name="DemoUsers">
+			<trigger source="@cron(0 0 * * ? *)">
+				<mapping target="dummy" value="#'dummy'"></mapping>
+			</trigger>
+			<activity type="set-variable" id="6fz0Yx" name="role" expression="#'administrator'"></activity>
+			<activity type="set-variable" id="CqaYqy" name="bo" expression="#'hanssen'" fail-silent="false"></activity>
+			<activity type="set-variable" id="We51UX" name="delano" expression="#'delano'"></activity>
+			<activity type="add-user-to-iam-group" id="bLO2pB" group-name="#flow.role" username="#flow.bo" fail-silent="true"></activity>
+			<activity type="add-user-to-iam-group" id="CvSj37" group-name="#flow.role" username="#flow.delano" fail-silent="true"></activity>
+		</notifier>
 		<notifier name="InitializeSystemUser">
 			<trigger source="@afterDeployment">
 				<mapping target="dummy" value="#''"></mapping>
 			</trigger>
 			<activity type="iam-create-systemuser" fail-silent="true" id="vMB9LZ"></activity>
-			<activity type="set-variable" id="6fz0Yx" name="role" expression="#'administrator'"></activity>
-			<activity type="set-variable" id="CqaYqy" name="bo" expression="#'hanssen'"></activity>
-			<activity type="set-variable" id="We51UX" name="delano" expression="#'delano'"></activity>
-			<activity type="add-user-to-iam-group" id="bLO2pB" group-name="#flow.role" username="#flow.bo"></activity>
-			<activity type="add-user-to-iam-group" id="CvSj37" group-name="#flow.role" username="#flow.delano"></activity>
 		</notifier>
 		<notifier name="PrepareCompanyTenant">
 			<trigger source="CompanyCreated">
@@ -454,6 +503,6 @@
 			</activity>
 		</notifier>
 	</notifiers>
-	<functional-scenarios clean-db="false" clean-iam="false" minimum-event-coverage="80" minimum-view-coverage="80">
+	<functional-scenarios clean-db="true" clean-iam="true" minimum-event-coverage="80" minimum-view-coverage="80">
 	</functional-scenarios>
 </draftsman>
