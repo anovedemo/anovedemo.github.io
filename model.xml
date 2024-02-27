@@ -9,15 +9,6 @@
 		<pattern name="ControlFrameworkType" regex="^(standard|regulation|framework)$"></pattern>
 	</global>
 	<events>
-		<event graphql-namespace="ControlFramework.Requirement" graphql-name="add" name="AddControlFrameworkRequirementRequested" authorization="role" role="administrator" type="ActorEvent">
-			<field name="arn" type="String" pattern="{{ControlFrameworkArn}}"></field>
-			<nested-object name="requirements">
-				<field name="name" type="String"></field>
-				<field name="description" type="String"></field>
-				<field name="mandatory" type="Boolean"></field>
-				<field name="summary" type="String"></field>
-			</nested-object>
-		</event>
 		<event graphql-namespace="Requirement" graphql-name="add" name="AddRequirementRequested" authorization="role" type="ActorEvent" role="administrator">
 			<field name="arn" type="String" pattern="{{RequirementArn}}"></field>
 			<field name="name" type="String"></field>
@@ -37,6 +28,7 @@
 			<field name="companySize" type="Int"></field>
 			<field name="revenue" type="String"></field>
 			<field name="industry" type="String" pattern="{{IndustryLink}}"></field>
+			<field name="user" type="String" auto-fill="username"></field>
 		</event>
 		<event graphql-namespace="ControlFramework" graphql-name="add" name="AddControlFrameworkRequested" authorization="role" type="ActorEvent" role="administrator">
 			<field name="arn" type="String" pattern="{{ControlFrameworkArn}}"></field>
@@ -77,6 +69,7 @@
 			<field name="companySize" type="Int"></field>
 			<field name="revenue" type="String"></field>
 			<field name="industry" type="String"></field>
+			<field name="user" type="String"></field>
 		</event>
 	</events>
 	<domain>
@@ -87,7 +80,7 @@
 				<field name="description" type="String"></field>
 				<field name="mandatory" type="Boolean"></field>
 				<field name="summary" type="String"></field>
-				<command name="Create" create-command="false">
+				<command name="Create" create-command="true">
 					<trigger source="AddRequirementRequested" key-field="arn">
 						<mapping target="arn" value="arn"></mapping>
 						<mapping target="name" value="name"></mapping>
@@ -122,6 +115,17 @@
   "mandatory": true,
   "summary": "hw"
 }</expected-state>
+					</test-case>
+					<test-case name="AddDuplicateRequirement" trigger-event="AddRequirementRequested" expected-processing-status="error">
+						<input name="arn" value="controlframework:gdpr:req1" type="String"></input>
+						<input name="name" value="req 1" type="String"></input>
+						<input name="description" value="Hello World!" type="String"></input>
+						<input name="mandatory" value="true" type="Boolean"></input>
+						<input name="summary" value="hw" type="String"></input>
+						<state>{
+      "arn": "controlframework:gdpr:req1",
+      "version": 1
+      }</state>
 					</test-case>
 				</command>
 				<event-handler on="RequirementCreated">
@@ -277,7 +281,7 @@
 				<field name="companySize" type="Int"></field>
 				<field name="revenue" type="String"></field>
 				<field name="industryLink" type="StringList"></field>
-				<command name="Create">
+				<command name="Create" create-command="true">
 					<trigger source="CreateCompanyRequested" key-field="arn">
 						<mapping target="arn" value="arn"></mapping>
 						<mapping target="name" value="name"></mapping>
@@ -285,6 +289,7 @@
 						<mapping target="companySize" value="companySize"></mapping>
 						<mapping target="revenue" value="revenue"></mapping>
 						<mapping target="industry" value="industry"></mapping>
+						<mapping target="user" value="user"></mapping>
 					</trigger>
 					<processor type="emit-event" id="AqKpZH" ref="CompanyCreated">
 						<mapping target="arn" value="#flow.arn"></mapping>
@@ -293,6 +298,7 @@
 						<mapping target="companySize" value="#flow.companySize"></mapping>
 						<mapping target="revenue" value="#flow.revenue"></mapping>
 						<mapping target="industry" value="#flow.industry"></mapping>
+						<mapping target="user" value="#flow.user"></mapping>
 					</processor>
 					<test-case name="CreateNewCompany" trigger-event="CreateCompanyRequested">
 						<input name="arn" value="company:draftsman" type="String"></input>
@@ -301,12 +307,34 @@
 						<input name="companySize" value="2" type="Int"></input>
 						<input name="revenue" value="0" type="String"></input>
 						<input name="industry" value="--" type="String"></input>
+						<input name="user" value="j.doe" type="String"></input>
 						<expected domain-event="CompanyCreated">
 							<field value="company:draftsman" name="arn" type="String"></field>
 							<field value="Draftsman" name="name" type="String"></field>
 							<field value="--" name="description" type="String"></field>
 							<field value="0" name="revenue" type="String"></field>
 						</expected>
+						<expected-state pk="company:draftsman">{
+        "arn":"company:draftsman",
+        "name":"Draftsman",
+        "description":"--",
+        "companySize": 2,
+        "revenue": "0",
+        "industryLink": ["--"]
+      }</expected-state>
+					</test-case>
+					<test-case name="CreateDuplicateCompany" trigger-event="CreateCompanyRequested" expected-processing-status="error">
+						<input name="arn" value="company:draftsman" type="String"></input>
+						<input name="name" value="Draftsman" type="String"></input>
+						<input name="description" value="--" type="String"></input>
+						<input name="companySize" value="2" type="Int"></input>
+						<input name="revenue" value="0" type="String"></input>
+						<input name="industry" value="--" type="String"></input>
+						<input name="user" value="j.doe" type="String"></input>
+						<state>{
+        "arn":"company:draftsman",
+        "version":1
+      }</state>
 					</test-case>
 				</command>
 				<event-handler on="CompanyCreated" code="self.arn = event.arn|LB|self.name = event.name|LB|self.description = event.description|LB|self.companySize = event.companySize|LB|self.revenue = event.revenue|LB|self.industryLink = event.industry.split(';')"></event-handler>
@@ -405,7 +433,21 @@
 			</trigger>
 			<activity type="iam-create-systemuser" fail-silent="true" id="vMB9LZ"></activity>
 		</notifier>
+		<notifier name="PrepareCompanyTenant">
+			<trigger source="CompanyCreated">
+				<mapping target="arn" value="arn"></mapping>
+				<mapping target="user" value="user"></mapping>
+			</trigger>
+			<activity type="code" id="4x5IYY" code='flow.roles = [|LB|    flow.arn + ":administrator",|LB|    flow.arn + ":viewer"|LB|]'></activity>
+			<activity type="set-variable" id="9V4dG1" name="systemUser" expression="#'system-user'"></activity>
+			<activity type="loop" id="ytmySk" array="#flow.roles">
+				<activity type="set-variable" id="ILrv7Y" name="role" expression="#item"></activity>
+				<activity type="create-iam-group" id="ONx6ky" group-name="#flow.role"></activity>
+				<activity type="add-user-to-iam-group" id="dri70C" group-name="#flow.role" username="#flow.user"></activity>
+				<activity type="add-user-to-iam-group" id="jBKEw3" group-name="#flow.role" username="#flow.systemUser"></activity>
+			</activity>
+		</notifier>
 	</notifiers>
-	<functional-scenarios clean-db="true" clean-iam="false" minimum-event-coverage="80" minimum-view-coverage="80">
+	<functional-scenarios clean-db="false" clean-iam="false" minimum-event-coverage="80" minimum-view-coverage="80">
 	</functional-scenarios>
 </draftsman>

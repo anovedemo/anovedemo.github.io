@@ -119,14 +119,14 @@ The notifications are also stored in an array accessible from the AlpineJS conte
 ### The mutation tag
 
 The mutation tag is intended to make GraphQL mutations available within the AlpineJS context.
-<code class="html" x-include="/admin-console/components/commands/AddControlFrameworkRequirement.html"></code>
+<code class="html" x-include="/admin-console/components/commands/AddRequirement.html"></code>
 
 #### The basic concept
 ```html
-<draftsman-mutation command="AddControlFrameworkRequirement" x-include="/prepared-statements/commands/AddControlFrameworkRequirement.txt">
+<draftsman-mutation command="AddRequirement" x-include="/prepared-statements/commands/AddRequirement.txt">
 </draftsman-mutation>
 ```
-Registers a prepared statement (/prepared-statements/commands/AddControlFrameworkRequirement.txt) as a command (AddControlFrameworkRequirement) in the Draftsman framework. 
+Registers a prepared statement (/prepared-statements/commands/AddRequirement.txt) as a command (AddRequirement) in the Draftsman framework. 
 The body of the tag is imported by vimesh-ui.
 
 #### The form definition
@@ -136,7 +136,7 @@ showcased on the [Admin Console](/admin-console). We use [vimesh-ui's](https://g
 functionality to load it into the page, the element is hidden and accessible via the id. Note that this ID must be equal to
 the command.
 ```html
-<div style="display:none;" id="AddControlFrameworkRequirement" x-include="/form-definitions/AddControlFrameworkRequirement.json"></div>
+<div style="display:none;" id="AddRequirement" x-include="/form-definitions/AddRequirement.json"></div>
 ```
 
 #### The trace table
@@ -151,7 +151,7 @@ and id of the previous component identical, both should point to the command nam
 
 The submit button will execute the following statement:
 ```javascript
-$store.mutation.send('AddControlFrameworkRequirement',{all-form-data});
+$store.mutation.send('AddRequirement',{all-form-data});
 ```
 The will execute the registered command against the GraphQL API.
 We use bootstrap 5 for styling, but feel free to customize to your liking.
@@ -172,11 +172,11 @@ The trace tag is used to react to specific trace events after a mutation, for th
     2. Clear the form by dispatching a setdata event specific for our command and with an empty data object.
 
 ```html
-<draftsman-trace command="AddControlFrameworkRequirement" 
+<draftsman-trace command="AddRequirement" 
                  status="success" 
                  @trace="
                     Draftsman.empty_track_and_trace_log();
-                    $dispatch('setdata', { command: 'AddControlFrameworkRequirement', data: {} });">
+                    $dispatch('setdata', { command: 'AddRequirement', data: {} });">
 </draftsman-trace>
 ```
 
