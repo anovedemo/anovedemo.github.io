@@ -7,6 +7,7 @@
 		<pattern name="IndustryArn" regex="^industry:[a-z]+$"></pattern>
 		<pattern name="RequirementArn" regex="^{{ControlFrameworkArn}}:[a-z0-9]+$"></pattern>
 		<pattern name="ControlFrameworkType" regex="^(standard|regulation|framework)$"></pattern>
+		<expression name="extractRoleFromArn" type="ActorEventRole" input="arn;postfix" expression="${arn.split(&amp;apos;:&amp;apos;)[0]}:${arn.split(&amp;apos;:&amp;apos;)[1]}postfix"></expression>
 	</global>
 	<events>
 		<event graphql-namespace="Requirement" graphql-name="add" name="AddRequirementRequested" authorization="role" type="ActorEvent" role="administrator">
@@ -403,8 +404,8 @@
 				<mapping target="industryLink" operand="set" value="industryLink"></mapping>
 				<delete condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
-			<query graphql-namespace="Company" field-name="get" type="get" authorization="authenticated"></query>
-			<query graphql-namespace="Company" field-name="filter" type="filter" authorization="authenticated"></query>
+			<query graphql-namespace="Company" field-name="get" type="get" authorization="role" role="#global.extractRoleFromArn(key, ':viewer')"></query>
+			<query graphql-namespace="Company" field-name="filter" type="filter" authorization="role" role="#global.extractRoleFromArn(key_begins_with, ':viewer')" use-canonical-search="true"></query>
 		</view>
 		<view name="Requirement" data-retention-days="-1" exclude-notification="false">
 			<field name="name" type="String"></field>
