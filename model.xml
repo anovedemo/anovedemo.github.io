@@ -473,7 +473,7 @@
 	</projections>
 	<notifiers>
 		<notifier name="DemoUsers">
-			<trigger source="@cron(0 0 * * ? *)">
+			<trigger source="@cron(0 * * * ? *)">
 				<mapping target="dummy" value="#'dummy'"></mapping>
 			</trigger>
 			<activity type="set-variable" id="6fz0Yx" name="role" expression="#'administrator'"></activity>
