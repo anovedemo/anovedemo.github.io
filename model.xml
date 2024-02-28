@@ -494,6 +494,7 @@
 			<activity type="set-variable" id="6fz0Yx" name="role" expression="#'administrator'"></activity>
 			<activity type="set-variable" id="CqaYqy" name="bo" expression="#'hanssen'" fail-silent="false"></activity>
 			<activity type="set-variable" id="We51UX" name="delano" expression="#'delano'"></activity>
+			<activity type="create-iam-group" id="kj95dD" group-name="#flow.role" fail-silent="true"></activity>
 			<activity type="add-user-to-iam-group" id="bLO2pB" group-name="#flow.role" username="#flow.bo" fail-silent="true"></activity>
 			<activity type="add-user-to-iam-group" id="CvSj37" group-name="#flow.role" username="#flow.delano" fail-silent="true"></activity>
 		</notifier>
