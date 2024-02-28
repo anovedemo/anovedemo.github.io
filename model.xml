@@ -171,7 +171,7 @@
   "companies": {
     "company:draftsman": {
       "arn": "company:draftsman",
-      "employeeArn": "company:draftsman:j.doe"
+      "employeeArn": "company:draftsman:employee:j.doe"
     }
   }
 }</expected-state>
@@ -193,7 +193,7 @@
   "companies": {
     "company:draftsman": {
       "arn": "company:draftsman",
-      "employeeArn": "company:draftsman:j.doe"
+      "employeeArn": "company:draftsman:employee:j.doe"
     },
       "company:anove": {
       "arn": "company:anove"
@@ -210,7 +210,7 @@
 }</state>
 					</test-case>
 				</command>
-				<event-handler on="CompanyAdministratorCreated" code='self.username = event.username|LB|self.companies[event.companyArn] = {|LB|    "arn": event.companyArn,|LB|    "employeeArn": event.companyArn + ":" + event.username|LB|}|LB|'></event-handler>
+				<event-handler on="CompanyAdministratorCreated" code='self.username = event.username|LB|self.companies[event.companyArn] = {|LB|    "arn": event.companyArn,|LB|    "employeeArn": event.companyArn + ":employee:" + event.username|LB|}|LB|'></event-handler>
 				<nested-object name="companies" business-key="arn">
 					<field name="arn" type="String"></field>
 					<field name="employeeArn" type="String"></field>
