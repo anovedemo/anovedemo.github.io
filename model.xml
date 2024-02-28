@@ -143,6 +143,8 @@
 			</aggregate>
 			<aggregate name="User" business-key="username" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
 				<field name="username" type="String"></field>
+				<field name="firstName" type="String"></field>
+				<field name="lastName" type="String"></field>
 				<command name="CreateFirstCompanyUser">
 					<trigger source="CompanyCreated" key-field="user">
 						<mapping target="arn" value="arn"></mapping>
@@ -169,7 +171,7 @@
   "companies": {
     "company:draftsman": {
       "arn": "company:draftsman",
-      "roles": ["viewer","administrator"]
+      "employeeArn": "company:draftsman:j.doe"
     }
   }
 }</expected-state>
@@ -191,11 +193,10 @@
   "companies": {
     "company:draftsman": {
       "arn": "company:draftsman",
-      "roles": ["viewer","administrator"]
+      "employeeArn": "company:draftsman:j.doe"
     },
       "company:anove": {
-      "arn": "company:anove",
-      "roles": ["viewer","administrator"]
+      "arn": "company:anove"
     }
   }
 }</expected-state>
@@ -203,17 +204,16 @@
   "username": "j.doe",
   "companies": {
     "company:anove": {
-      "arn": "company:anove",
-      "roles": ["viewer","administrator"]
+      "arn": "company:anove"
     }
   }
 }</state>
 					</test-case>
 				</command>
-				<event-handler on="CompanyAdministratorCreated" code='self.username = event.username|LB|self.companies[event.companyArn] = {|LB|    "arn": event.companyArn,|LB|    "roles": ["viewer","administrator"]|LB|}|LB|print(self.__dict__,"!!!")'></event-handler>
+				<event-handler on="CompanyAdministratorCreated" code='self.username = event.username|LB|self.companies[event.companyArn] = {|LB|    "arn": event.companyArn,|LB|    "employeeArn": event.companyArn + ":" + event.username|LB|}|LB|'></event-handler>
 				<nested-object name="companies" business-key="arn">
 					<field name="arn" type="String"></field>
-					<field name="roles" type="StringList"></field>
+					<field name="emplyeeArn" type="String"></field>
 				</nested-object>
 			</aggregate>
 			<aggregate name="Industry" business-key="fieldName" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
@@ -417,14 +417,19 @@
       }</state>
 					</test-case>
 				</command>
-				<event-handler on="CompanyCreated" code="self.arn = event.arn|LB|self.name = event.name|LB|self.description = event.description|LB|self.companySize = event.companySize|LB|self.revenue = event.revenue|LB|self.industryLink = event.industry.split(';')"></event-handler>
-				<nested-object name="businessUnit" business-key="newField">
-					<field name="name" type="String"></field>
-					<field name="description" type="String"></field>
-				</nested-object>
+				<event-handler on="CompanyCreated" code="self.arn = event.arn|LB|self.name = event.name|LB|self.description = event.description|LB|self.companySize = event.companySize|LB|self.revenue = event.revenue|LB|self.industryLink = event.industry.split(';')|LB|employeeArn = event.arn + &quot;:employee:&quot; + event.user|LB|self.employees[employeeArn] = {|LB|    &quot;arn&quot;: employeeArn,|LB|    &quot;username&quot;: event.user,|LB|    &quot;businessRole&quot;: &quot;administrator&quot;|LB|    |LB|}"></event-handler>
 				<nested-object name="regulations" business-key="name">
 					<field name="name" type="String"></field>
 					<field name="link" type="String"></field>
+				</nested-object>
+				<nested-object name="businessUnits" business-key="newField">
+					<field name="name" type="String"></field>
+					<field name="description" type="String"></field>
+				</nested-object>
+				<nested-object name="employees" business-key="arn">
+					<field name="arn" type="String"></field>
+					<field name="username" type="String"></field>
+					<field name="businessRole" type="String"></field>
 				</nested-object>
 			</aggregate>
 		</subdomain>
@@ -457,9 +462,13 @@
 		<view name="User" data-retention-days="-1" exclude-notification="false">
 			<field name="username" type="String" pk="true"></field>
 			<field name="links" type="ObjectList" ref="UserCompanyLink" authorization="authenticated" foreign-key="username"></field>
-			<snapshot-handler id="Xi4PEb" sub-domain="Admin" aggregate="User" key-mapping="username" processor="item">
+			<field name="firstName" type="String"></field>
+			<field name="lastName" type="String"></field>
+			<snapshot-handler id="svYd9b" sub-domain="Admin" aggregate="User" key-mapping="username" processor="item">
 				<mapping target="username" operand="set" value="username"></mapping>
-				<mapping target="links" operand="convert_items" value="companies" template='{"arn": value["arn"], "roles": value["roles"]}'></mapping>
+				<mapping target="firstName" operand="set" value="firstName"></mapping>
+				<mapping target="lastName" operand="set" value="lastName"></mapping>
+				<mapping target="links" operand="convert_items" value="companies" template='{"arn": value["arn"],"emplyeeArn": value["emplyeeArn"]}'></mapping>
 				<delete condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="User" field-name="get" type="get" authorization="user" username-field="key"></query>
@@ -484,6 +493,7 @@
 			<field name="companySize" type="Int"></field>
 			<field name="revenue" type="String"></field>
 			<field name="industryLink" type="StringList"></field>
+			<field name="employees" type="OneToMany" ref="Employee" authorization="authenticated" foreign-key="#canonical"></field>
 			<snapshot-handler id="a8vzJw" sub-domain="Customer" aggregate="Company" key-mapping="arn" processor="item">
 				<mapping target="arn" operand="set" value="arn"></mapping>
 				<mapping target="name" operand="set" value="name"></mapping>
@@ -498,8 +508,20 @@
 		</view>
 		<view name="UserCompanyLink" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String"></field>
-			<field name="roles" type="StringList"></field>
 			<field name="company" type="ManyToOne" ref="Company" authorization="role" foreign-key="arn" role="#global.extractRoleFromArn(arn, 'viewer')"></field>
+			<field name="emplyeeArn" type="String"></field>
+			<field name="employee" type="OneToOne" ref="Employee" authorization="role" foreign-key="employeeArn" role="#global.extractRoleFromArn(employeeArn, 'viewer')"></field>
+		</view>
+		<view name="Employee" data-retention-days="-1" exclude-notification="false">
+			<field name="arn" type="String" pk="true"></field>
+			<field name="username" type="String"></field>
+			<field name="businessRole" type="String"></field>
+			<snapshot-handler id="mvobEq" sub-domain="Customer" aggregate="Company" key-mapping="arn" processor="dictionary" dictionary="employees">
+				<mapping target="arn" operand="set" value="arn"></mapping>
+				<mapping target="username" operand="set" value="username"></mapping>
+				<mapping target="businessRole" operand="set" value="businessRole"></mapping>
+				<delete condition="#snapshot.isDeleted != ''"></delete>
+			</snapshot-handler>
 		</view>
 		<view name="Requirement" data-retention-days="-1" exclude-notification="false">
 			<field name="name" type="String"></field>
