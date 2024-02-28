@@ -7,7 +7,7 @@
 		<pattern name="IndustryArn" regex="^industry:[a-z]+$"></pattern>
 		<pattern name="RequirementArn" regex="^{{ControlFrameworkArn}}:[a-z0-9]+$"></pattern>
 		<pattern name="ControlFrameworkType" regex="^(standard|regulation|framework)$"></pattern>
-		<expression name="extractRoleFromArn" type="ActorEventRole" input="arn;postfix" expression="${arn.split(&amp;apos;:&amp;apos;)[0]}:${arn.split(&amp;apos;:&amp;apos;)[1]}postfix"></expression>
+		<expression name="extractRoleFromArn" type="ActorEventRole" input="arn;role" expression="${arn.split(':')[0]}:${arn.split(':')[1]}:role"></expression>
 	</global>
 	<events>
 		<event graphql-namespace="Requirement" graphql-name="add" name="AddRequirementRequested" authorization="role" type="ActorEvent" role="administrator">
@@ -173,6 +173,41 @@
     }
   }
 }</expected-state>
+					</test-case>
+					<test-case name="AddCompanyToUser" trigger-event="CompanyCreated">
+						<input name="arn" value="company:draftsman" type="String"></input>
+						<input name="name" value="dummy" type="String"></input>
+						<input name="description" value="dummy" type="String"></input>
+						<input name="companySize" value="2" type="Int"></input>
+						<input name="revenue" value="dummy" type="String"></input>
+						<input name="industry" value="dummy" type="String"></input>
+						<input name="user" value="j.doe" type="String"></input>
+						<expected domain-event="CompanyAdministratorCreated">
+							<field value="j.doe" name="username" type="String"></field>
+							<field value="company:draftsman" name="companyArn" type="String"></field>
+						</expected>
+						<expected-state pk="j.doe">{
+  "username": "j.doe",
+  "companies": {
+    "company:draftsman": {
+      "arn": "company:draftsman",
+      "roles": ["viewer","administrator"]
+    },
+      "company:anove": {
+      "arn": "company:anove",
+      "roles": ["viewer","administrator"]
+    }
+  }
+}</expected-state>
+						<state>{
+  "username": "j.doe",
+  "companies": {
+    "company:anove": {
+      "arn": "company:anove",
+      "roles": ["viewer","administrator"]
+    }
+  }
+}</state>
 					</test-case>
 				</command>
 				<event-handler on="CompanyAdministratorCreated" code='self.username = event.username|LB|self.companies[event.companyArn] = {|LB|    "arn": event.companyArn,|LB|    "roles": ["viewer","administrator"]|LB|}|LB|print(self.__dict__,"!!!")'></event-handler>
@@ -458,13 +493,13 @@
 				<mapping target="industryLink" operand="set" value="industryLink"></mapping>
 				<delete condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
-			<query graphql-namespace="Company" field-name="get" type="get" authorization="role" role="#global.extractRoleFromArn(key, ':viewer')"></query>
-			<query graphql-namespace="Company" field-name="filter" type="filter" authorization="role" role="#global.extractRoleFromArn(key_begins_with, ':viewer')" use-canonical-search="true"></query>
+			<query graphql-namespace="Company" field-name="get" type="get" authorization="role" role="#global.extractRoleFromArn(key, 'viewer')"></query>
+			<query graphql-namespace="Company" field-name="filter" type="filter" authorization="role" role="#global.extractRoleFromArn(key_begins_with, 'viewer')" use-canonical-search="true"></query>
 		</view>
 		<view name="UserCompanyLink" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String"></field>
 			<field name="roles" type="StringList"></field>
-			<field name="companies" type="ManyToMany" ref="Company" authorization="role" foreign-key="arn" role="#global.extractRoleFromArn(arn, postfix)"></field>
+			<field name="companies" type="ManyToMany" ref="Company" authorization="role" foreign-key="arn" role="#global.extractRoleFromArn(arn, 'viewer')"></field>
 		</view>
 		<view name="Requirement" data-retention-days="-1" exclude-notification="false">
 			<field name="name" type="String"></field>
