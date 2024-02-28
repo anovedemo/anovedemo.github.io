@@ -499,7 +499,7 @@
 		<view name="UserCompanyLink" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String"></field>
 			<field name="roles" type="StringList"></field>
-			<field name="companies" type="ManyToMany" ref="Company" authorization="role" foreign-key="arn" role="#global.extractRoleFromArn(arn, 'viewer')"></field>
+			<field name="companies" type="ManyToOne" ref="Company" authorization="role" foreign-key="arn" role="#global.extractRoleFromArn(arn, 'viewer')"></field>
 		</view>
 		<view name="Requirement" data-retention-days="-1" exclude-notification="false">
 			<field name="name" type="String"></field>
