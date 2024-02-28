@@ -424,7 +424,7 @@
 			<field name="links" type="ObjectList" ref="UserCompanyLink" authorization="authenticated" foreign-key="username"></field>
 			<snapshot-handler id="Xi4PEb" sub-domain="Admin" aggregate="User" key-mapping="username" processor="item">
 				<mapping target="username" operand="set" value="username"></mapping>
-				<mapping target="links" operand="convert_items" value="companies" template='{"arn": value["arn"]}'></mapping>
+				<mapping target="links" operand="convert_items" value="companies" template='{"arn": value["arn"], "roles": value["roles"]}'></mapping>
 				<delete condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="User" field-name="get" type="get" authorization="user" username-field="key"></query>
