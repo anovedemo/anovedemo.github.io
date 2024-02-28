@@ -213,7 +213,7 @@
 				<event-handler on="CompanyAdministratorCreated" code='self.username = event.username|LB|self.companies[event.companyArn] = {|LB|    "arn": event.companyArn,|LB|    "employeeArn": event.companyArn + ":" + event.username|LB|}|LB|'></event-handler>
 				<nested-object name="companies" business-key="arn">
 					<field name="arn" type="String"></field>
-					<field name="emplyeeArn" type="String"></field>
+					<field name="employeeArn" type="String"></field>
 				</nested-object>
 			</aggregate>
 			<aggregate name="Industry" business-key="fieldName" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
@@ -468,7 +468,7 @@
 				<mapping target="username" operand="set" value="username"></mapping>
 				<mapping target="firstName" operand="set" value="firstName"></mapping>
 				<mapping target="lastName" operand="set" value="lastName"></mapping>
-				<mapping target="links" operand="convert_items" value="companies" template='{"arn": value["arn"],"emplyeeArn": value["emplyeeArn"]}'></mapping>
+				<mapping target="links" operand="convert_items" value="companies" template='{"arn": value["arn"],"employeeArn": value["employeeArn"]}'></mapping>
 				<delete condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="User" field-name="get" type="get" authorization="user" username-field="key"></query>
@@ -509,7 +509,7 @@
 		<view name="UserCompanyLink" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String"></field>
 			<field name="company" type="ManyToOne" ref="Company" authorization="role" foreign-key="arn" role="#global.extractRoleFromArn(arn, 'viewer')"></field>
-			<field name="emplyeeArn" type="String"></field>
+			<field name="employeeArn" type="String"></field>
 			<field name="employee" type="OneToOne" ref="Employee" authorization="role" foreign-key="employeeArn" role="#global.extractRoleFromArn(employeeArn, 'viewer')"></field>
 		</view>
 		<view name="Employee" data-retention-days="-1" exclude-notification="false">
