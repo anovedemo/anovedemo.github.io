@@ -638,19 +638,19 @@
 		</notifier>
 		<notifier name="UpdateAccessForEmployee">
 			<trigger source="BusinessRoleUpdated">
-				<mapping target="employeeArn" value="employeeArn"></mapping>
+				<mapping target="arn" value="employeeArn"></mapping>
 				<mapping target="businessRole" value="businessRole"></mapping>
 			</trigger>
-			<activity type="set-variable" id="IFN8ne" name="username" expression='#flow.employeeArn.split(":")[-1]'></activity>
+			<activity type="set-variable" id="IFN8ne" name="username" expression='#flow.arn.split(":")[-1]'></activity>
 			<activity type="code" id="q26CJL" python-file="lib/AccessManagement.py" handler="retrieve_all_roles"></activity>
 			<activity type="loop" id="rMzheY" array="#flow.roles">
 				<activity type="set-variable" id="FJN6tv" name="role" expression="#item"></activity>
-				<activity type="remove-user-from-iam-group" id="dlyKQu" group-name="#flow.role" username="#flow.username"></activity>
+				<activity type="remove-user-from-iam-group" id="dlyKQu" group-name="#flow.role" username="#flow.username" fail-silent="true"></activity>
 			</activity>
 			<activity type="code" id="cp3AMN" python-file="lib/AccessManagement.py" handler="get_technical_roles_for_businessrole"></activity>
 			<activity type="loop" id="XZC39S" array="#flow.roles">
 				<activity type="set-variable" id="p0OpGd" name="role" expression="#item"></activity>
-				<activity type="add-user-to-iam-group" id="XBvRzc" group-name="#flow.role" username="#flow.username"></activity>
+				<activity type="add-user-to-iam-group" id="XBvRzc" group-name="#flow.role" username="#flow.username" fail-silent="true"></activity>
 			</activity>
 		</notifier>
 		<notifier name="InitializeSystemUser">
