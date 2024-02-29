@@ -15,7 +15,7 @@
     "name": "businessRole",
     "title": "Businessrole",
     "type": "String",
-    "pattern": "^(administrator|viewer)$",
+    "pattern": "^(administrator|guest)$",
     "placeholder": "",
     "default": ""
   }
