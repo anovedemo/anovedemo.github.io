@@ -141,6 +141,22 @@
                 </div>
 
                 
+                <div x-show="component == 'Profile/get'" x-cloak x-transition>
+                    <div x-import="views/Profile/get">
+                        <h6>Profile.get</h6>
+                        <ui-Profile-get></ui-Profile-get>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Profile/filter'" x-cloak x-transition>
+                    <div x-import="views/Profile/filter">
+                        <h6>Profile.filter</h6>
+                        <ui-Profile-filter></ui-Profile-filter>
+                    </div>
+                </div>
+
+                
 
             </div>
             <div class="col-3">
@@ -190,6 +206,16 @@
                     <button type="button" class="btn btn-outline-primary"
                             x-show="'requirement.filter'.includes(search.toLowerCase())"
                             @click="component = 'Requirement/filter'">Requirement.filter
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'profile.get'.includes(search.toLowerCase())"
+                            @click="component = 'Profile/get'">Profile.get
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'profile.filter'.includes(search.toLowerCase())"
+                            @click="component = 'Profile/filter'">Profile.filter
                     </button>
                     
                 </div>

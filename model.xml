@@ -516,6 +516,7 @@
 			<field name="arn" type="String" pk="true"></field>
 			<field name="username" type="String"></field>
 			<field name="businessRole" type="String"></field>
+			<field name="user" type="ManyToOne" ref="Profile" authorization="authenticated" foreign-key="username"></field>
 			<snapshot-handler id="mvobEq" sub-domain="Customer" aggregate="Company" key-mapping="arn" processor="dictionary" dictionary="employees">
 				<mapping target="arn" operand="set" value="arn"></mapping>
 				<mapping target="username" operand="set" value="username"></mapping>
@@ -539,6 +540,19 @@
 			</snapshot-handler>
 			<query graphql-namespace="Requirement" field-name="get" type="get" authorization="authenticated"></query>
 			<query graphql-namespace="Requirement" field-name="filter" type="filter" authorization="authenticated"></query>
+		</view>
+		<view name="Profile" data-retention-days="-1" exclude-notification="false">
+			<field name="username" type="String" pk="true"></field>
+			<field name="firstName" type="String"></field>
+			<field name="lastName" type="String"></field>
+			<snapshot-handler id="71tqcg" sub-domain="Admin" aggregate="User" key-mapping="username" processor="item">
+				<mapping target="username" operand="set" value="username"></mapping>
+				<mapping target="firstName" operand="set" value="firstName"></mapping>
+				<mapping target="lastName" operand="set" value="lastName"></mapping>
+				<delete condition="#snapshot.isDeleted != ''"></delete>
+			</snapshot-handler>
+			<query graphql-namespace="Profile" field-name="get" type="get" authorization="authenticated"></query>
+			<query graphql-namespace="Profile" field-name="filter" type="filter" authorization="authenticated"></query>
 		</view>
 	</views>
 	<projections>
@@ -566,7 +580,7 @@
 				<mapping target="arn" value="arn"></mapping>
 				<mapping target="user" value="user"></mapping>
 			</trigger>
-			<activity type="code" id="4x5IYY" code='flow.roles = [|LB|    flow.arn + ":administrator",|LB|    flow.arn + ":viewer"|LB|]'></activity>
+			<activity type="code" id="4x5IYY" python-file="lib/AccessManagement.py" handler="retrieve_all_roles" condition=""></activity>
 			<activity type="set-variable" id="9V4dG1" name="systemUser" expression="#'system-user'"></activity>
 			<activity type="loop" id="ytmySk" array="#flow.roles">
 				<activity type="set-variable" id="ILrv7Y" name="role" expression="#item"></activity>
