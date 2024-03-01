@@ -15,7 +15,7 @@
     "name": "businessRole",
     "title": "Businessrole",
     "type": "String",
-    "pattern": "^(administrator|guest)$",
+    "pattern": "^(administrator|guest|blocked)$",
     "placeholder": "",
     "default": ""
   }

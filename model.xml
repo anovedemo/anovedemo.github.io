@@ -7,7 +7,7 @@
 		<pattern name="EmployeeArn" regex="^{{CompanyArn}}:employee:[^\s]+$"></pattern>
 		<pattern name="IndustryArn" regex="^industry:[a-z]+$"></pattern>
 		<pattern name="RequirementArn" regex="^{{ControlFrameworkArn}}:[a-z0-9]+$"></pattern>
-		<pattern name="BusinessRole" regex="^(administrator|guest)$"></pattern>
+		<pattern name="BusinessRole" regex="^(administrator|guest|blocked)$"></pattern>
 		<pattern name="ControlFrameworkType" regex="^(standard|regulation|framework)$"></pattern>
 		<expression name="truncateArn" type="TriggerKeyField" input="arn;length" expression="':'.join(arn.split(':')[:int(length)])"></expression>
 		<expression name="extractRoleFromArn" type="ActorEventRole" input="arn;role" expression="${arn.split(':')[0]}:${arn.split(':')[1]}:role"></expression>
@@ -638,7 +638,7 @@
 				<mapping target="arn" operand="set" value="arn"></mapping>
 				<mapping target="username" operand="set" value="username"></mapping>
 				<mapping target="businessRole" operand="set" value="businessRole"></mapping>
-				<delete condition="#snapshot.isDeleted != ''"></delete>
+				<delete condition='#snapshot.isDeleted != ""'></delete>
 			</snapshot-handler>
 		</view>
 		<view name="Requirement" data-retention-days="-1" exclude-notification="false">
