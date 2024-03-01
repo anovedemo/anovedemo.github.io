@@ -13,6 +13,11 @@
 		<expression name="extractRoleFromArn" type="ActorEventRole" input="arn;role" expression="${arn.split(':')[0]}:${arn.split(':')[1]}:role"></expression>
 	</global>
 	<events>
+		<event graphql-namespace="Company.BusinessUnit" graphql-name="update" name="UpdateCompanyBusinessUnitRequested" authorization="role" type="ActorEvent" role='#global.extractRoleFromArn(arn, "administrator")'>
+			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
+			<field name="name" type="String"></field>
+			<field name="description" type="String"></field>
+		</event>
 		<event graphql-namespace="Requirement" graphql-name="add" name="AddRequirementRequested" authorization="role" type="ActorEvent" role="administrator">
 			<field name="arn" type="String" pattern="{{RequirementArn}}"></field>
 			<field name="name" type="String"></field>
@@ -85,6 +90,13 @@
 		<event name="BusinessRoleUpdated" source="Customer.Company" type="DomainEvent">
 			<field name="employeeArn" type="String"></field>
 			<field name="businessRole" type="String"></field>
+		</event>
+		<event name="BusinessUnitUpdated" source="Customer.Company" type="DomainEvent">
+			<field name="arn" type="String"></field>
+			<nested-object name="businessUnits" business-key="newField">
+				<field name="name" type="String"></field>
+				<field name="description" type="String"></field>
+			</nested-object>
 		</event>
 		<event name="CompanyCreated" source="Customer.Company" type="DomainEvent">
 			<field name="arn" type="String"></field>
@@ -521,7 +533,67 @@
 }</expected-state>
 					</test-case>
 				</command>
+				<command name="UpdateBusinessUnit">
+					<trigger source="UpdateCompanyBusinessUnitRequested" key-field="arn">
+						<mapping target="arn" value="arn"></mapping>
+						<mapping target="name" value="name"></mapping>
+						<mapping target="description" value="description"></mapping>
+					</trigger>
+					<processor type="code" id="nMDsHG" file="" handler="" code='flow.businessUnits = [{|LB|    "name": flow.name,|LB|    "description": flow.description|LB|}]'></processor>
+					<processor type="emit-event" id="CH0OnK" ref="BusinessUnitUpdated">
+						<mapping target="arn" value="#flow.arn"></mapping>
+						<mapping target="businessUnits" value="#flow.businessUnits"></mapping>
+					</processor>
+					<test-case name="AddNewBusinessUnit" trigger-event="UpdateCompanyBusinessUnitRequested">
+						<input name="arn" value="company:draftsman" type="String"></input>
+						<input name="name" value="Product Development" type="String"></input>
+						<input name="description" value="Hello World!" type="String"></input>
+						<expected domain-event="BusinessUnitUpdated">
+							<field value="company:draftsman" name="arn" type="String"></field>
+						</expected>
+						<expected-state pk="company:draftsman">{
+  "businessUnits": {
+    "Product Development": {
+      "name": "Product Development",
+      "description": "Hello World!"
+    }
+  }
+}</expected-state>
+					</test-case>
+					<test-case name="UpdateBusinessUnit" trigger-event="UpdateCompanyBusinessUnitRequested">
+						<input name="arn" value="company:draftsman" type="String"></input>
+						<input name="name" value="Product Development" type="String"></input>
+						<input name="description" value="..." type="String"></input>
+						<expected domain-event="BusinessUnitUpdated">
+							<field value="company:draftsman" name="arn" type="String"></field>
+						</expected>
+						<state>{
+  "arn": "company:draftsman",
+  "businessUnits": {
+    "Product Development": {
+      "name": "Product Development",
+      "description": "Hello World!"
+    }
+  }
+}</state>
+						<expected-state pk="company:draftsman">{
+  "arn": "company:draftsman",
+  "businessUnits": {
+    "Product Development": {
+      "name": "Product Development",
+      "description": "..."
+    }
+  }
+}</expected-state>
+					</test-case>
+				</command>
 				<event-handler on="BusinessRoleUpdated" code='self.employees[event.employeeArn] = {|LB|    "arn": event.employeeArn,|LB|    "username": event.employeeArn.split(":")[-1],|LB|    "businessRole": event.businessRole|LB|}'></event-handler>
+				<event-handler on="BusinessUnitUpdated">
+					<nested-mapping source="businessUnits" target="businessUnits" business-key="name">
+						<mapping target="name" operand="set" value="name"></mapping>
+						<mapping target="description" operand="set" value="description"></mapping>
+					</nested-mapping>
+				</event-handler>
 				<event-handler on="CompanyCreated" code="self.arn = event.arn|LB|self.name = event.name|LB|self.description = event.description|LB|self.companySize = event.companySize|LB|self.revenue = event.revenue|LB|self.industryLink = event.industry.split(';')|LB|employeeArn = event.arn + &quot;:employee:&quot; + event.user|LB|self.employees[employeeArn] = {|LB|    &quot;arn&quot;: employeeArn,|LB|    &quot;username&quot;: event.user,|LB|    &quot;businessRole&quot;: &quot;administrator&quot;|LB|    |LB|}"></event-handler>
 				<nested-object name="regulations" business-key="name">
 					<field name="name" type="String"></field>
@@ -600,6 +672,7 @@
 			<field name="industryLink" type="StringList"></field>
 			<field name="employees" type="OneToMany" ref="Employee" authorization="authenticated" foreign-key="#canonical"></field>
 			<field name="industry" type="ManyToMany" ref="Industry" authorization="authenticated" foreign-key="industryLink"></field>
+			<field name="businessUnits" type="ObjectList" ref="BusinessUnit" authorization="authenticated" foreign-key="arn"></field>
 			<snapshot-handler id="a8vzJw" sub-domain="Customer" aggregate="Company" key-mapping="arn" processor="item">
 				<mapping target="arn" operand="set" value="arn"></mapping>
 				<mapping target="name" operand="set" value="name"></mapping>
@@ -607,6 +680,7 @@
 				<mapping target="companySize" operand="set" value="companySize"></mapping>
 				<mapping target="revenue" operand="set" value="revenue"></mapping>
 				<mapping target="industryLink" operand="set" value="industryLink"></mapping>
+				<mapping target="businessUnits" operand="convert_items" value="businessUnits" template='{"name": value["name"],"description": value["description"]}'></mapping>
 				<delete condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="Company" field-name="get" type="get" authorization="role" role="#global.extractRoleFromArn(key, 'viewer')"></query>
@@ -622,6 +696,10 @@
 			</snapshot-handler>
 			<query graphql-namespace="Demo" field-name="get" type="get" authorization="anonymous"></query>
 			<query graphql-namespace="Demo" field-name="filter" type="filter" authorization="anonymous"></query>
+		</view>
+		<view name="BusinessUnit" data-retention-days="-1" exclude-notification="false">
+			<field name="name" type="String"></field>
+			<field name="description" type="String"></field>
 		</view>
 		<view name="UserCompanyLink" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String"></field>
