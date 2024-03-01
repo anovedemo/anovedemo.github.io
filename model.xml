@@ -599,6 +599,7 @@
 			<field name="revenue" type="String"></field>
 			<field name="industryLink" type="StringList"></field>
 			<field name="employees" type="OneToMany" ref="Employee" authorization="authenticated" foreign-key="#canonical"></field>
+			<field name="industry" type="ManyToMany" ref="Industry" authorization="authenticated" foreign-key="industryLink"></field>
 			<snapshot-handler id="a8vzJw" sub-domain="Customer" aggregate="Company" key-mapping="arn" processor="item">
 				<mapping target="arn" operand="set" value="arn"></mapping>
 				<mapping target="name" operand="set" value="name"></mapping>
