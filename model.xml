@@ -24,6 +24,10 @@
 			<field name="arn" type="String" pattern="{{EmployeeArn}}"></field>
 			<field name="businessRole" type="String" pattern="{{BusinessRole}}"></field>
 		</event>
+		<event graphql-namespace="Demo" graphql-name="update" name="UpdateDemoRequested" authorization="anonymous" type="ActorEvent">
+			<field name="identifier" type="String"></field>
+			<field name="value" type="String"></field>
+		</event>
 		<event graphql-namespace="Industry" graphql-name="add" name="AddIndustryRequested" authorization="role" type="ActorEvent" role="administrator">
 			<field name="arn" type="String" pattern="{{IndustryArn}}"></field>
 			<field name="name" type="String"></field>
@@ -47,6 +51,10 @@
 			<field name="unit" type="String"></field>
 			<field name="acronym" type="String"></field>
 			<field name="active" type="Boolean"></field>
+		</event>
+		<event name="DemoUpdated" source="Admin.Demo" type="DomainEvent">
+			<field name="identifier" type="String"></field>
+			<field name="value" type="String"></field>
 		</event>
 		<event name="RequirementCreated" source="Admin.Requirement" type="DomainEvent">
 			<field name="arn" type="String"></field>
@@ -90,6 +98,36 @@
 	</events>
 	<domain>
 		<subdomain name="Admin">
+			<aggregate name="Demo" business-key="fieldName" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
+				<field name="identifier" type="String"></field>
+				<field name="value" type="String"></field>
+				<command name="Update">
+					<trigger source="UpdateDemoRequested" key-field="identifier">
+						<mapping target="identifier" value="identifier"></mapping>
+						<mapping target="value" value="value"></mapping>
+					</trigger>
+					<processor type="emit-event" id="gneYIn" ref="DemoUpdated">
+						<mapping target="identifier" value="#flow.identifier"></mapping>
+						<mapping target="value" value="#flow.value"></mapping>
+					</processor>
+					<test-case name="UpdateDemoObject" trigger-event="UpdateDemoRequested">
+						<input name="identifier" value="myKey" type="String"></input>
+						<input name="value" value="Hello World!" type="String"></input>
+						<expected domain-event="DemoUpdated">
+							<field value="myKey" name="identifier" type="String"></field>
+							<field value="Hello World!" name="value" type="String"></field>
+						</expected>
+						<expected-state pk="myKey">{
+  "identifier": "myKey",
+  "value": "Hello World!"
+}</expected-state>
+					</test-case>
+				</command>
+				<event-handler on="DemoUpdated">
+					<mapping target="identifier" operand="set" value="identifier"></mapping>
+					<mapping target="value" operand="set" value="value"></mapping>
+				</event-handler>
+			</aggregate>
 			<aggregate name="Requirement" business-key="arn" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
 				<field name="arn" type="String"></field>
 				<field name="name" type="String"></field>
@@ -572,6 +610,17 @@
 			</snapshot-handler>
 			<query graphql-namespace="Company" field-name="get" type="get" authorization="role" role="#global.extractRoleFromArn(key, 'viewer')"></query>
 			<query graphql-namespace="Company" field-name="filter" type="filter" authorization="role" role="#global.extractRoleFromArn(key_begins_with, 'viewer')" use-canonical-search="true"></query>
+		</view>
+		<view name="Demo" data-retention-days="-1" exclude-notification="false">
+			<field name="identifier" type="String" pk="true"></field>
+			<field name="value" type="String"></field>
+			<snapshot-handler id="gK9lTC" sub-domain="Admin" aggregate="Demo" key-mapping="identifier" processor="item">
+				<mapping target="identifier" operand="set" value="identifier"></mapping>
+				<mapping target="value" operand="set" value="value"></mapping>
+				<delete condition="#snapshot.isDeleted != ''"></delete>
+			</snapshot-handler>
+			<query graphql-namespace="Demo" field-name="get" type="get" authorization="anonymous"></query>
+			<query graphql-namespace="Demo" field-name="filter" type="filter" authorization="anonymous"></query>
 		</view>
 		<view name="UserCompanyLink" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String"></field>

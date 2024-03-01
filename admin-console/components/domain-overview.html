@@ -19,6 +19,12 @@
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateDemo'"
+                                x-show="'updatedemo'.includes(search.toLowerCase())">
+                            UpdateDemo
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
                                 @click="Draftsman.empty_track_and_trace_log();component = 'AddIndustry'"
                                 x-show="'addindustry'.includes(search.toLowerCase())">
                             AddIndustry
@@ -53,6 +59,14 @@
                     <div x-import="commands/UpdateBusinessRoleCompanyEmployee">
                         <h6>UpdateBusinessRoleCompanyEmployee</h6>
                         <ui-UpdateBusinessRoleCompanyEmployee></ui-UpdateBusinessRoleCompanyEmployee>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'UpdateDemo'" x-cloak x-transition>
+                    <div x-import="commands/UpdateDemo">
+                        <h6>UpdateDemo</h6>
+                        <ui-UpdateDemo></ui-UpdateDemo>
                     </div>
                 </div>
 
@@ -139,6 +153,22 @@
                 </div>
 
                 
+                <div x-show="component == 'Demo/get'" x-cloak x-transition>
+                    <div x-import="views/Demo/get">
+                        <h6>Demo.get</h6>
+                        <ui-Demo-get></ui-Demo-get>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Demo/filter'" x-cloak x-transition>
+                    <div x-import="views/Demo/filter">
+                        <h6>Demo.filter</h6>
+                        <ui-Demo-filter></ui-Demo-filter>
+                    </div>
+                </div>
+
+                
                 <div x-show="component == 'Requirement/get'" x-cloak x-transition>
                     <div x-import="views/Requirement/get">
                         <h6>Requirement.get</h6>
@@ -210,6 +240,16 @@
                     <button type="button" class="btn btn-outline-primary"
                             x-show="'company.filter'.includes(search.toLowerCase())"
                             @click="component = 'Company/filter'">Company.filter
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'demo.get'.includes(search.toLowerCase())"
+                            @click="component = 'Demo/get'">Demo.get
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'demo.filter'.includes(search.toLowerCase())"
+                            @click="component = 'Demo/filter'">Demo.filter
                     </button>
                     
                     <button type="button" class="btn btn-outline-primary"
