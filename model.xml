@@ -37,6 +37,11 @@
 			<field name="mandatory" type="Boolean"></field>
 			<field name="summary" type="String"></field>
 		</event>
+		<event graphql-namespace="User" graphql-name="update" name="UpdateUserRequested" authorization="authenticated" type="ActorEvent">
+			<field name="username" type="String" auto-fill="username"></field>
+			<field name="firstName" type="String"></field>
+			<field name="lastName" type="String"></field>
+		</event>
 		<event graphql-namespace="Company.Employee" graphql-name="updateBusinessRole" name="UpdateBusinessRoleCompanyEmployeeRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
 			<field name="arn" type="String" pattern="{{EmployeeArn}}"></field>
 			<field name="businessRole" type="String" pattern="{{BusinessRole}}"></field>
@@ -94,9 +99,22 @@
 			<field name="mandatory" type="Boolean"></field>
 			<field name="summary" type="String"></field>
 		</event>
+		<event name="UserUpdated" source="Admin.User" type="DomainEvent">
+			<field name="firstName" type="String"></field>
+			<field name="lastName" type="String"></field>
+			<field name="active" type="Boolean"></field>
+		</event>
 		<event name="CompanyAdministratorCreated" source="Admin.User" type="DomainEvent">
 			<field name="username" type="String"></field>
 			<field name="companyArn" type="String"></field>
+		</event>
+		<event name="UserAddedToCompany" source="Admin.User" type="DomainEvent">
+			<field name="username" type="String"></field>
+			<field name="active" type="Boolean"></field>
+			<nested-object name="companies" business-key="arn">
+				<field name="arn" type="String"></field>
+				<field name="employeeArn" type="String"></field>
+			</nested-object>
 		</event>
 		<event name="IndustryCreated" source="Admin.Industry" type="DomainEvent">
 			<field name="arn" type="String"></field>
@@ -116,6 +134,7 @@
 		<event name="BusinessRoleUpdated" source="Customer.Company" type="DomainEvent">
 			<field name="employeeArn" type="String"></field>
 			<field name="businessRole" type="String"></field>
+			<field name="username" type="String"></field>
 		</event>
 		<event name="BusinessUnitRemoved" source="Customer.Company" type="DomainEvent">
 			<field name="name" type="String"></field>
@@ -349,6 +368,42 @@
 				<field name="username" type="String"></field>
 				<field name="firstName" type="String"></field>
 				<field name="lastName" type="String"></field>
+				<field name="active" type="Boolean"></field>
+				<command name="Update">
+					<trigger source="UpdateUserRequested" key-field="username">
+						<mapping target="username" value="username"></mapping>
+						<mapping target="firstName" value="firstName"></mapping>
+						<mapping target="lastName" value="lastName"></mapping>
+					</trigger>
+					<processor type="set-variable" id="ZVMw4u" name="active" expression="True"></processor>
+					<processor type="emit-event" id="BZOsSq" ref="UserUpdated">
+						<mapping target="firstName" value="#flow.firstName"></mapping>
+						<mapping target="lastName" value="#flow.lastName"></mapping>
+						<mapping target="active" value="#flow.active"></mapping>
+					</processor>
+					<test-case name="UpdateUser" trigger-event="UpdateUserRequested">
+						<input name="username" value="j.doe" type="String"></input>
+						<input name="firstName" value="John" type="String"></input>
+						<input name="lastName" value="Doe" type="String"></input>
+						<expected domain-event="UserUpdated">
+							<field value="John" name="firstName" type="String"></field>
+							<field value="Doe" name="lastName" type="String"></field>
+							<field value="true" name="active" type="Boolean"></field>
+						</expected>
+						<state>{
+  "username": "j.doe",
+  "firstName": "",
+  "lastName": "",
+  "active": false
+}</state>
+						<expected-state pk="j.doe">{
+  "username": "j.doe",
+  "firstName": "John",
+  "lastName": "Doe",
+  "active": true
+}</expected-state>
+					</test-case>
+				</command>
 				<command name="CreateFirstCompanyUser">
 					<trigger source="CompanyCreated" key-field="user">
 						<mapping target="arn" value="arn"></mapping>
@@ -414,7 +469,67 @@
 }</state>
 					</test-case>
 				</command>
+				<command name="LinkCompanyToUser">
+					<trigger source="BusinessRoleUpdated" key-field="username">
+						<mapping target="employeeArn" value="employeeArn"></mapping>
+						<mapping target="businessRole" value="businessRole"></mapping>
+						<mapping target="username" value="username"></mapping>
+					</trigger>
+					<processor type="set-variable" id="HRnMzH" name="active" expression="flow.entity.active"></processor>
+					<processor type="code" id="I2C5M7" file="" handler="" code='flow.companies = []|LB|for arn,company in flow.entity.companies.items():|LB|    flow.companies.append(company)|LB||LB|flow.arn = ":".join(flow.employeeArn.split(":")[:2])|LB|if not flow.arn in flow.entity.companies.keys(): |LB|    flow.companies.append({|LB|        "arn": flow.arn,|LB|        "employeeArn": flow.employeeArn|LB|    })'></processor>
+					<processor type="emit-event" id="M3Zqjo" ref="UserAddedToCompany">
+						<mapping target="username" value="#flow.username"></mapping>
+						<mapping target="active" value="#flow.active"></mapping>
+						<mapping target="companies" value="#flow.companies"></mapping>
+					</processor>
+					<test-case name="LinkCompanyToUser" trigger-event="BusinessRoleUpdated">
+						<input name="employeeArn" value="company:tracepaper:employee:j.doe" type="String"></input>
+						<input name="businessRole" value="administrator" type="String"></input>
+						<input name="username" value="j.doe" type="String"></input>
+						<expected domain-event="UserAddedToCompany">
+							<field value="j.doe" name="username" type="String"></field>
+							<field value="true" name="active" type="Boolean"></field>
+						</expected>
+						<state>{
+  "username": "j.doe",
+  "active": true,
+  "companies": {
+    "company:draftsman": {
+      "arn": "company:draftsman",
+      "employeeArn": "company:draftsman:employee:j.doe"
+    }
+  }
+}</state>
+						<expected-state pk="j.doe">{
+  "username": "j.doe",
+  "active": true,
+  "companies": {
+    "company:draftsman": {
+      "arn": "company:draftsman",
+      "employeeArn": "company:draftsman:employee:j.doe"
+    },
+    "company:tracepaper": {
+      "arn": "company:tracepaper",
+      "employeeArn": "company:tracepaper:employee:j.doe"
+    }
+  }
+}</expected-state>
+					</test-case>
+				</command>
+				<event-handler on="UserUpdated">
+					<mapping target="firstName" operand="set" value="firstName"></mapping>
+					<mapping target="lastName" operand="set" value="lastName"></mapping>
+					<mapping target="active" operand="set" value="active"></mapping>
+				</event-handler>
 				<event-handler on="CompanyAdministratorCreated" code='self.username = event.username|LB|self.companies[event.companyArn] = {|LB|    "arn": event.companyArn,|LB|    "employeeArn": event.companyArn + ":employee:" + event.username|LB|}|LB|'></event-handler>
+				<event-handler on="UserAddedToCompany">
+					<mapping target="username" operand="set" value="username"></mapping>
+					<mapping target="active" operand="set" value="active"></mapping>
+					<nested-mapping source="companies" target="companies" business-key="arn">
+						<mapping target="arn" operand="set" value="arn"></mapping>
+						<mapping target="employeeArn" operand="set" value="employeeArn"></mapping>
+					</nested-mapping>
+				</event-handler>
 				<nested-object name="companies" business-key="arn">
 					<field name="arn" type="String"></field>
 					<field name="employeeArn" type="String"></field>
@@ -663,9 +778,11 @@
 						<mapping target="arn" value="arn"></mapping>
 						<mapping target="businessRole" value="businessRole"></mapping>
 					</trigger>
+					<processor type="set-variable" id="HmACgJ" name="username" expression='flow.arn.split(":")[-1]'></processor>
 					<processor type="emit-event" id="lqJZbl" ref="BusinessRoleUpdated">
 						<mapping target="employeeArn" value="#flow.arn"></mapping>
 						<mapping target="businessRole" value="#flow.businessRole"></mapping>
+						<mapping target="username" value="#flow.username"></mapping>
 					</processor>
 					<test-case name="UpdateBusinessRoleForNewUser" trigger-event="UpdateBusinessRoleCompanyEmployeeRequested">
 						<input name="arn" value="company:draftsman:employee:j.doe" type="String"></input>
@@ -822,11 +939,13 @@
 			<field name="links" type="ObjectList" ref="UserCompanyLink" authorization="authenticated" foreign-key="username"></field>
 			<field name="firstName" type="String"></field>
 			<field name="lastName" type="String"></field>
+			<field name="active" type="Boolean"></field>
 			<snapshot-handler id="svYd9b" sub-domain="Admin" aggregate="User" key-mapping="username" processor="item">
 				<mapping target="username" operand="set" value="username"></mapping>
 				<mapping target="firstName" operand="set" value="firstName"></mapping>
 				<mapping target="lastName" operand="set" value="lastName"></mapping>
 				<mapping target="links" operand="convert_items" value="companies" template='{"arn": value["arn"],"employeeArn": value["employeeArn"]}'></mapping>
+				<mapping target="active" operand="set" value="active"></mapping>
 				<delete condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="User" field-name="get" type="get" authorization="user" username-field="key"></query>
@@ -913,7 +1032,7 @@
 			<field name="region" type="ManyToOne" ref="Region" authorization="authenticated" foreign-key="regionArn"></field>
 			<custom-handler id="RWpc1Y" sub-domain="Admin" aggregate="Region">for country in snapshot.countries.values():
     arn = snapshot.arn + ":country:" + country.code
-    entity = EntityManager.get(type="Country", key=snapshot.arn)
+    entity = EntityManager.get(type="Country", key=arn)
     entity.arn = arn
     entity.name = country.name
     entity.code = country.code
@@ -1016,6 +1135,14 @@
 				<activity type="add-user-to-iam-group" id="dri70C" group-name="#flow.role" username="#flow.user"></activity>
 				<activity type="add-user-to-iam-group" id="jBKEw3" group-name="#flow.role" username="#flow.systemUser"></activity>
 			</activity>
+		</notifier>
+		<notifier name="SendInvite">
+			<trigger source="UserAddedToCompany">
+				<mapping target="username" value="username"></mapping>
+				<mapping target="active" value="active"></mapping>
+			</trigger>
+			<activity type="code" id="HZNTTw" code='flow.eligible = flow.active == False and "@" in flow.username|LB|flow.sender = "no-reply@draftsman.io"|LB|flow.receiver = flow.username|LB|flow.subject = "Colleagues are reaching out in Anove"|LB|flow.text = "Create an account at https://anovedemo.github.io"|LB|flow.html = flow.text'></activity>
+			<activity type="send-email" id="2wJ6Y9" condition="flow.eligible" sender="#flow.sender" receiver="#flow.receiver" subject="#flow.subject" text="#flow.text" html="#flow.html"></activity>
 		</notifier>
 	</notifiers>
 	<functional-scenarios clean-db="true" clean-iam="true" minimum-event-coverage="80" minimum-view-coverage="80">
