@@ -1,0 +1,8 @@
+# This file is managed by Tracepaper
+mutation Update($arn: String = "", $code: String = "", $name: String = "", $countries: [UpdateRegion_Countries!] = []) {
+  Region{
+    update(input: {arn: $arn,code: $code,name: $name,countries: $countries}) {
+       correlationId
+    }
+  }
+}

@@ -13,6 +13,12 @@
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateRegion'"
+                                x-show="'updateregion'.includes(search.toLowerCase())">
+                            UpdateRegion
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
                                 @click="Draftsman.empty_track_and_trace_log();component = 'AddRequirement'"
                                 x-show="'addrequirement'.includes(search.toLowerCase())">
                             AddRequirement
@@ -63,6 +69,14 @@
                     <div x-import="commands/UpdateCompanyBusinessUnit">
                         <h6>UpdateCompanyBusinessUnit</h6>
                         <ui-UpdateCompanyBusinessUnit></ui-UpdateCompanyBusinessUnit>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'UpdateRegion'" x-cloak x-transition>
+                    <div x-import="commands/UpdateRegion">
+                        <h6>UpdateRegion</h6>
+                        <ui-UpdateRegion></ui-UpdateRegion>
                     </div>
                 </div>
 
@@ -149,6 +163,22 @@
                 </div>
 
                 
+                <div x-show="component == 'Region/get'" x-cloak x-transition>
+                    <div x-import="views/Region/get">
+                        <h6>Region.get</h6>
+                        <ui-Region-get></ui-Region-get>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Region/filter'" x-cloak x-transition>
+                    <div x-import="views/Region/filter">
+                        <h6>Region.filter</h6>
+                        <ui-Region-filter></ui-Region-filter>
+                    </div>
+                </div>
+
+                
                 <div x-show="component == 'Industry/get'" x-cloak x-transition>
                     <div x-import="views/Industry/get">
                         <h6>Industry.get</h6>
@@ -193,6 +223,22 @@
                     <div x-import="views/Demo/filter">
                         <h6>Demo.filter</h6>
                         <ui-Demo-filter></ui-Demo-filter>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Country/get'" x-cloak x-transition>
+                    <div x-import="views/Country/get">
+                        <h6>Country.get</h6>
+                        <ui-Country-get></ui-Country-get>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Country/filter'" x-cloak x-transition>
+                    <div x-import="views/Country/filter">
+                        <h6>Country.filter</h6>
+                        <ui-Country-filter></ui-Country-filter>
                     </div>
                 </div>
 
@@ -251,6 +297,16 @@
                     </button>
                     
                     <button type="button" class="btn btn-outline-primary"
+                            x-show="'region.get'.includes(search.toLowerCase())"
+                            @click="component = 'Region/get'">Region.get
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'region.filter'.includes(search.toLowerCase())"
+                            @click="component = 'Region/filter'">Region.filter
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
                             x-show="'industry.get'.includes(search.toLowerCase())"
                             @click="component = 'Industry/get'">Industry.get
                     </button>
@@ -278,6 +334,16 @@
                     <button type="button" class="btn btn-outline-primary"
                             x-show="'demo.filter'.includes(search.toLowerCase())"
                             @click="component = 'Demo/filter'">Demo.filter
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'country.get'.includes(search.toLowerCase())"
+                            @click="component = 'Country/get'">Country.get
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'country.filter'.includes(search.toLowerCase())"
+                            @click="component = 'Country/filter'">Country.filter
                     </button>
                     
                     <button type="button" class="btn btn-outline-primary"

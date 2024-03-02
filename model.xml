@@ -5,9 +5,11 @@
 		<pattern name="ControlFrameworkArn" regex="^controlframework:[a-z0-9]+$"></pattern>
 		<pattern name="CompanyArn" regex="^company:[a-z]+$"></pattern>
 		<pattern name="EmployeeArn" regex="^{{CompanyArn}}:employee:[^\s]+$"></pattern>
+		<pattern name="GeoCode" regex="^[A-Z]+$"></pattern>
 		<pattern name="IndustryArn" regex="^industry:[a-z]+$"></pattern>
 		<pattern name="RequirementArn" regex="^{{ControlFrameworkArn}}:[a-z0-9]+$"></pattern>
 		<pattern name="BusinessRole" regex="^(administrator|guest|blocked)$"></pattern>
+		<pattern name="RegionArn" regex="^region:[A-Z]+$"></pattern>
 		<pattern name="ControlFrameworkType" regex="^(standard|regulation|framework)$"></pattern>
 		<expression name="truncateArn" type="TriggerKeyField" input="arn;length" expression="':'.join(arn.split(':')[:int(length)])"></expression>
 		<expression name="extractRoleFromArn" type="ActorEventRole" input="arn;role" expression="${arn.split(':')[0]}:${arn.split(':')[1]}:role"></expression>
@@ -17,6 +19,15 @@
 			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
+		</event>
+		<event graphql-namespace="Region" graphql-name="update" name="UpdateRegionRequested" authorization="role" type="ActorEvent" role="administrator">
+			<field name="arn" type="String" pattern="{{RegionArn}}"></field>
+			<field name="code" type="String" pattern="{{GeoCode}}"></field>
+			<field name="name" type="String"></field>
+			<nested-object name="countries">
+				<field name="name" type="String"></field>
+				<field name="code" type="String" pattern="{{GeoCode}}"></field>
+			</nested-object>
 		</event>
 		<event graphql-namespace="Requirement" graphql-name="add" name="AddRequirementRequested" authorization="role" type="ActorEvent" role="administrator">
 			<field name="arn" type="String" pattern="{{RequirementArn}}"></field>
@@ -64,6 +75,15 @@
 		<event name="DemoUpdated" source="Admin.Demo" type="DomainEvent">
 			<field name="identifier" type="String"></field>
 			<field name="value" type="String"></field>
+		</event>
+		<event name="RegionUpdated" source="Admin.Region" type="DomainEvent">
+			<field name="arn" type="String"></field>
+			<field name="name" type="String"></field>
+			<field name="code" type="String"></field>
+			<nested-object name="countries" business-key="code">
+				<field name="code" type="String"></field>
+				<field name="name" type="String"></field>
+			</nested-object>
 		</event>
 		<event name="RequirementCreated" source="Admin.Requirement" type="DomainEvent">
 			<field name="arn" type="String"></field>
@@ -146,6 +166,119 @@
 					<mapping target="identifier" operand="set" value="identifier"></mapping>
 					<mapping target="value" operand="set" value="value"></mapping>
 				</event-handler>
+			</aggregate>
+			<aggregate name="Region" business-key="arn" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
+				<field name="arn" type="String"></field>
+				<field name="name" type="String"></field>
+				<field name="code" type="String"></field>
+				<command name="CreateOrUpdate">
+					<trigger source="UpdateRegionRequested" key-field="arn">
+						<mapping target="arn" value="arn"></mapping>
+						<mapping target="code" value="code"></mapping>
+						<mapping target="name" value="name"></mapping>
+						<mapping target="countries" value="countries"></mapping>
+					</trigger>
+					<processor type="emit-event" id="HAaaVq" ref="RegionUpdated">
+						<mapping target="arn" value="#flow.arn"></mapping>
+						<mapping target="name" value="#flow.name"></mapping>
+						<mapping target="code" value="#flow.code"></mapping>
+						<mapping target="countries" value="#flow.countries"></mapping>
+					</processor>
+					<test-case name="CreateNewRegion" trigger-event="UpdateRegionRequested">
+						<input name="arn" value="region:NA" type="String"></input>
+						<input name="code" value="NA" type="String"></input>
+						<input name="name" value="North America" type="String"></input>
+						<input name="countries" type="NestedObject">[
+  {
+        "code": "US",
+        "name": "United States of America"
+      },
+      {
+        "code": "CA",
+        "name": "Canada"
+      }
+]</input>
+						<expected domain-event="RegionUpdated">
+							<field value="region:NA" name="arn" type="String"></field>
+							<field value="North America" name="name" type="String"></field>
+							<field value="NA" name="code" type="String"></field>
+						</expected>
+						<expected-state pk="region:NA">{
+  "arn": "region:NA",
+  "name": "North America",
+  "code": "NA",
+  "countries": {
+    "US": {
+        "code": "US",
+        "name": "United States of America"
+      },
+     "CA": {
+        "code": "CA",
+        "name": "Canada"
+      }
+  }
+}</expected-state>
+					</test-case>
+					<test-case name="UpdateRegion" trigger-event="UpdateRegionRequested">
+						<input name="arn" value="region:NA" type="String"></input>
+						<input name="code" value="NA" type="String"></input>
+						<input name="name" value="North America" type="String"></input>
+						<input name="countries" type="NestedObject">[
+  {
+        "code": "US",
+        "name": "United States of America"
+      },
+      {
+        "code": "CA",
+        "name": "Canada"
+      }
+]</input>
+						<state>{
+  "arn": "region:NA",
+  "name": "North America",
+  "code": "NA",
+  "countries": {
+    "US": {
+        "code": "US",
+        "name": "Un Sta of Ame"
+      }
+  }
+}</state>
+						<expected domain-event="RegionUpdated">
+							<field value="region:NA" name="arn" type="String"></field>
+							<field value="North America" name="name" type="String"></field>
+							<field value="NA" name="code" type="String"></field>
+						</expected>
+						<expected-state pk="region:NA">{
+  "arn": "region:NA",
+  "name": "North America",
+  "code": "NA",
+  "countries": {
+    "US": {
+        "code": "US",
+        "name": "United States of America"
+      },
+     "CA": {
+        "code": "CA",
+        "name": "Canada"
+      }
+  }
+}</expected-state>
+					</test-case>
+				</command>
+				<event-handler on="RegionUpdated">
+					<mapping target="arn" operand="set" value="arn"></mapping>
+					<mapping target="name" operand="set" value="name"></mapping>
+					<mapping target="code" operand="set" value="code"></mapping>
+					<nested-mapping source="countries" target="countries" business-key="code">
+						<mapping target="code" operand="set" value="code"></mapping>
+						<mapping target="name" operand="set" value="name"></mapping>
+					</nested-mapping>
+				</event-handler>
+				<nested-object name="countries" business-key="code">
+					<field name="code" type="String"></field>
+					<field name="name" type="String"></field>
+				</nested-object>
 			</aggregate>
 			<aggregate name="Requirement" business-key="arn" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
 				<field name="arn" type="String"></field>
@@ -422,7 +555,7 @@
 			</aggregate>
 		</subdomain>
 		<subdomain name="Customer">
-			<aggregate name="Company" business-key="name" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
+			<aggregate name="Company" business-key="arn" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
 				<field name="arn" type="String"></field>
 				<field name="name" type="String"></field>
 				<field name="description" type="String"></field>
@@ -624,7 +757,7 @@
 					</test-case>
 				</command>
 				<event-handler on="BusinessRoleUpdated" code='self.employees[event.employeeArn] = {|LB|    "arn": event.employeeArn,|LB|    "username": event.employeeArn.split(":")[-1],|LB|    "businessRole": event.businessRole|LB|}'></event-handler>
-				<event-handler on="BusinessUnitRemoved" code="del self.businessUnits[event.name]"></event-handler>
+				<event-handler on="BusinessUnitRemoved" code="if event.name in self.businessUnits:|LB|    del self.businessUnits[event.name]"></event-handler>
 				<event-handler on="BusinessUnitUpdated">
 					<nested-mapping source="businessUnits" target="businessUnits" business-key="name">
 						<mapping target="name" operand="set" value="name"></mapping>
@@ -687,6 +820,20 @@
 			</snapshot-handler>
 			<query graphql-namespace="User" field-name="get" type="get" authorization="user" username-field="key"></query>
 		</view>
+		<view name="Region" data-retention-days="-1" exclude-notification="false">
+			<field name="arn" type="String" pk="true"></field>
+			<field name="name" type="String"></field>
+			<field name="code" type="String"></field>
+			<field name="countries" type="OneToMany" ref="Country" authorization="authenticated" foreign-key="#canonical"></field>
+			<snapshot-handler id="niRRoc" sub-domain="Admin" aggregate="Region" key-mapping="arn" processor="item">
+				<mapping target="arn" operand="set" value="arn"></mapping>
+				<mapping target="name" operand="set" value="name"></mapping>
+				<mapping target="code" operand="set" value="code"></mapping>
+				<delete condition="#snapshot.isDeleted != ''"></delete>
+			</snapshot-handler>
+			<query graphql-namespace="Region" field-name="get" type="get" authorization="authenticated"></query>
+			<query graphql-namespace="Region" field-name="filter" type="filter" authorization="authenticated" use-canonical-search="false"></query>
+		</view>
 		<view name="Industry" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String" pk="true"></field>
 			<field name="name" type="String"></field>
@@ -743,6 +890,24 @@
 			<field name="company" type="ManyToOne" ref="Company" authorization="role" foreign-key="arn" role="#global.extractRoleFromArn(arn, 'viewer')"></field>
 			<field name="employeeArn" type="String"></field>
 			<field name="employee" type="OneToOne" ref="Employee" authorization="role" foreign-key="employeeArn" role="#global.extractRoleFromArn(employeeArn, 'viewer')"></field>
+		</view>
+		<view name="Country" data-retention-days="-1" exclude-notification="false">
+			<field name="arn" type="String" pk="true"></field>
+			<field name="name" type="String"></field>
+			<field name="code" type="String"></field>
+			<field name="regionArn" type="String"></field>
+			<field name="region" type="ManyToOne" ref="Region" authorization="authenticated" foreign-key="regionArn"></field>
+			<custom-handler id="RWpc1Y" sub-domain="Admin" aggregate="Region">for country in snapshot.countries.values():
+    arn = snapshot.arn + ":country:" + country.code
+    entity = EntityManager.get(type="Country", key=snapshot.arn)
+    entity.arn = arn
+    entity.name = country.name
+    entity.code = country.code
+    entity.regionArn = snapshot.arn
+    if snapshot.isDeleted != '':
+        entity.mark_for_deletion = True</custom-handler>
+			<query graphql-namespace="Country" field-name="get" type="get" authorization="authenticated"></query>
+			<query graphql-namespace="Country" field-name="filter" type="filter" authorization="authenticated" use-canonical-search="true"></query>
 		</view>
 		<view name="Employee" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String" pk="true"></field>
