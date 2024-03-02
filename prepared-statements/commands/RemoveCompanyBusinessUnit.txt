@@ -1,0 +1,10 @@
+# This file is managed by Tracepaper
+mutation Remove($arn: String = "", $name: String = "") {
+  Company{
+    BusinessUnit{
+      remove(input: {arn: $arn,name: $name}) {
+         correlationId
+      }
+    }
+  }
+}

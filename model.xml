@@ -13,7 +13,7 @@
 		<expression name="extractRoleFromArn" type="ActorEventRole" input="arn;role" expression="${arn.split(':')[0]}:${arn.split(':')[1]}:role"></expression>
 	</global>
 	<events>
-		<event graphql-namespace="Company.BusinessUnit" graphql-name="update" name="UpdateCompanyBusinessUnitRequested" authorization="role" type="ActorEvent" role='#global.extractRoleFromArn(arn, "administrator")'>
+		<event graphql-namespace="Company.BusinessUnit" graphql-name="update" name="UpdateCompanyBusinessUnitRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
 			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
@@ -32,6 +32,10 @@
 		<event graphql-namespace="Demo" graphql-name="update" name="UpdateDemoRequested" authorization="anonymous" type="ActorEvent">
 			<field name="identifier" type="String"></field>
 			<field name="value" type="String"></field>
+		</event>
+		<event graphql-namespace="Company.BusinessUnit" graphql-name="remove" name="RemoveCompanyBusinessUnitRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
+			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
+			<field name="name" type="String"></field>
 		</event>
 		<event graphql-namespace="Industry" graphql-name="add" name="AddIndustryRequested" authorization="role" type="ActorEvent" role="administrator">
 			<field name="arn" type="String" pattern="{{IndustryArn}}"></field>
@@ -90,6 +94,9 @@
 		<event name="BusinessRoleUpdated" source="Customer.Company" type="DomainEvent">
 			<field name="employeeArn" type="String"></field>
 			<field name="businessRole" type="String"></field>
+		</event>
+		<event name="BusinessUnitRemoved" source="Customer.Company" type="DomainEvent">
+			<field name="name" type="String"></field>
 		</event>
 		<event name="BusinessUnitUpdated" source="Customer.Company" type="DomainEvent">
 			<field name="arn" type="String"></field>
@@ -422,6 +429,35 @@
 				<field name="companySize" type="Int"></field>
 				<field name="revenue" type="String"></field>
 				<field name="industryLink" type="StringList"></field>
+				<command name="RemoveBusinessUnit">
+					<trigger source="RemoveCompanyBusinessUnitRequested" key-field="arn">
+						<mapping target="arn" value="arn"></mapping>
+						<mapping target="name" value="name"></mapping>
+					</trigger>
+					<processor type="emit-event" id="Vaiosp" ref="BusinessUnitRemoved">
+						<mapping target="name" value="#flow.name"></mapping>
+					</processor>
+					<test-case name="RemoveBusinessUnit" trigger-event="RemoveCompanyBusinessUnitRequested">
+						<input name="arn" value="company:draftsman" type="String"></input>
+						<input name="name" value="Product Development" type="String"></input>
+						<expected domain-event="BusinessUnitRemoved">
+							<field value="Product Development" name="name" type="String"></field>
+						</expected>
+						<state>{
+  "arn": "company:draftsman",
+  "businessUnits": {
+    "Product Development": {
+      "name": "Product Development",
+      "description": "Hello World!"
+    }
+  }
+}</state>
+						<expected-state pk="company:draftsman">{
+  "arn": "company:draftsman",
+  "businessUnits": {}
+}</expected-state>
+					</test-case>
+				</command>
 				<command name="Create" create-command="true">
 					<trigger source="CreateCompanyRequested" key-field="arn">
 						<mapping target="arn" value="arn"></mapping>
@@ -588,6 +624,7 @@
 					</test-case>
 				</command>
 				<event-handler on="BusinessRoleUpdated" code='self.employees[event.employeeArn] = {|LB|    "arn": event.employeeArn,|LB|    "username": event.employeeArn.split(":")[-1],|LB|    "businessRole": event.businessRole|LB|}'></event-handler>
+				<event-handler on="BusinessUnitRemoved" code="del self.businessUnits[event.name]"></event-handler>
 				<event-handler on="BusinessUnitUpdated">
 					<nested-mapping source="businessUnits" target="businessUnits" business-key="name">
 						<mapping target="name" operand="set" value="name"></mapping>
