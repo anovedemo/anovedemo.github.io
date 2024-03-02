@@ -3,6 +3,7 @@
 	<global>
 		<pattern name="IndustryLink" regex="^{{IndustryArn}}(;{{IndustryArn}})*$"></pattern>
 		<pattern name="ControlFrameworkArn" regex="^controlframework:[a-z0-9]+$"></pattern>
+		<pattern name="CountryArn" regex="^{{RegionArn}}:country:[A-Z]+$"></pattern>
 		<pattern name="CompanyArn" regex="^company:[a-z]+$"></pattern>
 		<pattern name="EmployeeArn" regex="^{{CompanyArn}}:employee:[^\s]+$"></pattern>
 		<pattern name="GeoCode" regex="^[A-Z]+$"></pattern>
@@ -61,6 +62,7 @@
 			<field name="revenue" type="String"></field>
 			<field name="industry" type="String" pattern="{{IndustryLink}}"></field>
 			<field name="user" type="String" auto-fill="username"></field>
+			<field name="country" type="String" pattern="{{CountryArn}}"></field>
 		</event>
 		<event graphql-namespace="ControlFramework" graphql-name="add" name="AddControlFrameworkRequested" authorization="role" type="ActorEvent" role="administrator">
 			<field name="arn" type="String" pattern="{{ControlFrameworkArn}}"></field>
@@ -133,6 +135,7 @@
 			<field name="revenue" type="String"></field>
 			<field name="industry" type="String"></field>
 			<field name="user" type="String"></field>
+			<field name="country" type="String"></field>
 		</event>
 	</events>
 	<domain>
@@ -562,6 +565,7 @@
 				<field name="companySize" type="Int"></field>
 				<field name="revenue" type="String"></field>
 				<field name="industryLink" type="StringList"></field>
+				<field name="countryArn" type="String"></field>
 				<command name="RemoveBusinessUnit">
 					<trigger source="RemoveCompanyBusinessUnitRequested" key-field="arn">
 						<mapping target="arn" value="arn"></mapping>
@@ -600,6 +604,7 @@
 						<mapping target="revenue" value="revenue"></mapping>
 						<mapping target="industry" value="industry"></mapping>
 						<mapping target="user" value="user"></mapping>
+						<mapping target="country" value="country"></mapping>
 					</trigger>
 					<processor type="emit-event" id="AqKpZH" ref="CompanyCreated">
 						<mapping target="arn" value="#flow.arn"></mapping>
@@ -609,6 +614,7 @@
 						<mapping target="revenue" value="#flow.revenue"></mapping>
 						<mapping target="industry" value="#flow.industry"></mapping>
 						<mapping target="user" value="#flow.user"></mapping>
+						<mapping target="country" value="#flow.country"></mapping>
 					</processor>
 					<test-case name="CreateNewCompany" trigger-event="CreateCompanyRequested">
 						<input name="arn" value="company:draftsman" type="String"></input>
@@ -618,11 +624,14 @@
 						<input name="revenue" value="0" type="String"></input>
 						<input name="industry" value="--" type="String"></input>
 						<input name="user" value="j.doe" type="String"></input>
+						<input name="country" value="region:EMEA:country:NL" type="String"></input>
 						<expected domain-event="CompanyCreated">
 							<field value="company:draftsman" name="arn" type="String"></field>
 							<field value="Draftsman" name="name" type="String"></field>
 							<field value="--" name="description" type="String"></field>
+							<field value="2" name="companySize" type="Int"></field>
 							<field value="0" name="revenue" type="String"></field>
+							<field value="region:EMEA:country:NL" name="country" type="String"></field>
 						</expected>
 						<expected-state pk="company:draftsman">{
         "arn":"company:draftsman",
@@ -630,7 +639,8 @@
         "description":"--",
         "companySize": 2,
         "revenue": "0",
-        "industryLink": ["--"]
+        "industryLink": ["--"],
+       "countryArn": "region:EMEA:country:NL"
       }</expected-state>
 					</test-case>
 					<test-case name="CreateDuplicateCompany" trigger-event="CreateCompanyRequested" expected-processing-status="error">
@@ -641,6 +651,7 @@
 						<input name="revenue" value="0" type="String"></input>
 						<input name="industry" value="--" type="String"></input>
 						<input name="user" value="j.doe" type="String"></input>
+						<input name="country" value="region:EMEA:country:NL" type="String"></input>
 						<state>{
         "arn":"company:draftsman",
         "version":1
@@ -764,7 +775,7 @@
 						<mapping target="description" operand="set" value="description"></mapping>
 					</nested-mapping>
 				</event-handler>
-				<event-handler on="CompanyCreated" code="self.arn = event.arn|LB|self.name = event.name|LB|self.description = event.description|LB|self.companySize = event.companySize|LB|self.revenue = event.revenue|LB|self.industryLink = event.industry.split(';')|LB|employeeArn = event.arn + &quot;:employee:&quot; + event.user|LB|self.employees[employeeArn] = {|LB|    &quot;arn&quot;: employeeArn,|LB|    &quot;username&quot;: event.user,|LB|    &quot;businessRole&quot;: &quot;administrator&quot;|LB|    |LB|}"></event-handler>
+				<event-handler on="CompanyCreated" code="self.arn = event.arn|LB|self.name = event.name|LB|self.description = event.description|LB|self.companySize = event.companySize|LB|self.revenue = event.revenue|LB|self.industryLink = event.industry.split(';')|LB|self.countryArn = event.country|LB|employeeArn = event.arn + &quot;:employee:&quot; + event.user|LB|self.employees[employeeArn] = {|LB|    &quot;arn&quot;: employeeArn,|LB|    &quot;username&quot;: event.user,|LB|    &quot;businessRole&quot;: &quot;administrator&quot;|LB|    |LB|}"></event-handler>
 				<nested-object name="regulations" business-key="name">
 					<field name="name" type="String"></field>
 					<field name="link" type="String"></field>
@@ -857,6 +868,8 @@
 			<field name="employees" type="OneToMany" ref="Employee" authorization="authenticated" foreign-key="#canonical"></field>
 			<field name="industry" type="ManyToMany" ref="Industry" authorization="authenticated" foreign-key="industryLink"></field>
 			<field name="businessUnits" type="ObjectList" ref="BusinessUnit" authorization="authenticated" foreign-key="arn"></field>
+			<field name="countryArn" type="String"></field>
+			<field name="country" type="ManyToOne" ref="Country" authorization="authenticated" foreign-key="countryArn"></field>
 			<snapshot-handler id="a8vzJw" sub-domain="Customer" aggregate="Company" key-mapping="arn" processor="item">
 				<mapping target="arn" operand="set" value="arn"></mapping>
 				<mapping target="name" operand="set" value="name"></mapping>
@@ -865,6 +878,7 @@
 				<mapping target="revenue" operand="set" value="revenue"></mapping>
 				<mapping target="industryLink" operand="set" value="industryLink"></mapping>
 				<mapping target="businessUnits" operand="convert_items" value="businessUnits" template='{"name": value["name"],"description": value["description"]}'></mapping>
+				<mapping target="countryArn" operand="set" value="countryArn"></mapping>
 				<delete condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="Company" field-name="get" type="get" authorization="role" role="#global.extractRoleFromArn(key, 'viewer')"></query>
