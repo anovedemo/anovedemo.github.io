@@ -1,0 +1,16 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query FilterCompany {
+  Company {
+    filter {
+       resultset { 
+        key
+        arn
+        name
+        description
+        companySize
+        revenue
+        industryLink
+      }
+    }
+  }
+}

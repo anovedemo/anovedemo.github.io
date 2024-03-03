@@ -1,0 +1,53 @@
+[
+  {
+    "type": "meta",
+    "message": "This file is managed by Tracepaper"
+  },
+  {
+    "name": "arn",
+    "title": "Arn",
+    "type": "String",
+    "pattern": "^region:[A-Z]+$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "code",
+    "title": "Code",
+    "type": "String",
+    "pattern": "^[A-Z]+$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "name",
+    "title": "Name",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "countries",
+    "title": "Countries",
+    "type": "nested",
+    "fields": [
+      {
+        "name": "name",
+        "title": "Name",
+        "type": "String",
+        "pattern": "",
+        "placeholder": "",
+        "default": ""
+      },
+      {
+        "name": "code",
+        "title": "Code",
+        "type": "String",
+        "pattern": "^[A-Z]+$",
+        "placeholder": "",
+        "default": ""
+      }
+    ]
+  }
+]

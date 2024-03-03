@@ -1,0 +1,13 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query GetRequirement($key: ID = "") {
+  Requirement {
+    get(key: $key) {
+      key
+      name
+      description
+      mandatory
+      summary
+      arn
+    }
+  }
+}

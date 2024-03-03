@@ -1,0 +1,10 @@
+# This file is managed by Tracepaper
+mutation Add($arn: String = "", $requirements: [AddControlFrameworkRequirement_Requirements!] = []) {
+  ControlFramework{
+    Requirement{
+      add(input: {arn: $arn,requirements: $requirements}) {
+         correlationId
+      }
+    }
+  }
+}

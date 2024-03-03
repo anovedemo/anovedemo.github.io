@@ -1,0 +1,11 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query GetProfile($key: ID = "") {
+  Profile {
+    get(key: $key) {
+      key
+      username
+      firstName
+      lastName
+    }
+  }
+}

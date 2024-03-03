@@ -1,0 +1,14 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query GetCompany($key: ID = "") {
+  Company {
+    get(key: $key) {
+      key
+      arn
+      name
+      description
+      companySize
+      revenue
+      industryLink
+    }
+  }
+}

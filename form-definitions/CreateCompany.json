@@ -7,15 +7,7 @@
     "name": "arn",
     "title": "Arn",
     "type": "String",
-    "pattern": "^controlframework:[a-z0-9]+$",
-    "placeholder": "",
-    "default": ""
-  },
-  {
-    "name": "description",
-    "title": "Description",
-    "type": "String",
-    "pattern": "",
+    "pattern": "^company:[a-z]+$",
     "placeholder": "",
     "default": ""
   },
@@ -28,42 +20,42 @@
     "default": ""
   },
   {
-    "name": "category",
-    "title": "Category",
-    "type": "String",
-    "pattern": "^(standard|regulation|framework)$",
-    "placeholder": "",
-    "default": ""
-  },
-  {
-    "name": "edition",
-    "title": "Edition",
+    "name": "description",
+    "title": "Description",
     "type": "String",
     "pattern": "",
     "placeholder": "",
     "default": ""
   },
   {
-    "name": "unit",
-    "title": "Unit",
+    "name": "companySize",
+    "title": "Companysize",
+    "type": "Int",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "revenue",
+    "title": "Revenue",
     "type": "String",
     "pattern": "",
     "placeholder": "",
     "default": ""
   },
   {
-    "name": "acronym",
-    "title": "Acronym",
+    "name": "industry",
+    "title": "Industry",
     "type": "String",
-    "pattern": "",
+    "pattern": "^industry:[a-z]+(;industry:[a-z]+)*$",
     "placeholder": "",
     "default": ""
   },
   {
-    "name": "active",
-    "title": "Active",
-    "type": "Boolean",
-    "pattern": "",
+    "name": "country",
+    "title": "Country",
+    "type": "String",
+    "pattern": "^region:[A-Z]+:country:[A-Z]+$",
     "placeholder": "",
     "default": ""
   }
