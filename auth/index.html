@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Signing in</title>
+    <script src="/js/cache.js"></script>
+</head>
+<body>
+
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  localStorage["token"] = urlParams.get("id_token");
+  cacheJS.set("token",localStorage["token"],3600);
+  var referer = "/";
+  if (sessionStorage["prevLoc"]){
+      referer = sessionStorage["prevLoc"];
+      sessionStorage.removeItem("prevLoc");
+  }
+  location = referer;
+</script>
+</body>
+</html>
