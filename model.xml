@@ -709,6 +709,7 @@
 				<field name="revenue" type="String"></field>
 				<field name="industryLink" type="StringList"></field>
 				<field name="countryArn" type="String"></field>
+				<field name="deletedEmployeeArns" type="StringList"></field>
 				<command name="RemoveBusinessUnit">
 					<trigger source="RemoveCompanyBusinessUnitRequested" key-field="arn">
 						<mapping target="arn" value="arn"></mapping>
@@ -960,7 +961,7 @@
 }</expected-state>
 					</test-case>
 				</command>
-				<event-handler on="EmployeeArnUpdated" code='self.employees[event.employeeArn] = {|LB|    "arn": event.employeeArn,|LB|    "username": event.username,|LB|    "businessRole": event.businessRole|LB|}|LB|if event.oldArn in self.employees:|LB|    del self.employees[event.oldArn]'></event-handler>
+				<event-handler on="EmployeeArnUpdated" code='self.employees[event.employeeArn] = {|LB|    "arn": event.employeeArn,|LB|    "username": event.username,|LB|    "businessRole": event.businessRole|LB|}|LB|if event.oldArn in self.employees:|LB|    del self.employees[event.oldArn]|LB|    |LB|self.deletedEmployeeArns.append(event.oldArn)'></event-handler>
 				<event-handler on="BusinessRoleUpdated" code='self.employees[event.employeeArn] = {|LB|    "arn": event.employeeArn,|LB|    "username": event.employeeArn.split(":")[-1],|LB|    "businessRole": event.businessRole|LB|}'></event-handler>
 				<event-handler on="BusinessUnitRemoved" code="if event.name in self.businessUnits:|LB|    del self.businessUnits[event.name]"></event-handler>
 				<event-handler on="BusinessUnitUpdated">
@@ -1128,8 +1129,11 @@
 				<mapping target="arn" operand="set" value="arn"></mapping>
 				<mapping target="username" operand="set" value="username"></mapping>
 				<mapping target="businessRole" operand="set" value="businessRole"></mapping>
-				<delete condition='#snapshot.isDeleted != ""'></delete>
+				<delete condition='#snapshot.isDeleted != "" or item.businessRole == "blocked"'></delete>
 			</snapshot-handler>
+			<custom-handler id="XUqTGK" sub-domain="Customer" aggregate="Company">for depricated in snapshot.deletedEmployeeArns:
+    entity = EntityManager.get(type="Employee", key=depricated)
+    entity.mark_for_deletion = True</custom-handler>
 		</view>
 		<view name="Requirement" data-retention-days="-1" exclude-notification="false">
 			<field name="name" type="String"></field>
