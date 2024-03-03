@@ -25,15 +25,15 @@
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
-                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateUser'"
-                                x-show="'updateuser'.includes(search.toLowerCase())">
-                            UpdateUser
-                        </button>
-                        
-                        <button type="button" class="btn btn-outline-primary"
                                 @click="Draftsman.empty_track_and_trace_log();component = 'UpdateBusinessRoleCompanyEmployee'"
                                 x-show="'updatebusinessrolecompanyemployee'.includes(search.toLowerCase())">
                             UpdateBusinessRoleCompanyEmployee
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'ActivateUser'"
+                                x-show="'activateuser'.includes(search.toLowerCase())">
+                            ActivateUser
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
@@ -95,18 +95,18 @@
                 </div>
 
                 
-                <div x-show="component == 'UpdateUser'" x-cloak x-transition>
-                    <div x-import="commands/UpdateUser">
-                        <h6>UpdateUser</h6>
-                        <ui-UpdateUser></ui-UpdateUser>
-                    </div>
-                </div>
-
-                
                 <div x-show="component == 'UpdateBusinessRoleCompanyEmployee'" x-cloak x-transition>
                     <div x-import="commands/UpdateBusinessRoleCompanyEmployee">
                         <h6>UpdateBusinessRoleCompanyEmployee</h6>
                         <ui-UpdateBusinessRoleCompanyEmployee></ui-UpdateBusinessRoleCompanyEmployee>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'ActivateUser'" x-cloak x-transition>
+                    <div x-import="commands/ActivateUser">
+                        <h6>ActivateUser</h6>
+                        <ui-ActivateUser></ui-ActivateUser>
                     </div>
                 </div>
 

@@ -37,14 +37,15 @@
 			<field name="mandatory" type="Boolean"></field>
 			<field name="summary" type="String"></field>
 		</event>
-		<event graphql-namespace="User" graphql-name="update" name="UpdateUserRequested" authorization="authenticated" type="ActorEvent">
-			<field name="username" type="String" auto-fill="username"></field>
-			<field name="firstName" type="String"></field>
-			<field name="lastName" type="String"></field>
-		</event>
 		<event graphql-namespace="Company.Employee" graphql-name="updateBusinessRole" name="UpdateBusinessRoleCompanyEmployeeRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
 			<field name="arn" type="String" pattern="{{EmployeeArn}}"></field>
 			<field name="businessRole" type="String" pattern="{{BusinessRole}}"></field>
+		</event>
+		<event graphql-namespace="User" graphql-name="activate" name="ActivateUserRequested" authorization="authenticated" type="ActorEvent">
+			<field name="username" type="String" auto-fill="username"></field>
+			<field name="firstName" type="String"></field>
+			<field name="lastName" type="String"></field>
+			<field name="email" type="String"></field>
 		</event>
 		<event graphql-namespace="Demo" graphql-name="update" name="UpdateDemoRequested" authorization="anonymous" type="ActorEvent">
 			<field name="identifier" type="String"></field>
@@ -99,10 +100,17 @@
 			<field name="mandatory" type="Boolean"></field>
 			<field name="summary" type="String"></field>
 		</event>
-		<event name="UserUpdated" source="Admin.User" type="DomainEvent">
+		<event name="UserActivated" source="Admin.User" type="DomainEvent">
+			<field name="username" type="String"></field>
 			<field name="firstName" type="String"></field>
 			<field name="lastName" type="String"></field>
 			<field name="active" type="Boolean"></field>
+			<field name="email" type="String"></field>
+			<field name="companies" type="String"></field>
+			<nested-object name="companies" business-key="arn">
+				<field name="arn" type="String"></field>
+				<field name="employeeArn" type="String"></field>
+			</nested-object>
 		</event>
 		<event name="CompanyAdministratorCreated" source="Admin.User" type="DomainEvent">
 			<field name="username" type="String"></field>
@@ -369,38 +377,60 @@
 				<field name="firstName" type="String"></field>
 				<field name="lastName" type="String"></field>
 				<field name="active" type="Boolean"></field>
-				<command name="Update">
-					<trigger source="UpdateUserRequested" key-field="username">
+				<command name="Activate">
+					<trigger source="ActivateUserRequested" key-field="email">
 						<mapping target="username" value="username"></mapping>
 						<mapping target="firstName" value="firstName"></mapping>
 						<mapping target="lastName" value="lastName"></mapping>
+						<mapping target="email" value="email"></mapping>
 					</trigger>
 					<processor type="set-variable" id="ZVMw4u" name="active" expression="True"></processor>
-					<processor type="emit-event" id="BZOsSq" ref="UserUpdated">
+					<processor type="code" id="PjQOzT" file="" handler="" code='flow.companies = ";".join(flow.entity.companies.keys())'></processor>
+					<processor type="emit-event" id="BZOsSq" ref="UserActivated">
+						<mapping target="username" value="#flow.username"></mapping>
 						<mapping target="firstName" value="#flow.firstName"></mapping>
 						<mapping target="lastName" value="#flow.lastName"></mapping>
 						<mapping target="active" value="#flow.active"></mapping>
+						<mapping target="email" value="#flow.email"></mapping>
+						<mapping target="companies" value="#flow.companies"></mapping>
 					</processor>
-					<test-case name="UpdateUser" trigger-event="UpdateUserRequested">
+					<processor type="update-key" id="XbL8BP" key="#flow.username"></processor>
+					<test-case name="ActivateUser" trigger-event="ActivateUserRequested">
 						<input name="username" value="j.doe" type="String"></input>
 						<input name="firstName" value="John" type="String"></input>
 						<input name="lastName" value="Doe" type="String"></input>
-						<expected domain-event="UserUpdated">
+						<input name="email" value="j.doe@example.com" type="String"></input>
+						<state>{
+  "username": "j.doe@example.com",
+  "firstName": "",
+  "lastName": "",
+  "active": false,
+  "companies": {
+    "company:draftsman": {
+      "arn": "company:draftsman",
+      "employeeArn": "company:draftsman:employee:j.doe@example.com"
+    }
+  }
+}</state>
+						<expected domain-event="UserActivated">
+							<field value="j.doe" name="username" type="String"></field>
 							<field value="John" name="firstName" type="String"></field>
 							<field value="Doe" name="lastName" type="String"></field>
 							<field value="true" name="active" type="Boolean"></field>
+							<field value="j.doe@example.com" name="email" type="String"></field>
+							<field value="company:draftsman" name="companies" type="String"></field>
 						</expected>
-						<state>{
-  "username": "j.doe",
-  "firstName": "",
-  "lastName": "",
-  "active": false
-}</state>
-						<expected-state pk="j.doe">{
+						<expected-state pk="j.doe@example.com">{
   "username": "j.doe",
   "firstName": "John",
   "lastName": "Doe",
-  "active": true
+  "active": true,
+  "companies": {
+    "company:draftsman": {
+      "arn": "company:draftsman",
+      "employeeArn": "company:draftsman:employee:j.doe"
+    }
+  }
 }</expected-state>
 					</test-case>
 				</command>
@@ -516,11 +546,7 @@
 }</expected-state>
 					</test-case>
 				</command>
-				<event-handler on="UserUpdated">
-					<mapping target="firstName" operand="set" value="firstName"></mapping>
-					<mapping target="lastName" operand="set" value="lastName"></mapping>
-					<mapping target="active" operand="set" value="active"></mapping>
-				</event-handler>
+				<event-handler on="UserActivated" code='self.username = event.username|LB|self.firstName = event.firstName|LB|self.lastName = event.lastName|LB|self.active = event.active|LB|self.companies = {key:{|LB|    "arn": key,|LB|    "employeeArn": value["employeeArn"].replace(event.email,event.username)|LB|} for key,value in self.companies.items()}|LB|'></event-handler>
 				<event-handler on="CompanyAdministratorCreated" code='self.username = event.username|LB|self.companies[event.companyArn] = {|LB|    "arn": event.companyArn,|LB|    "employeeArn": event.companyArn + ":employee:" + event.username|LB|}|LB|'></event-handler>
 				<event-handler on="UserAddedToCompany">
 					<mapping target="username" operand="set" value="username"></mapping>
