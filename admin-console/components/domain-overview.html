@@ -1,0 +1,386 @@
+<!-- This file is managed by Tracepaper -->
+<template x-component="domain-overview">
+    <div class="row gx-5">
+            <div class="col-3">
+                <h4>Commands</h4>
+                <center>
+                    <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateCompanyBusinessUnit'"
+                                x-show="'updatecompanybusinessunit'.includes(search.toLowerCase())">
+                            UpdateCompanyBusinessUnit
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateRegion'"
+                                x-show="'updateregion'.includes(search.toLowerCase())">
+                            UpdateRegion
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'AddRequirement'"
+                                x-show="'addrequirement'.includes(search.toLowerCase())">
+                            AddRequirement
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateBusinessRoleCompanyEmployee'"
+                                x-show="'updatebusinessrolecompanyemployee'.includes(search.toLowerCase())">
+                            UpdateBusinessRoleCompanyEmployee
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'ActivateUser'"
+                                x-show="'activateuser'.includes(search.toLowerCase())">
+                            ActivateUser
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateDemo'"
+                                x-show="'updatedemo'.includes(search.toLowerCase())">
+                            UpdateDemo
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'RemoveCompanyBusinessUnit'"
+                                x-show="'removecompanybusinessunit'.includes(search.toLowerCase())">
+                            RemoveCompanyBusinessUnit
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'AddIndustry'"
+                                x-show="'addindustry'.includes(search.toLowerCase())">
+                            AddIndustry
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'CreateCompany'"
+                                x-show="'createcompany'.includes(search.toLowerCase())">
+                            CreateCompany
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'AddControlFramework'"
+                                x-show="'addcontrolframework'.includes(search.toLowerCase())">
+                            AddControlFramework
+                        </button>
+                        
+                    </div>
+                </center>
+            </div>
+            <div class="col-6">
+                
+                <div x-show="component == 'UpdateCompanyBusinessUnit'" x-cloak x-transition>
+                    <div x-import="commands/UpdateCompanyBusinessUnit">
+                        <h6>UpdateCompanyBusinessUnit</h6>
+                        <ui-UpdateCompanyBusinessUnit></ui-UpdateCompanyBusinessUnit>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'UpdateRegion'" x-cloak x-transition>
+                    <div x-import="commands/UpdateRegion">
+                        <h6>UpdateRegion</h6>
+                        <ui-UpdateRegion></ui-UpdateRegion>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'AddRequirement'" x-cloak x-transition>
+                    <div x-import="commands/AddRequirement">
+                        <h6>AddRequirement</h6>
+                        <ui-AddRequirement></ui-AddRequirement>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'UpdateBusinessRoleCompanyEmployee'" x-cloak x-transition>
+                    <div x-import="commands/UpdateBusinessRoleCompanyEmployee">
+                        <h6>UpdateBusinessRoleCompanyEmployee</h6>
+                        <ui-UpdateBusinessRoleCompanyEmployee></ui-UpdateBusinessRoleCompanyEmployee>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'ActivateUser'" x-cloak x-transition>
+                    <div x-import="commands/ActivateUser">
+                        <h6>ActivateUser</h6>
+                        <ui-ActivateUser></ui-ActivateUser>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'UpdateDemo'" x-cloak x-transition>
+                    <div x-import="commands/UpdateDemo">
+                        <h6>UpdateDemo</h6>
+                        <ui-UpdateDemo></ui-UpdateDemo>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'RemoveCompanyBusinessUnit'" x-cloak x-transition>
+                    <div x-import="commands/RemoveCompanyBusinessUnit">
+                        <h6>RemoveCompanyBusinessUnit</h6>
+                        <ui-RemoveCompanyBusinessUnit></ui-RemoveCompanyBusinessUnit>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'AddIndustry'" x-cloak x-transition>
+                    <div x-import="commands/AddIndustry">
+                        <h6>AddIndustry</h6>
+                        <ui-AddIndustry></ui-AddIndustry>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'CreateCompany'" x-cloak x-transition>
+                    <div x-import="commands/CreateCompany">
+                        <h6>CreateCompany</h6>
+                        <ui-CreateCompany></ui-CreateCompany>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'AddControlFramework'" x-cloak x-transition>
+                    <div x-import="commands/AddControlFramework">
+                        <h6>AddControlFramework</h6>
+                        <ui-AddControlFramework></ui-AddControlFramework>
+                    </div>
+                </div>
+
+                
+
+                
+                <div x-show="component == 'ControlFramework/get'" x-cloak x-transition>
+                    <div x-import="views/ControlFramework/get">
+                        <h6>ControlFramework.get</h6>
+                        <ui-ControlFramework-get></ui-ControlFramework-get>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'ControlFramework/filter'" x-cloak x-transition>
+                    <div x-import="views/ControlFramework/filter">
+                        <h6>ControlFramework.filter</h6>
+                        <ui-ControlFramework-filter></ui-ControlFramework-filter>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'User/get'" x-cloak x-transition>
+                    <div x-import="views/User/get">
+                        <h6>User.get</h6>
+                        <ui-User-get></ui-User-get>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Region/get'" x-cloak x-transition>
+                    <div x-import="views/Region/get">
+                        <h6>Region.get</h6>
+                        <ui-Region-get></ui-Region-get>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Region/filter'" x-cloak x-transition>
+                    <div x-import="views/Region/filter">
+                        <h6>Region.filter</h6>
+                        <ui-Region-filter></ui-Region-filter>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Industry/get'" x-cloak x-transition>
+                    <div x-import="views/Industry/get">
+                        <h6>Industry.get</h6>
+                        <ui-Industry-get></ui-Industry-get>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Industry/filter'" x-cloak x-transition>
+                    <div x-import="views/Industry/filter">
+                        <h6>Industry.filter</h6>
+                        <ui-Industry-filter></ui-Industry-filter>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Company/get'" x-cloak x-transition>
+                    <div x-import="views/Company/get">
+                        <h6>Company.get</h6>
+                        <ui-Company-get></ui-Company-get>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Company/filter'" x-cloak x-transition>
+                    <div x-import="views/Company/filter">
+                        <h6>Company.filter</h6>
+                        <ui-Company-filter></ui-Company-filter>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Demo/get'" x-cloak x-transition>
+                    <div x-import="views/Demo/get">
+                        <h6>Demo.get</h6>
+                        <ui-Demo-get></ui-Demo-get>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Demo/filter'" x-cloak x-transition>
+                    <div x-import="views/Demo/filter">
+                        <h6>Demo.filter</h6>
+                        <ui-Demo-filter></ui-Demo-filter>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Country/get'" x-cloak x-transition>
+                    <div x-import="views/Country/get">
+                        <h6>Country.get</h6>
+                        <ui-Country-get></ui-Country-get>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Country/filter'" x-cloak x-transition>
+                    <div x-import="views/Country/filter">
+                        <h6>Country.filter</h6>
+                        <ui-Country-filter></ui-Country-filter>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Requirement/get'" x-cloak x-transition>
+                    <div x-import="views/Requirement/get">
+                        <h6>Requirement.get</h6>
+                        <ui-Requirement-get></ui-Requirement-get>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Requirement/filter'" x-cloak x-transition>
+                    <div x-import="views/Requirement/filter">
+                        <h6>Requirement.filter</h6>
+                        <ui-Requirement-filter></ui-Requirement-filter>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Profile/get'" x-cloak x-transition>
+                    <div x-import="views/Profile/get">
+                        <h6>Profile.get</h6>
+                        <ui-Profile-get></ui-Profile-get>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Profile/filter'" x-cloak x-transition>
+                    <div x-import="views/Profile/filter">
+                        <h6>Profile.filter</h6>
+                        <ui-Profile-filter></ui-Profile-filter>
+                    </div>
+                </div>
+
+                
+
+            </div>
+            <div class="col-3">
+                <h4>Queries</h4>
+                <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'controlframework.get'.includes(search.toLowerCase())"
+                            @click="component = 'ControlFramework/get'">ControlFramework.get
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'controlframework.filter'.includes(search.toLowerCase())"
+                            @click="component = 'ControlFramework/filter'">ControlFramework.filter
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'user.get'.includes(search.toLowerCase())"
+                            @click="component = 'User/get'">User.get
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'region.get'.includes(search.toLowerCase())"
+                            @click="component = 'Region/get'">Region.get
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'region.filter'.includes(search.toLowerCase())"
+                            @click="component = 'Region/filter'">Region.filter
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'industry.get'.includes(search.toLowerCase())"
+                            @click="component = 'Industry/get'">Industry.get
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'industry.filter'.includes(search.toLowerCase())"
+                            @click="component = 'Industry/filter'">Industry.filter
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'company.get'.includes(search.toLowerCase())"
+                            @click="component = 'Company/get'">Company.get
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'company.filter'.includes(search.toLowerCase())"
+                            @click="component = 'Company/filter'">Company.filter
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'demo.get'.includes(search.toLowerCase())"
+                            @click="component = 'Demo/get'">Demo.get
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'demo.filter'.includes(search.toLowerCase())"
+                            @click="component = 'Demo/filter'">Demo.filter
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'country.get'.includes(search.toLowerCase())"
+                            @click="component = 'Country/get'">Country.get
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'country.filter'.includes(search.toLowerCase())"
+                            @click="component = 'Country/filter'">Country.filter
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'requirement.get'.includes(search.toLowerCase())"
+                            @click="component = 'Requirement/get'">Requirement.get
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'requirement.filter'.includes(search.toLowerCase())"
+                            @click="component = 'Requirement/filter'">Requirement.filter
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'profile.get'.includes(search.toLowerCase())"
+                            @click="component = 'Profile/get'">Profile.get
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'profile.filter'.includes(search.toLowerCase())"
+                            @click="component = 'Profile/filter'">Profile.filter
+                    </button>
+                    
+                </div>
+            </div>
+        </div>
+</template>

@@ -1,0 +1,16 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query GetUser($key: ID = "") {
+  User {
+    get(key: $key) {
+      key
+      username
+      links {
+        arn
+        employeeArn
+      } 
+      firstName
+      lastName
+      active
+    }
+  }
+}

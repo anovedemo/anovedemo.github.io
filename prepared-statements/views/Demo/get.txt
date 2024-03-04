@@ -1,0 +1,10 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query GetDemo($key: ID = "") {
+  Demo {
+    get(key: $key) {
+      key
+      identifier
+      value
+    }
+  }
+}

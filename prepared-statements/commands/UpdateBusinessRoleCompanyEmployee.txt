@@ -1,0 +1,10 @@
+# This file is managed by Tracepaper
+mutation UpdateBusinessRole($arn: String = "", $businessRole: String = "") {
+  Company{
+    Employee{
+      updateBusinessRole(input: {arn: $arn,businessRole: $businessRole}) {
+         correlationId
+      }
+    }
+  }
+}

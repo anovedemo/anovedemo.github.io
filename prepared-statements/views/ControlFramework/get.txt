@@ -1,0 +1,16 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query GetControlFramework($key: ID = "") {
+  ControlFramework {
+    get(key: $key) {
+      key
+      arn
+      description
+      name
+      category
+      edition
+      unit
+      acronym
+      active
+    }
+  }
+}

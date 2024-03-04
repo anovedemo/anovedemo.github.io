@@ -1,0 +1,22 @@
+[
+  {
+    "type": "meta",
+    "message": "This file is managed by Tracepaper"
+  },
+  {
+    "name": "arn",
+    "title": "Arn",
+    "type": "String",
+    "pattern": "^company:[a-z]+:employee:[^\\s]+$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "businessRole",
+    "title": "Businessrole",
+    "type": "String",
+    "pattern": "^(administrator|guest|blocked)$",
+    "placeholder": "",
+    "default": ""
+  }
+]

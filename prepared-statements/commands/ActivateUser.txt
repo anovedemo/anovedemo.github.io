@@ -1,0 +1,8 @@
+# This file is managed by Tracepaper
+mutation Activate($firstName: String = "", $lastName: String = "", $email: String = "") {
+  User{
+    activate(input: {firstName: $firstName,lastName: $lastName,email: $email}) {
+       correlationId
+    }
+  }
+}

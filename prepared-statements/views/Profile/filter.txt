@@ -1,0 +1,13 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query FilterProfile {
+  Profile {
+    filter {
+       resultset { 
+        key
+        username
+        firstName
+        lastName
+      }
+    }
+  }
+}

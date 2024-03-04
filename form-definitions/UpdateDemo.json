@@ -1,0 +1,22 @@
+[
+  {
+    "type": "meta",
+    "message": "This file is managed by Tracepaper"
+  },
+  {
+    "name": "identifier",
+    "title": "Identifier",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "value",
+    "title": "Value",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  }
+]
