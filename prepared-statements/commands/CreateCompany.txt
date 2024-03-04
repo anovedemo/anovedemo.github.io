@@ -1,8 +1,0 @@
-# This file is managed by Tracepaper
-mutation Create($arn: String = "", $name: String = "", $description: String = "", $companySize: Int = 0, $revenue: String = "", $industry: String = "", $country: String = "") {
-  Company{
-    create(input: {arn: $arn,name: $name,description: $description,companySize: $companySize,revenue: $revenue,industry: $industry,country: $country}) {
-       correlationId
-    }
-  }
-}

@@ -1,8 +1,0 @@
-# This file is managed by Tracepaper
-mutation Update($identifier: String = "", $value: String = "") {
-  Demo{
-    update(input: {identifier: $identifier,value: $value}) {
-       correlationId
-    }
-  }
-}

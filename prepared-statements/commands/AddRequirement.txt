@@ -1,8 +1,0 @@
-# This file is managed by Tracepaper
-mutation Add($arn: String = "", $name: String = "", $description: String = "", $mandatory: Boolean = false, $summary: String = "") {
-  Requirement{
-    add(input: {arn: $arn,name: $name,description: $description,mandatory: $mandatory,summary: $summary}) {
-       correlationId
-    }
-  }
-}
