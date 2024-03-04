@@ -4,10 +4,8 @@ query GetUser($key: ID = "") {
     get(key: $key) {
       key
       username
-      links {
-        arn
-        roles
-      } 
+      firstName
+      lastName
     }
   }
 }
