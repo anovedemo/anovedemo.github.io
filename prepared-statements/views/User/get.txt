@@ -2,15 +2,18 @@
 query GetUser($key: ID = "") {
   User {
     get(key: $key) {
-      key
-      username
       links {
         arn
         employeeArn
-      } 
+        company {
+          name
+        }
+        employee {
+          businessRole
+        }
+      }
       firstName
       lastName
-      active
     }
   }
 }
