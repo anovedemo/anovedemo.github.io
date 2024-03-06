@@ -387,7 +387,7 @@
 						<mapping target="email" value="email"></mapping>
 					</trigger>
 					<processor type="set-variable" id="ZVMw4u" name="active" expression="True"></processor>
-					<processor type="code" id="PjQOzT" file="" handler="" code="flow.companyArn = list(flow.entity.companies.keys())[0]"></processor>
+					<processor type="code" id="PjQOzT" file="" handler="" code='companies = list(flow.entity.companies.keys())|LB|flow.companyArn = companies[0] if len(companies) != 0 else ""'></processor>
 					<processor type="update-key" id="XbL8BP" key="#flow.username"></processor>
 					<processor type="emit-event" id="4W0IuN" ref="UserActivated">
 						<mapping target="username" value="#flow.username"></mapping>
