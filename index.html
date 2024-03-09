@@ -1,25 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta name="description" content="" />
-        <title>Anove Demo</title>
-        <script>var must_be_signed_in = true;</script>
-        <script src="/js/configuration.js"></script>
-        <script src="/js/configuration-staging.js"></script>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta name="description" content=""/>
+    <title>Anove Demo</title>
+    <script>var must_be_signed_in = true;</script>
+    <script src="/js/configuration.js"></script>
+    <script src="/js/configuration-staging.js"></script>
 
-        <link rel="stylesheet" href="/css/draftsman.css" />
-        <script src="/js/framework.js"></script>
-        <script src="/js/cache.js"></script>
-        <script src="https://unpkg.com/@vimesh/ui"></script>
-        <script src="/js/utils.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
-        <script src="https://unpkg.com/alpinejs" defer></script>
-    </head>
-    <body x-data x-import="">
+    <link rel="stylesheet" href="/css/draftsman.css"/>
+    <script src="/js/framework.js"></script>
+    <script src="/js/cache.js"></script>
+    <script src="https://unpkg.com/@vimesh/ui"></script>
+    <script src="/js/utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/alpinejs" defer></script>
 
-    <draftsman-query x-init="Draftsman.set_variable('key',localStorage['username'])" alias="WorkSpace" x-include="/prepared-statements/views/User/get.txt" authenticated>
-    </draftsman-query>
-    </body>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css"
+          integrity="sha512-SbiR/eusphKoMVVXysTKG/7VseWii+Y3FdHrt0EpKgpToZeemhqHeZeLWLhJutz/2ut2Vw1uQEj2MbRF+TVBUA=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" defer></script>
+</head>
+<body x-data="{workspace: null}" x-import="navbar">
+<ui-navbar></ui-navbar>
+
+<div class="container">
+    <h1>Hello <span x-text="workspace.firstName"></span> <span x-text="workspace.lastName"></span></h1>
+    <div class="row row-cols-1 row-cols-md-4 g-4">
+        <template x-for="company in workspace.links" :key="company.employeeArn">
+            <div class="col">
+                <div class="card">
+                    <img :src="`https://picsum.photos/seed/${company.arn}/100/50`" class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <h5 class="card-title" x-text="company.company.name"></h5>
+                        <p class="card-text" x-text="company.company.description"></p>
+                    </div>
+                </div>
+            </div>
+        </template>
+        <div class="col">
+            <div class="card">
+                <img src="https://picsum.photos/seed/picsum/100/50" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">Onboard company</h5>
+                    <p class="card-text">Use this wizard to onboard a company
+                        <a href="/onboarding/02_new-company" class="btn btn-primary stretched-link">Onboard company</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Get the users workspace -->
+<div class="data-element" @refresh="workspace = $store.WorkSpace.get"></div>
+<draftsman-query x-init="Draftsman.set_variable('key',localStorage['username'])" alias="WorkSpace"
+                 x-include="/prepared-statements/views/User/get.txt" authenticated>
+</draftsman-query>
+
+<!-- If the user object can't be found navigate to the user onboarding screen -->
+<div class="data-element" @refresh="if($store.WorkSpace.get == null){location='/onboarding/01_activate-user'}"></div>
+</body>
 </html>

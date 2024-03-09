@@ -2,11 +2,13 @@
 query FilterRegion {
   Region {
     filter {
-       resultset { 
-        key
+      resultset {
         arn
         name
-        code
+        countries {
+          arn
+          name
+        }
       }
     }
   }

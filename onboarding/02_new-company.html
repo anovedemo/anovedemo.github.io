@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <title>Anove Demo</title>
+    <script>var must_be_signed_in = true;</script>
+    <script src="/js/configuration.js"></script>
+    <script src="/js/configuration-staging.js"></script>
+
+    <link rel="stylesheet" href="/css/draftsman.css" />
+    <script src="/js/framework.js"></script>
+    <script src="/js/cache.js"></script>
+    <script src="https://unpkg.com/@vimesh/ui"></script>
+    <script src="/js/utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/alpinejs" defer></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css"
+          integrity="sha512-SbiR/eusphKoMVVXysTKG/7VseWii+Y3FdHrt0EpKgpToZeemhqHeZeLWLhJutz/2ut2Vw1uQEj2MbRF+TVBUA=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" defer></script>
+    <link rel="stylesheet" href="/css/onboarding.css" />
+</head>
+<body x-data="{regions: null, countries: null, industries: null}" class="text-center" x-import="utils/tables">
+
+<draftsman-mutation command="CreateCompany" x-include="/prepared-statements/commands/CreateCompany.txt" authenticated>
+</draftsman-mutation>
+
+<main class="form-signin">
+    <form x-data="{command: $persist({companySize: 10,industry: 'industry:agricultureandforestry', country: 'region:EMEA:country:NL'}).as(location)}">
+        <img class="mb-4" src="/assets/logo.png" alt="" width="72" height="57">
+        <h1 class="h3 mb-3 fw-normal">Onboard Company</h1>
+        <ui-trace-table></ui-trace-table>
+        
+        <div class="form-floating">
+            <input type="text" class="form-control" id="name" placeholder="My Company Name" x-model="command.name"/>
+            <label for="name">Company Name</label>
+        </div>
+        <div x-effect="command.arn = 'company:' + command.name.toLowerCase().replace(/[^a-zA-Z0-9]/g, '')"></div>
+
+        <div class="form-floating">
+            <textarea class="form-control" id="description" placeholder="What we do" x-model="command.description"></textarea>
+            <label for="description">What we do</label>
+        </div>
+
+        <div class="form-floating">
+            <input type="number" class="form-control" id="companySize" x-model="command.companySize"/>
+            <label for="companySize">Number of employees</label>
+        </div>
+
+        <div class="form-floating">
+            <input type="text" class="form-control" id="revenue" placeholder="1M" x-model="command.revenue"/>
+            <label for="revenue">Revenue</label>
+        </div>
+
+        <hr>
+        <h6>Country of establishment</h6>
+        <div x-data="{selectedRegion: $persist('')}">
+            <select class="form-select" aria-label="region selector"
+                    @change="selectedRegion = $el.value;">
+                <option>Region</option>
+                <template x-for="region in regions" :key="region.arn">
+                    <option x-text="region.name"
+                            :value="region.arn"
+                            :selected="command.country.startsWith(region.arn)"></option>
+                </template>
+            </select>
+            <select class="form-select" aria-label="country selector"
+                    @change="command.country = $el.value">
+                <option>Country</option>
+                <template x-for="country in countries" :key="country.arn">
+                    <option x-text="country.name"
+                            :selected="command.country == country.arn"
+                            :value="country.arn"
+                            x-show="country.arn.startsWith(selectedRegion)"
+                            x-cloak x-transition></option>
+                </template>
+            </select>
+        </div>
+        <hr>
+
+        <div x-data="{selectedIndustries: []}"
+             x-effect="selectedIndustries = industries.filter(x => command.industry.includes(x.arn))">
+        <h6>Industries</h6>
+        <ul class="list-group list-group-flush">
+            <template x-for="industry in selectedIndustries" :key="industry.arn">
+                <li class="list-group-item text-start">
+                    <button type="button"
+                            @click="command.industry = command.industry.replace(industry.arn,'').replace(';;',';');if(command.industry.startsWith(';')){command.industry = command.industry.replace(';','')}"
+                            class="btn-close" aria-label="Close"></button>
+                    <span x-text="industry.name"></span>
+                </li>
+            </template>
+        </ul>
+
+        <br>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#industryModal">
+            Select industry
+        </button>
+        </div>
+
+        <br>
+        <hr>
+
+        <button class="w-100 btn btn-lg btn-primary" type="button"
+                @click="$store.mutation.send('CreateCompany',command);window.scrollTo({ top: 0, behavior: 'smooth' });">Save</button>
+        <p class="mt-5 mb-3 text-muted">&copy; 2024</p>
+
+        <draftsman-notification
+                message="updated"
+                type="Employee"
+                @notification="
+                console.log($event.detail);
+                if($event.detail.identifier == command.arn + ':employee:' + localStorage['username']){Experimental.update_credentials('/')}">
+        </draftsman-notification>
+
+        <div class="modal fade" id="industryModal" tabindex="-1" aria-labelledby="industryModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="industryModalLabel">Select industry</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" x-data="{search: ''}">
+
+                        <form class="d-flex">
+                            <input class="form-control me-2" type="search"
+                                   x-model="search"
+                                   placeholder="Search" aria-label="Search">
+                        </form>
+
+                        <div class="list-group">
+                            <script>
+                                function add_industry(command,arn){
+                                    if (!command.industry.includes(arn) && arn){
+                                        if (command.industry){
+                                            command.industry += ";";
+                                        } else {
+                                            command.industry = "";
+                                        }
+                                        command.industry += arn
+                                    }
+                                }
+                            </script>
+                            <template x-for="industry in industries" :key="industry.arn">
+                                <a href="#" class="list-group-item list-group-item-action"
+                                   x-show="!command.industry.includes(industry.arn) &&
+                                   `${industry.arn} ${industry.name} ${industry.description}`.toLowerCase().includes(search.toLowerCase())"
+                                   x-transition x-cloak
+                                   @click="add_industry(command,industry.arn)"
+                                   aria-current="true" data-bs-dismiss="modal">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1" x-text="industry.name"></h5>
+                                        <small></small>
+                                    </div>
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <p class="mb-1 text-start" x-text="industry.description"></p>
+                                    </div>
+                                </a>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+    <div class="data-element" @refresh="regions = $store.Region.filter.resultset;countries = regions.map(region => region.countries).flat()"></div>
+    <draftsman-query alias="Region"
+                     x-include="/prepared-statements/views/Region/filter.txt" authenticated>
+    </draftsman-query>
+
+    <div class="data-element" @refresh="industries = $store.Industry.filter.resultset;"></div>
+    <draftsman-query alias="Industry"
+                     x-include="/prepared-statements/views/Industry/filter.txt" authenticated>
+    </draftsman-query>
+</main>
+
+
+
+</body>
+</html>

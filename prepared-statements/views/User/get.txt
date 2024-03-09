@@ -7,6 +7,7 @@ query GetUser($key: ID = "") {
         employeeArn
         company {
           name
+          description
         }
         employee {
           businessRole

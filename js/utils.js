@@ -16,6 +16,35 @@ $vui.config.importMap = {
     "*": '/components/${path}${component}.html'
 }
 
+function makeid(length) {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    let counter = 0;
+    while (counter < length) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      counter += 1;
+    }
+    return result;
+}
+
+const Experimental = {
+    sign_out: function(){
+        for(var i in localStorage){
+            localStorage.removeItem(i);
+        }
+        location = `${localStorage["aws-congnito-ui"]}/logout?client_id=${localStorage["aws-congnito-app-id"]}&logout_uri=${window.location.origin}`;
+    },
+    update_credentials: function(target_location){
+        if (target_location){
+            sessionStorage["prevLoc"] = target_location;
+        } else {
+            sessionStorage["prevLoc"] = location;
+        }
+        Draftsman.clear_cache();
+        location = `${localStorage["aws-congnito-ui"]}/logout?client_id=${localStorage["aws-congnito-app-id"]}&logout_uri=${window.location.origin}/auth`;
+    }
+}
 // The next two functions are only used for the generated demo-main-page
 
 function update_toc_highlight(element){
