@@ -1020,6 +1020,7 @@
 			<field name="lastName" type="String"></field>
 			<field name="active" type="Boolean"></field>
 			<field name="email" type="String"></field>
+			<field name="searchIndex" type="String"></field>
 			<snapshot-handler id="svYd9b" sub-domain="Admin" aggregate="User" key-mapping="username" processor="item">
 				<mapping target="username" operand="set" value="username"></mapping>
 				<mapping target="firstName" operand="set" value="firstName"></mapping>
@@ -1030,6 +1031,11 @@
 				<delete condition="#snapshot.isDeleted != '' or snapshot.active == False"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="User" field-name="get" type="get" authorization="user" username-field="key"></query>
+			<custom-handler id="TRGjhv" sub-domain="Admin" aggregate="User">entity = EntityManager.get(type="User", key=snapshot.username)
+index = f"{snapshot.username} {snapshot.firstName} {snapshot.lastName} {snapshot.email}"
+entity.searchIndex = index.lower()
+if snapshot.isDeleted != '':
+    entity.mark_for_deletion = True</custom-handler>
 		</view>
 		<view name="Region" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String" pk="true"></field>
@@ -1170,7 +1176,7 @@
 		</view>
 	</views>
 	<projections>
-		<projection graphql-namespace="Profile" field-name="search" authorization="authenticated" return="Profile" name="SearchProfile" code="|LB|from draftsman.ViewStoreApi import Query|LB||LB||LB|def transform(arguments, username):|LB|    |LB|    print(f&quot;Handle graph request [{arguments}/{username}]&quot;)|LB|    search = arguments[&quot;searchString&quot;]|LB|    |LB|    results = Query('User').get_items(filter_chain_method=&quot;or&quot;)|LB|        .contains(&quot;username&quot;,search)|LB|        .contains(&quot;firstName&quot;,search)|LB|        .contains(&quot;lastName&quot;,search)|LB|        .contains(&quot;email&quot;,search)|LB|        .run()|LB||LB|    return [{|LB|        &quot;username&quot;: result[&quot;username&quot;],|LB|        &quot;firstName&quot;: result[&quot;firstName&quot;],|LB|        &quot;lastName&quot;: result[&quot;lastName&quot;]|LB|    } for result in results]">
+		<projection graphql-namespace="Profile" return-type="result set" field-name="search" authorization="authenticated" return="Profile" name="SearchProfile" code="|LB|from draftsman.ViewStoreApi import Query|LB||LB||LB|def transform(arguments, username):|LB|    |LB|    print(f&quot;Handle graph request [{arguments}/{username}]&quot;)|LB|    search = arguments[&quot;searchString&quot;]|LB|    |LB|    query = Query('User').get_items()|LB|    for word in search.lower().split(&quot; &quot;):|LB|        query = query.contains(&quot;searchIndex&quot;,word)|LB|    results = query.run()|LB||LB|    return [{|LB|        &quot;key&quot;: result[&quot;username&quot;],|LB|        &quot;username&quot;: result[&quot;username&quot;],|LB|        &quot;firstName&quot;: result[&quot;firstName&quot;],|LB|        &quot;lastName&quot;: result[&quot;lastName&quot;]|LB|    } for result in results]">
 			<input name="searchString" type="String" required="true"></input>
 		</projection>
 	</projections>
