@@ -29,11 +29,11 @@
 </draftsman-mutation>
 
 <main class="form-signin">
-    <form x-data="{command: $persist({companySize: 10,industry: 'industry:agricultureandforestry', country: 'region:EMEA:country:NL'}).as(location)}">
+    <form x-data="{command: $persist({companySize: 10,country:'',industry:''}).as(location)}">
         <img class="mb-4" src="/assets/logo.png" alt="" width="72" height="57">
         <h1 class="h3 mb-3 fw-normal">Onboard Company</h1>
         <ui-trace-table></ui-trace-table>
-        
+
         <div class="form-floating">
             <input type="text" class="form-control" id="name" placeholder="My Company Name" x-model="command.name"/>
             <label for="name">Company Name</label>

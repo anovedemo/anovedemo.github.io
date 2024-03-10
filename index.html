@@ -30,11 +30,18 @@
     <div class="row row-cols-1 row-cols-md-4 g-4">
         <template x-for="company in workspace.links" :key="company.employeeArn">
             <div class="col">
+                <div x-init="if(company.company == null){
+                    if (confirm('Could not fetch al data, signing in again could resolve this issue. Continue?')){
+                        Experimental.update_credentials();
+                    }
+                }"></div>
                 <div class="card">
                     <img :src="`https://picsum.photos/seed/${company.arn}/100/50`" class="card-img-top" alt="...">
                     <div class="card-body">
                         <h5 class="card-title" x-text="company.company.name"></h5>
                         <p class="card-text" x-text="company.company.description"></p>
+                        <a :href="'/company?arn=' + company.arn"
+                           class="btn btn-primary stretched-link">Go to</a>
                     </div>
                 </div>
             </div>
@@ -45,8 +52,8 @@
                 <div class="card-body">
                     <h5 class="card-title">Onboard company</h5>
                     <p class="card-text">Use this wizard to onboard a company
-                        <a href="/onboarding/02_new-company" class="btn btn-primary stretched-link">Onboard company</a>
                     </p>
+                    <a href="/onboarding/02_new-company" class="btn btn-primary stretched-link">Onboard company</a>
                 </div>
             </div>
         </div>

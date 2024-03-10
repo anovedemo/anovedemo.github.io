@@ -1,19 +1,34 @@
 # This file is NOT managed by Tracepaper, and can be customized.
-query GetCompany($key: ID = "") {
+query GetCompany($arn: ID = "") {
   Company {
-    get(key: $key) {
-      key
+    get(key: $arn) {
       arn
-      name
-      description
-      companySize
-      revenue
-      industryLink
       businessUnits {
-        name
         description
-      } 
-      countryArn
+        name
+      }
+      companySize
+      country {
+        name
+        region {
+          name
+        }
+      }
+      description
+      employees {
+        arn
+        businessRole
+        username
+        user {
+          firstName
+          lastName
+        }
+      }
+      industry {
+        name
+      }
+      name
+      revenue
     }
   }
 }

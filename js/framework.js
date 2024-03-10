@@ -235,6 +235,7 @@ var subscription_reconnect_backoff = 100;
 async function query(query,variables,anonymous){
     var cache_key = JSON.stringify({query: query,variables: variables});
     if(cache_enabled && query.indexOf("filter(") == -1) {
+        console.log(cache_key);
         var cached_response = cacheJS.get(cache_key);
     } else {
         var cached_response = null;

@@ -43,6 +43,10 @@ const Experimental = {
         }
         Draftsman.clear_cache();
         location = `${localStorage["aws-congnito-ui"]}/logout?client_id=${localStorage["aws-congnito-app-id"]}&logout_uri=${window.location.origin}/auth`;
+    },
+    show_trace_modal: function(){
+        let modal = new bootstrap.Modal(document.getElementById("traceModal"), {});
+        modal.show();
     }
 }
 // The next two functions are only used for the generated demo-main-page
