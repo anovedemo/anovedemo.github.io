@@ -1,0 +1,81 @@
+<template x-component="navigation">
+  <div>
+    <div class="offcanvas-md offcanvas-end bg-body-tertiary" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="sidebarMenuLabel">devConf Management</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#sidebarMenu" aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body d-md-flex flex-column p-0 pt-lg-3 overflow-y-auto">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a @click="navigation = 'dashboard'" class="nav-link d-flex align-items-center gap-2 active" aria-current="page"
+               :href="'#tab:/admin-console/dashboard?year=' + year">
+              <i class="fa-solid fa-chart-line"></i>
+              Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a @click="navigation = 'employees'" class="nav-link d-flex align-items-center gap-2 active" aria-current="page"
+               :href="'#tab:/admin-console/visitors?year=' + year">
+              <i class="fa-solid fa-users-rectangle"></i>
+              Employees
+            </a>
+          </li>
+          <li class="nav-item">
+            <a @click="navigation = 'businessunits'" class="nav-link d-flex align-items-center gap-2 active" aria-current="page"
+               :href="'#tab:/admin-console/registration-manager?year=' + year">
+              <i class="fa-solid fa-people-roof"></i>
+              Business units
+            </a>
+          </li>
+        </ul>
+
+        <hr class="my-3">
+        <ul class="nav flex-column mb-auto">
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center gap-2 active" aria-current="page"
+               target="_blank"
+               href="https://tracepaper.draftsman.io/">
+              <i class="fa-solid fa-compass-drafting"></i>
+              Tracepaper
+              <small><i class="fa-solid fa-arrow-up-right-from-square"></i></small>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center gap-2 active" aria-current="page"
+               target="_blank"
+               href="https://github.com/anovedemo">
+              <i class="fa-brands fa-square-github"></i>
+              GIT
+              <small><i class="fa-solid fa-arrow-up-right-from-square"></i></small>
+            </a>
+          </li>
+        </ul>
+        <hr class="my-3">
+
+        <ul class="nav flex-column mb-auto">
+          <li class="nav-item" x-data="{env: ''}" x-effect="env = localStorage['staging-environment'] == 'false' ? 'production' : 'staging'"
+              x-init="if(!('staging-environment' in localStorage)){localStorage['staging-environment'] = 'false' }">
+            <div x-init="document.getElementById('env').innerText = env" x-effect="document.getElementById('env').innerText = env"></div>
+            <a class="nav-link d-flex align-items-center gap-2" href="/configuration">
+              <i class="fa-solid fa-gear"></i>
+              <span x-text="env"></span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center gap-2" href="#refresh" @click="Experimental.force_reload_data()">
+              <i class="fa-solid fa-arrows-rotate"></i>
+              Refresh
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center gap-2" href="#signout" @click="Draftsman.sign_out()">
+              <i class="fa-solid fa-door-closed"></i>
+              Sign out
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</template>

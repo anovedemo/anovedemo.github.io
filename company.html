@@ -14,7 +14,7 @@
         <script src="https://unpkg.com/@vimesh/ui"></script>
         <script src="/js/utils.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
-        <script src="https://unpkg.com/alpinejs" defer></script>
+        <script src="https://unpkg.com/alpinejs@3.13.7" defer></script>
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css"
               integrity="sha512-SbiR/eusphKoMVVXysTKG/7VseWii+Y3FdHrt0EpKgpToZeemhqHeZeLWLhJutz/2ut2Vw1uQEj2MbRF+TVBUA=="
@@ -24,266 +24,29 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         <script src="/js/company-utils.js"></script>
     </head>
-<body x-data="{company: null, navigation: $persist('dashboard').as('company-navigation'), selected_user: null,email:''}" x-import="utils/tables;utils/trace-modal">
+<body x-data="{company: null, navigation: $persist('dashboard').as('company-navigation')}"
+      x-import="utils/trace-modal;utils/trace-alert;company/header;">
 
-    <header class="navbar sticky-top bg-dark flex-md-nowrap p-0 shadow" data-bs-theme="dark">
-        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-white" href="/">Anove: <span x-text="company.name"></span></a>
-
-        <ul class="navbar-nav flex-row d-md-none">
-            <li class="nav-item text-nowrap">
-                <button class="nav-link px-3 text-white"
-                        type="button" data-bs-toggle="offcanvas"
-                        data-bs-target="#sidebarMenu" aria-controls="sidebarMenu"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <i class="fa-solid fa-list"></i>
-                </button>
-            </li>
-        </ul>
-
-    </header>
+    <ui-header></ui-header>
+    <ui-trace-modal></ui-trace-modal>
 
     <div class="container-fluid">
         <div class="row">
-            <div class="sidebar border border-right col-md-3 col-lg-2 p-0 bg-body-tertiary">
-                <div class="offcanvas-md offcanvas-end bg-body-tertiary" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
-                    <div class="offcanvas-header">
-                        <h5 class="offcanvas-title" id="sidebarMenuLabel">devConf Management</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#sidebarMenu" aria-label="Close"></button>
-                    </div>
-                    <div class="offcanvas-body d-md-flex flex-column p-0 pt-lg-3 overflow-y-auto">
-                        <ul class="nav flex-column">
-                            <li class="nav-item">
-                                <a @click="navigation = 'dashboard'" class="nav-link d-flex align-items-center gap-2 active" aria-current="page"
-                                   :href="'#tab:/admin-console/dashboard?year=' + year">
-                                    <i class="fa-solid fa-chart-line"></i>
-                                    Dashboard
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a @click="navigation = 'employees'" class="nav-link d-flex align-items-center gap-2 active" aria-current="page"
-                                   :href="'#tab:/admin-console/visitors?year=' + year">
-                                    <i class="fa-solid fa-users-rectangle"></i>
-                                    Employees
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a @click="navigation = 'businessunits'" class="nav-link d-flex align-items-center gap-2 active" aria-current="page"
-                                   :href="'#tab:/admin-console/registration-manager?year=' + year">
-                                    <i class="fa-solid fa-people-roof"></i>
-                                    Business units
-                                </a>
-                            </li>
-                        </ul>
-
-                        <hr class="my-3">
-                        <ul class="nav flex-column mb-auto">
-                            <li class="nav-item">
-                                <a class="nav-link d-flex align-items-center gap-2 active" aria-current="page"
-                                   target="_blank"
-                                   href="https://tracepaper.draftsman.io/">
-                                    <i class="fa-solid fa-compass-drafting"></i>
-                                    Tracepaper
-                                    <small><i class="fa-solid fa-arrow-up-right-from-square"></i></small>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link d-flex align-items-center gap-2 active" aria-current="page"
-                                   target="_blank"
-                                   href="https://github.com/anovedemo">
-                                    <i class="fa-brands fa-square-github"></i>
-                                    GIT
-                                    <small><i class="fa-solid fa-arrow-up-right-from-square"></i></small>
-                                </a>
-                            </li>
-                        </ul>
-                        <hr class="my-3">
-
-                        <ul class="nav flex-column mb-auto">
-                            <li class="nav-item" x-data="{env: ''}" x-effect="env = localStorage['staging-environment'] == 'false' ? 'production' : 'staging'"
-                                x-init="if(!('staging-environment' in localStorage)){localStorage['staging-environment'] = 'false' }">
-                                <div x-init="document.getElementById('env').innerText = env" x-effect="document.getElementById('env').innerText = env"></div>
-                                <a class="nav-link d-flex align-items-center gap-2" href="/configuration">
-                                    <i class="fa-solid fa-gear"></i>
-                                    <span x-text="env"></span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link d-flex align-items-center gap-2" href="#refresh" @click="Experimental.force_reload_data()">
-                                    <i class="fa-solid fa-arrows-rotate"></i>
-                                    Refresh
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link d-flex align-items-center gap-2" href="#signout" @click="Draftsman.sign_out()">
-                                    <i class="fa-solid fa-door-closed"></i>
-                                    Sign out
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+            <div class="sidebar border border-right col-md-3 col-lg-2 p-0 bg-body-tertiary" x-import="company/navigation">
+                <ui-navigation></ui-navigation>
             </div>
 
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <template x-if="navigation == 'dashboard'" key="dashboard">
-                    <div>
-                        <h1>Dashboard for: <span x-text="company.name"></span></h1>
-                        <hr>
-                        <table class="table">
-                            <tr>
-                                <th scope="row">Country of establishment</th>
-                                <td>
-                                    <span x-text="company.country.name"></span>
-                                    (<span x-text="company.country.region.name"></span>)
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Industry</th>
-                                <td x-text="company.industry.map(x => x.name).join(', ')"></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">What we do</th>
-                                <td x-text="company.description"></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Company size</th>
-                                <td x-text="company.companySize"></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Revenue</th>
-                                <td x-text="company.revenue"></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Businessunits</th>
-                                <td x-text="company.businessunits.map(x => x.name).join(', ')"></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Number of tool users</th>
-                                <td x-text="company.employees.length"></td>
-                            </tr>
-                        </table>
-                    </div>
-                </template>
-                <template x-if="navigation == 'employees'" key="employees">
-                    <div>
-                        <h1>Employees with access</h1>
-                        <hr>
-                        <table class="table">
-                            <thead>
-                            <tr>
-                                <th>Username</th>
-                                <th>First Name</th>
-                                <th>Last Name</th>
-                                <th>Business role</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <template x-for="employee in company.employees" :key="employee.arn">
-                                <tr>
-                                    <th scope="row" x-text="employee.username"></th>
-                                    <td x-text="employee.user.firstName"></td>
-                                    <td x-text="employee.user.lastName"></td>
-                                    <td>
-                                        <select @change.debounce="
-                                            $store.mutation.send('ChangeBusinessRole',{arn: employee.arn, businessRole: $el.value});
-                                            Experimental.show_trace_modal();" class="form-select" aria-label="Default select example">
-                                            <template x-for="role in ['guest','administrator', 'blocked']" :key="employee.username + role">
-                                                <option :selected="employee.businessRole == role" :value="role" x-text="role"></option>
-                                            </template>
-                                        </select>
-                                    </td>
-                                </tr>
-                            </template>
-                            </tbody>
-                        </table>
-
-                        <!-- Button trigger modal -->
-                        <button @click="Draftsman.empty_track_and_trace_log();selected_user=null;email=''" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#inviteModal">
-                            Invite user
-                        </button>
-
-                        <!-- Modal -->
-                        <div class="modal fade" id="inviteModal" tabindex="-1" aria-labelledby="inviteModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="inviteModalLabel">Invite user</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body" x-data="{command: {arn: '',businessRole:'guest'}}">
-                                        <ui-trace-table></ui-trace-table>
-                                        <form x-data="{users: []}">
-
-                                            <div x-show="selected_user == null" x-cloak x-transition>
-                                                <input class="form-control me-2" type="search"
-                                                       @keyup.enter="users = await search_users($el.value)"
-                                                       placeholder="Search user" aria-label="Search">
-                                                <br>
-                                                <div class="list-group">
-                                                    <a @click="selected_user = 'send-invite-email'" href="#" class="list-group-item list-group-item-action">
-                                                        Invite user by email
-                                                    </a>
-                                                    <template x-for="user in users" :key="user.username">
-                                                        <a @click="selected_user = user" href="#" class="list-group-item list-group-item-action">
-                                                            <span x-text="user.firstName"></span>
-                                                            <span x-text="user.lastName"></span>
-                                                        </a>
-                                                    </template>
-                                                </div>
-                                            </div>
-
-                                            <div x-show="selected_user == 'send-invite-email'" x-cloak x-transition>
-                                                <div class="form-floating">
-                                                    <input type="email" class="form-control"
-                                                           @change.debounce="
-                                                           let item = await prepare_employee_arn(company,$el.value);
-                                                           if(typeof item === 'string'){
-                                                                command.arn = item;
-                                                           }else{
-                                                                selected_user = item;
-                                                           }"
-                                                           id="email" placeholder="j.doe@example.com" x-model="email"/>
-                                                    <label for="email">Email</label>
-                                                </div>
-                                                <select @change.debounce="command.businessRole = $el.value" class="form-select" aria-label="Default select example">
-                                                    <template x-for="role in ['guest','administrator']" :key="role">
-                                                        <option :selected="command.businessRole == role" :value="role" x-text="role"></option>
-                                                    </template>
-                                                </select>
-
-                                                <br>
-                                                <button class="w-100 btn btn-sm btn-primary" type="button"
-                                                        :disabled="command.arn.endsWith(':undefined')"
-                                                        @click="$store.mutation.send('ChangeBusinessRole',command)">Send</button>
-                                            </div>
-
-                                            <div x-show="selected_user != null && selected_user != 'send-invite-email'" x-cloak x-transition>
-                                                <h6>
-                                                    Assign business role to <span x-text="selected_user.firstName"></span>
-                                                    <span x-text="selected_user.lastName"></span>
-                                                </h6>
-                                                <div x-effect="command.arn = company.arn + ':employee:' + selected_user.username"></div>
-                                                <select @change.debounce="command.businessRole = $el.value" class="form-select" aria-label="Default select example">
-                                                    <template x-for="role in ['guest','administrator']" :key="role">
-                                                        <option :selected="command.businessRole == role" :value="role" x-text="role"></option>
-                                                    </template>
-                                                </select>
-
-                                                <br>
-                                                <button class="w-100 btn btn-sm btn-primary" type="button"
-                                                        @click="$store.mutation.send('ChangeBusinessRole',command)">Send invite</button>
-                                            </div>
-
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </template>
-                <template x-if="navigation == 'businessunits'" key="businessunits">
-                    <pre x-text="JSON.stringify(company,null,2)"></pre>
-                </template>
+                <ui-trace-alert></ui-trace-alert>
+                <div x-import="company/dashboard" x-show="navigation == 'dashboard'" x-transition x-cloak>
+                    <ui-dashboard></ui-dashboard>
+                </div>
+                <div x-import="company/employees" x-show="navigation == 'employees'" x-transition x-cloak>
+                    <ui-employees></ui-employees>
+                </div>
+                <div x-import="company/businessunit" x-show="navigation == 'businessunits'" x-transition x-cloak>
+                    <ui-businessunit></ui-businessunit>
+                </div>
             </main>
         </div>
     </div>
@@ -300,9 +63,5 @@
             @notification="Draftsman.force_reload_data">
     </draftsman-notification>
 
-    <draftsman-mutation command="ChangeBusinessRole" x-include="/prepared-statements/commands/UpdateBusinessRoleCompanyEmployee.txt" authenticated>
-    </draftsman-mutation>
-
-    <ui-trace-modal></ui-trace-modal>
 </body>
 </html>

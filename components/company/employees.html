@@ -1,0 +1,121 @@
+<template x-component="employees">
+  <div x-import="utils/tables;" x-data="{selected_user: null,email:''}">
+    <draftsman-mutation command="ChangeBusinessRole"
+                        x-include="/prepared-statements/commands/UpdateBusinessRoleCompanyEmployee.txt"
+                        authenticated>
+    </draftsman-mutation>
+    <h1>Employees with access</h1>
+    <hr>
+    <table class="table">
+      <thead>
+      <tr>
+        <th>Username</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Business role</th>
+      </tr>
+      </thead>
+      <tbody>
+      <template x-for="employee in company.employees" :key="employee.arn">
+        <tr>
+          <th scope="row" x-text="employee.username"></th>
+          <td x-text="employee.user.firstName"></td>
+          <td x-text="employee.user.lastName"></td>
+          <td>
+            <select @change.debounce="
+                                            $store.mutation.send('ChangeBusinessRole',{arn: employee.arn, businessRole: $el.value});
+                                            Experimental.show_trace_modal();" class="form-select" aria-label="Default select example">
+              <template x-for="role in ['guest','administrator', 'blocked']" :key="employee.username + role">
+                <option :selected="employee.businessRole == role" :value="role" x-text="role"></option>
+              </template>
+            </select>
+          </td>
+        </tr>
+      </template>
+      </tbody>
+    </table>
+
+    <!-- Button trigger modal -->
+    <button @click="Draftsman.empty_track_and_trace_log();selected_user=null;email=''" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#inviteModal">
+      Invite user
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="inviteModal" tabindex="-1" aria-labelledby="inviteModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="inviteModalLabel">Invite user</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" x-data="{command: {arn: '',businessRole:'guest'}}">
+            <ui-trace-table></ui-trace-table>
+            <form x-data="{users: []}">
+
+              <div x-show="selected_user == null" x-cloak x-transition>
+                <input class="form-control me-2" type="search"
+                       @keyup.enter="users = await search_users($el.value)"
+                       placeholder="Search user" aria-label="Search">
+                <br>
+                <div class="list-group">
+                  <a @click="selected_user = 'send-invite-email'" href="#" class="list-group-item list-group-item-action">
+                    Invite user by email
+                  </a>
+                  <template x-for="user in users" :key="user.username">
+                    <a @click="selected_user = user" href="#" class="list-group-item list-group-item-action">
+                      <span x-text="user.firstName"></span>
+                      <span x-text="user.lastName"></span>
+                    </a>
+                  </template>
+                </div>
+              </div>
+
+              <div x-show="selected_user == 'send-invite-email'" x-cloak x-transition>
+                <div class="form-floating">
+                  <input type="email" class="form-control"
+                         @change.debounce="
+                                                           let item = await prepare_employee_arn(company,$el.value);
+                                                           if(typeof item === 'string'){
+                                                                command.arn = item;
+                                                           }else{
+                                                                selected_user = item;
+                                                           }"
+                         id="email" placeholder="j.doe@example.com" x-model="email"/>
+                  <label for="email">Email</label>
+                </div>
+                <select @change.debounce="command.businessRole = $el.value" class="form-select" aria-label="Default select example">
+                  <template x-for="role in ['guest','administrator']" :key="role">
+                    <option :selected="command.businessRole == role" :value="role" x-text="role"></option>
+                  </template>
+                </select>
+
+                <br>
+                <button class="w-100 btn btn-sm btn-primary" type="button"
+                        :disabled="command.arn.endsWith(':undefined')"
+                        @click="$store.mutation.send('ChangeBusinessRole',command)">Send</button>
+              </div>
+
+              <div x-show="selected_user != null && selected_user != 'send-invite-email'" x-cloak x-transition>
+                <h6>
+                  Assign business role to <span x-text="selected_user.firstName"></span>
+                  <span x-text="selected_user.lastName"></span>
+                </h6>
+                <div x-effect="command.arn = company.arn + ':employee:' + selected_user.username"></div>
+                <select @change.debounce="command.businessRole = $el.value" class="form-select" aria-label="Default select example">
+                  <template x-for="role in ['guest','administrator']" :key="role">
+                    <option :selected="command.businessRole == role" :value="role" x-text="role"></option>
+                  </template>
+                </select>
+
+                <br>
+                <button class="w-100 btn btn-sm btn-primary" type="button"
+                        @click="$store.mutation.send('ChangeBusinessRole',command)">Send invite</button>
+              </div>
+
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

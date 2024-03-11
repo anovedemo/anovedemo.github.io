@@ -1,0 +1,78 @@
+<template x-component="businessunit">
+  <div x-import="utils/tables;">
+    <draftsman-mutation command="UpdateCompanyBusinessUnit"
+                        x-include="/prepared-statements/commands/UpdateCompanyBusinessUnit.txt"
+                        authenticated>
+    </draftsman-mutation>
+    <draftsman-mutation command="RemoveCompanyBusinessUnit"
+                        x-include="/prepared-statements/commands/RemoveCompanyBusinessUnit.txt"
+                        authenticated>
+    </draftsman-mutation>
+    <h1>Business units</h1>
+    <hr>
+    <table class="table">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      <template x-for="businessunit in company.businessUnits" :key="businessunit.name">
+        <tr :id="'row' + businessunit.name">
+          <th scope="row" x-text="businessunit.name"></th>
+          <td x-text="businessunit.description"
+              @focusout="if($el.innerText != businessunit.description){$store.mutation.send('UpdateCompanyBusinessUnit',{
+            arn: company.arn,
+            name: businessunit.name,
+            description: $el.innerText
+          });}" contenteditable spellcheck="false"></td>
+          <td>
+            <a href="#" @click="
+              $store.mutation.send('RemoveCompanyBusinessUnit',{arn:company.arn,name:businessunit.name});
+              document.getElementById('row' + businessunit.name).classList.add('table-danger')">
+              <i class="fa-solid fa-xmark"></i>
+            </a>
+          </td>
+        </tr>
+      </template>
+      </tbody>
+    </table>
+
+    <!-- Button trigger modal -->
+    <button @click="Draftsman.empty_track_and_trace_log"
+            type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#unitModal">
+      Add business unit
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="unitModal" tabindex="-1" aria-labelledby="unitModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="unitModalLabel">Add business unit</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" x-data="{command: {}}">
+            <form x-effect="command.arn = company.arn">
+
+              <div class="form-floating">
+                <input type="text" id="unitname" class="form-control" x-model="command.name"/>
+                <label for="unitname">Unit name</label>
+              </div>
+
+              <div class="form-floating">
+                <textarea type="text" id="unitdescription" class="form-control" x-model="command.description"></textarea>
+                <label for="unitdescription">Description</label>
+              </div>
+
+              <br>
+              <button class="w-100 btn btn-sm btn-primary" type="button" data-bs-dismiss="modal"
+                      @click="$store.mutation.send('UpdateCompanyBusinessUnit',command)">Save</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
