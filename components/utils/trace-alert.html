@@ -2,7 +2,8 @@
   <div>
     <br>
     <template x-for="message in $store.trace">
-      <div class="alert alert-danger alert-dismissible fade show" role="alert" x-show="message.status == 'error'" x-transition x-cloak>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert"
+           x-show="['error','failed'].includes(message.status)" x-transition x-cloak>
         <strong><i class="fa-solid fa-triangle-exclamation"></i></strong> <span x-text="message.message"></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" @click="Draftsman.force_reload_data()"></button>
       </div>
