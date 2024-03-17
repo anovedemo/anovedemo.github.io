@@ -1,0 +1,20 @@
+<template x-component="requirement">
+  <div>
+    <h1 x-text="selected_requirement.name"></h1>
+    <hr>
+    <table class="table">
+      <tr>
+        <th scope="row">Mandatory</th>
+        <td x-text="selected_requirement.mandatory"></td>
+      </tr>
+      <tr>
+        <th scope="row">Summary</th>
+        <td x-html="selected_requirement.summary"></td>
+      </tr>
+      <tr>
+        <th scope="row">Description</th>
+        <td x-html="selected_requirement.description"></td>
+      </tr>
+    </table>
+  </div>
+</template>

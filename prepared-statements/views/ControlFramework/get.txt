@@ -1,7 +1,7 @@
 # This file is NOT managed by Tracepaper, and can be customized.
-query GetControlFramework($key: ID = "") {
+query GetControlFramework($arn: ID = "") {
   ControlFramework {
-    get(key: $key) {
+    get(key: $arn) {
       key
       arn
       description
@@ -11,6 +11,13 @@ query GetControlFramework($key: ID = "") {
       unit
       acronym
       active
+      requirements {
+        description
+        key
+        mandatory
+        name
+        summary
+      }
     }
   }
 }

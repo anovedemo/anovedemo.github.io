@@ -1,0 +1,32 @@
+<template x-component="about">
+  <div>
+    <h1 x-text="framework.name"></h1>
+    <hr>
+    <table class="table">
+      <tr>
+        <th scope="row">Acronym</th>
+        <td x-text="framework.acronym"></td>
+      </tr>
+      <tr>
+        <th scope="row">Category</th>
+        <td x-text="framework.category"></td>
+      </tr>
+      <tr>
+        <th scope="row">Edition</th>
+        <td x-text="framework.edition"></td>
+      </tr>
+      <tr>
+        <th scope="row">Unit</th>
+        <td x-text="framework.unit"></td>
+      </tr>
+      <tr>
+        <th scope="row">Active</th>
+        <td x-text="framework.active"></td>
+      </tr>
+      <tr>
+        <th scope="row">Description</th>
+        <td x-html="framework.description"></td>
+      </tr>
+    </table>
+  </div>
+</template>

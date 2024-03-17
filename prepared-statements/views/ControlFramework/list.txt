@@ -1,0 +1,11 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query FilterControlFramework {
+  ControlFramework {
+    filter {
+       resultset {
+        arn
+        name
+      }
+    }
+  }
+}

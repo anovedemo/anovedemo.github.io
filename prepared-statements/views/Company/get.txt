@@ -1,4 +1,3 @@
-# This file is NOT managed by Tracepaper, and can be customized.
 query GetCompany($arn: ID = "") {
   Company {
     get(key: $arn) {
@@ -29,6 +28,13 @@ query GetCompany($arn: ID = "") {
       }
       name
       revenue
+      controlframework {
+        name
+        edition
+        category
+        arn
+        active
+      }
     }
   }
 }

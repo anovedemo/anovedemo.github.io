@@ -1,0 +1,76 @@
+<template x-component="frameworks">
+  <div x-data="{command: {}, frameworks: [], selected: ''}">
+
+    <draftsman-mutation command="LinkControlFramework"
+                        x-include="/prepared-statements/commands/LinkControlFrameworkCompany.txt"
+                        authenticated>
+    </draftsman-mutation>
+
+    <h1>Selected control frameworks</h1>
+    <hr>
+    <table class="table">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Edition</th>
+        <th>Category</th>
+        <th>Active</th>
+      </tr>
+      </thead>
+      <tbody>
+      <template x-for="framework in company.controlframework">
+        <tr>
+          <td>
+            <span x-text="framework.name"></span>
+            <span class="badge bg-primary rounded-pill float-end"
+                  @click.stop="window.open('/control-framework?arn=' + framework.arn,'_blank')">read more</span>
+          </td>
+          <td x-text="framework.edition"></td>
+          <td x-text="framework.category"></td>
+          <td x-text="framework.active"></td>
+        </tr>
+      </template>
+      </tbody>
+    </table>
+
+    <!-- Button trigger modal -->
+    <div id="framework-list" x-include="/prepared-statements/views/ControlFramework/list.txt" style="display:none;"></div>
+
+    <button @click="command = {arn: company.arn, controlFrameworkArn: ''};frameworks = await get_frameworks($store.Company.get.controlframework);"
+            type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#frameworkModal">
+      Select control framework
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="frameworkModal" tabindex="-1" aria-labelledby="frameworkModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="frameworkModalLabel">Select control framework</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+
+            <div class="list-group" x-show="command.controlFrameworkArn == ''" x-cloak x-transition>
+              <template x-for="framework in frameworks">
+                <a href="#"
+                   @click="command.controlFrameworkArn = framework.arn;selected = framework.name;"
+                   class="list-group-item list-group-item-action">
+                  <span x-text="framework.name"></span>
+                  <span class="badge bg-primary rounded-pill float-end"
+                        @click.stop="window.open('/control-framework?arn=' + framework.arn,'_blank')">read more</span>
+                </a>
+              </template>
+            </div>
+
+            <form x-show="command.controlFrameworkArn != ''" x-cloak x-transition>
+              <p x-text="selected"></p>
+              <button class="w-100 btn btn-sm btn-primary" type="button" data-bs-dismiss="modal"
+                      @click="$store.mutation.send('LinkControlFramework',command)">Save</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
