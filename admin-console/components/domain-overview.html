@@ -55,6 +55,12 @@
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UnlinkControlFrameworkCompany'"
+                                x-show="'unlinkcontrolframeworkcompany'.includes(search.toLowerCase())">
+                            UnlinkControlFrameworkCompany
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
                                 @click="Draftsman.empty_track_and_trace_log();component = 'AddIndustry'"
                                 x-show="'addindustry'.includes(search.toLowerCase())">
                             AddIndustry
@@ -143,6 +149,14 @@
                     <div x-import="commands/RemoveCompanyBusinessUnit">
                         <h6>RemoveCompanyBusinessUnit</h6>
                         <ui-RemoveCompanyBusinessUnit></ui-RemoveCompanyBusinessUnit>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'UnlinkControlFrameworkCompany'" x-cloak x-transition>
+                    <div x-import="commands/UnlinkControlFrameworkCompany">
+                        <h6>UnlinkControlFrameworkCompany</h6>
+                        <ui-UnlinkControlFrameworkCompany></ui-UnlinkControlFrameworkCompany>
                     </div>
                 </div>
 
