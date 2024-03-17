@@ -6,6 +6,10 @@
                         authenticated>
     </draftsman-mutation>
 
+    <draftsman-mutation command="UnlinkControlFramework"
+                        x-include="/prepared-statements/commands/UnlinkControlFrameworkCompany.txt" authenticated>
+    </draftsman-mutation>
+
     <h1>Selected control frameworks</h1>
     <hr>
     <table class="table" x-show="company.controlframework" x-cloak x-transition>
@@ -18,8 +22,8 @@
       </tr>
       </thead>
       <tbody>
-      <template x-for="framework in company.controlframework">
-        <tr>
+      <template x-for="framework in company.controlframework" :key="framework.arn">
+        <tr :id="'row' + framework.arn">
           <td>
             <span x-text="framework.name"></span>
             <span class="badge bg-primary rounded-pill float-end"
@@ -30,8 +34,8 @@
           <td x-text="framework.active"></td>
           <td>
             <a href="#" @click="
-              $store.mutation.send('RemoveCompanyBusinessUnit',{arn:company.arn,name:businessunit.name});
-              document.getElementById('row' + businessunit.name).classList.add('table-danger')">
+              $store.mutation.send('UnlinkControlFramework',{arn:company.arn,controlFrameworkArn:framework.arn});
+              document.getElementById('row' + framework.arn).classList.add('table-danger')">
               <i class="fa-solid fa-xmark"></i>
             </a>
           </td>
