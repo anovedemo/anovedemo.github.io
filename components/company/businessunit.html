@@ -1,5 +1,9 @@
 <template x-component="businessunit">
   <div>
+    <draftsman-mutation command="AddCompanyBusinessUnit"
+                        x-include="/prepared-statements/commands/AddCompanyBusinessUnit.txt"
+                        authenticated>
+    </draftsman-mutation>
     <draftsman-mutation command="UpdateCompanyBusinessUnit"
                         x-include="/prepared-statements/commands/UpdateCompanyBusinessUnit.txt"
                         authenticated>
@@ -68,7 +72,7 @@
 
               <br>
               <button class="w-100 btn btn-sm btn-primary" type="button" data-bs-dismiss="modal"
-                      @click="$store.mutation.send('UpdateCompanyBusinessUnit',command)">Save</button>
+                      @click="$store.mutation.send('AddCompanyBusinessUnit',command)">Save</button>
             </form>
           </div>
         </div>
