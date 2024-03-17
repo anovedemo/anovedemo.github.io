@@ -1,0 +1,26 @@
+<!-- This file is managed by Tracepaper -->
+<template x-component="UnlinkControlFrameworkCompany">
+    <div x-import="basic-form;tables">
+
+        <!-- The command object -->
+        <draftsman-mutation command="UnlinkControlFrameworkCompany" x-include="/prepared-statements/commands/UnlinkControlFrameworkCompany.txt" authenticated>
+        </draftsman-mutation>
+
+        <!-- The form definition -->
+        <div  style="display:none;" id="UnlinkControlFrameworkCompany"
+              x-include="/form-definitions/UnlinkControlFrameworkCompany.json"></div>
+
+        <!-- The trace table -->
+        <ui-trace-table></ui-trace-table>
+
+        <!-- The form -->
+        <ui-basic-form alias="UnlinkControlFrameworkCompany"></ui-basic-form>
+
+        <draftsman-trace command="UnlinkControlFrameworkCompany"
+              status="success"
+              @trace="
+                setTimeout(Draftsman.empty_track_and_trace_log,5000);
+                $dispatch('setdata', { command: 'UnlinkControlFrameworkCompany', data: {} });">
+        </draftsman-trace>
+    </div>
+</template>

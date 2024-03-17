@@ -59,6 +59,10 @@
 			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
 			<field name="name" type="String"></field>
 		</event>
+		<event graphql-namespace="Company" graphql-name="unlinkControlFramework" name="UnlinkControlFrameworkCompanyRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
+			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
+			<field name="controlFrameworkArn" type="String" pattern="{{ControlFrameworkArn}}"></field>
+		</event>
 		<event graphql-namespace="Industry" graphql-name="add" name="AddIndustryRequested" authorization="role" type="ActorEvent" role="administrator">
 			<field name="arn" type="String" pattern="{{IndustryArn}}"></field>
 			<field name="name" type="String"></field>
@@ -168,6 +172,10 @@
 				<field name="name" type="String"></field>
 				<field name="description" type="String"></field>
 			</nested-object>
+		</event>
+		<event name="UnlinkedControlFrameworkFromCompany" source="Customer.Company" type="DomainEvent">
+			<field name="arn" type="String"></field>
+			<field name="controlFrameworkArn" type="String"></field>
 		</event>
 		<event name="BusinessUnitAdded" source="Customer.Company" type="DomainEvent">
 			<field name="arn" type="String"></field>
@@ -732,6 +740,35 @@
 				<field name="countryArn" type="String"></field>
 				<field name="deletedEmployeeArns" type="StringList"></field>
 				<field name="controlFrameworkLinks" type="StringList"></field>
+				<command name="UnlinkControlFramework">
+					<trigger source="UnlinkControlFrameworkCompanyRequested" key-field="arn">
+						<mapping target="arn" value="arn"></mapping>
+						<mapping target="controlFrameworkArn" value="controlFrameworkArn"></mapping>
+					</trigger>
+					<processor type="emit-event" id="RKifTj" ref="UnlinkedControlFrameworkFromCompany">
+						<mapping target="arn" value="#flow.arn"></mapping>
+						<mapping target="controlFrameworkArn" value="#flow.controlFrameworkArn"></mapping>
+					</processor>
+					<test-case name="UnlinkControlFramework" trigger-event="UnlinkControlFrameworkCompanyRequested">
+						<input name="arn" value="company:draftsman" type="String"></input>
+						<input name="controlFrameworkArn" value="first" type="String"></input>
+						<expected domain-event="UnlinkedControlFrameworkFromCompany">
+							<field value="company:draftsman" name="arn" type="String"></field>
+							<field value="first" name="controlFrameworkArn" type="String"></field>
+						</expected>
+						<state>{
+  "controlFrameworkLinks": [
+        "first",
+         "second"
+   ]
+}</state>
+						<expected-state pk="company:draftsman">{
+  "controlFrameworkLinks": [
+         "second"
+   ]
+}</expected-state>
+					</test-case>
+				</command>
 				<command name="LinkControlFramework">
 					<trigger source="LinkControlFrameworkCompanyRequested" key-field="arn">
 						<mapping target="arn" value="arn"></mapping>
@@ -1063,6 +1100,7 @@
 						<mapping target="description" operand="set" value="description"></mapping>
 					</nested-mapping>
 				</event-handler>
+				<event-handler on="UnlinkedControlFrameworkFromCompany" code="self.controlFrameworkLinks.remove(event.controlFrameworkArn)"></event-handler>
 				<event-handler on="BusinessUnitAdded">
 					<nested-mapping source="businessUnits" target="businessUnits" business-key="name">
 						<mapping target="name" operand="set" value="name"></mapping>
