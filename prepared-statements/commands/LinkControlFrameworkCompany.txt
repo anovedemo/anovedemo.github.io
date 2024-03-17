@@ -1,0 +1,8 @@
+# This file is managed by Tracepaper
+mutation LinkControlFramework($arn: String = "", $controlFrameworkArn: String = "") {
+  Company{
+    linkControlFramework(input: {arn: $arn,controlFrameworkArn: $controlFrameworkArn}) {
+       correlationId
+    }
+  }
+}

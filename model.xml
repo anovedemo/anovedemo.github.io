@@ -51,6 +51,10 @@
 			<field name="identifier" type="String"></field>
 			<field name="value" type="String"></field>
 		</event>
+		<event graphql-namespace="Company" graphql-name="linkControlFramework" name="LinkControlFrameworkCompanyRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
+			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
+			<field name="controlFrameworkArn" type="String" pattern="{{ControlFrameworkArn}}"></field>
+		</event>
 		<event graphql-namespace="Company.BusinessUnit" graphql-name="remove" name="RemoveCompanyBusinessUnitRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
 			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
 			<field name="name" type="String"></field>
@@ -69,6 +73,11 @@
 			<field name="industry" type="String" pattern="{{IndustryLink}}"></field>
 			<field name="user" type="String" auto-fill="username"></field>
 			<field name="country" type="String" pattern="{{CountryArn}}"></field>
+		</event>
+		<event graphql-namespace="Company.BusinessUnit" graphql-name="add" name="AddCompanyBusinessUnitRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
+			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
+			<field name="name" type="String"></field>
+			<field name="description" type="String"></field>
 		</event>
 		<event graphql-namespace="ControlFramework" graphql-name="add" name="AddControlFrameworkRequested" authorization="role" type="ActorEvent" role="administrator">
 			<field name="arn" type="String" pattern="{{ControlFrameworkArn}}"></field>
@@ -141,6 +150,10 @@
 			<field name="businessRole" type="String"></field>
 			<field name="username" type="String"></field>
 		</event>
+		<event name="LinkedControlFrameworkToCompany" source="Customer.Company" type="DomainEvent">
+			<field name="arn" type="String"></field>
+			<field name="controlFrameworkArn" type="String"></field>
+		</event>
 		<event name="BusinessRoleUpdated" source="Customer.Company" type="DomainEvent">
 			<field name="employeeArn" type="String"></field>
 			<field name="businessRole" type="String"></field>
@@ -150,6 +163,13 @@
 			<field name="name" type="String"></field>
 		</event>
 		<event name="BusinessUnitUpdated" source="Customer.Company" type="DomainEvent">
+			<field name="arn" type="String"></field>
+			<nested-object name="businessUnits" business-key="newField">
+				<field name="name" type="String"></field>
+				<field name="description" type="String"></field>
+			</nested-object>
+		</event>
+		<event name="BusinessUnitAdded" source="Customer.Company" type="DomainEvent">
 			<field name="arn" type="String"></field>
 			<nested-object name="businessUnits" business-key="newField">
 				<field name="name" type="String"></field>
@@ -711,6 +731,36 @@
 				<field name="industryLink" type="StringList"></field>
 				<field name="countryArn" type="String"></field>
 				<field name="deletedEmployeeArns" type="StringList"></field>
+				<field name="controlFrameworkLinks" type="StringList"></field>
+				<command name="LinkControlFramework">
+					<trigger source="LinkControlFrameworkCompanyRequested" key-field="arn">
+						<mapping target="arn" value="arn"></mapping>
+						<mapping target="controlFrameworkArn" value="controlFrameworkArn"></mapping>
+					</trigger>
+					<processor type="validator" id="UhPsMB" condition='flow.entity.name != ""' exception="Company is not initialized"></processor>
+					<processor type="emit-event" id="gF6Krh" ref="LinkedControlFrameworkToCompany">
+						<mapping target="arn" value="#flow.arn"></mapping>
+						<mapping target="controlFrameworkArn" value="#flow.controlFrameworkArn"></mapping>
+					</processor>
+					<test-case name="LinkControlFramework" trigger-event="LinkControlFrameworkCompanyRequested">
+						<input name="arn" value="company:draftsman" type="String"></input>
+						<input name="controlFrameworkArn" value="controlframework:gdpr" type="String"></input>
+						<expected domain-event="LinkedControlFrameworkToCompany">
+							<field value="company:draftsman" name="arn" type="String"></field>
+							<field value="controlframework:gdpr" name="controlFrameworkArn" type="String"></field>
+						</expected>
+						<state>{
+    "name": "Draftsman"
+}</state>
+						<expected-state pk="company:draftsman">{
+  "controlFrameworkLinks": ["controlframework:gdpr"]
+}</expected-state>
+					</test-case>
+					<test-case name="LinkControlFrameworkToNonExistingCompany" trigger-event="LinkControlFrameworkCompanyRequested" expected-processing-status="error">
+						<input name="arn" value="company:tracepaper" type="String"></input>
+						<input name="controlFrameworkArn" value="controlframework:gdpr" type="String"></input>
+					</test-case>
+				</command>
 				<command name="RemoveBusinessUnit">
 					<trigger source="RemoveCompanyBusinessUnitRequested" key-field="arn">
 						<mapping target="arn" value="arn"></mapping>
@@ -908,32 +958,73 @@
 }</expected-state>
 					</test-case>
 				</command>
+				<command name="AddBusinessUnit">
+					<trigger source="AddCompanyBusinessUnitRequested" key-field="arn">
+						<mapping target="arn" value="arn"></mapping>
+						<mapping target="name" value="name"></mapping>
+						<mapping target="description" value="description"></mapping>
+					</trigger>
+					<processor type="validator" id="r3TLgH" condition='flow.entity.name != ""' exception="Company does not exist"></processor>
+					<processor type="validator" id="BM5RG4" condition="flow.name not in flow.entity.businessUnits" exception="Can not add business unit with name {flow.name} because it is already present"></processor>
+					<processor type="code" id="SJBpIu" file="" handler="" code='flow.businessUnits = [{|LB|    "name": flow.name,|LB|    "description": flow.description|LB|}]'></processor>
+					<processor type="emit-event" id="zYKprC" ref="BusinessUnitAdded">
+						<mapping target="arn" value="#flow.arn"></mapping>
+						<mapping target="businessUnits" value="#flow.businessUnits"></mapping>
+					</processor>
+					<test-case name="AddBusinessUnit" trigger-event="AddCompanyBusinessUnitRequested">
+						<input name="arn" value="company:draftsman" type="String"></input>
+						<input name="name" value="Engineering" type="String"></input>
+						<input name="description" value="Hello World!" type="String"></input>
+						<state>{"name":"Draftsman"}</state>
+						<expected domain-event="BusinessUnitAdded">
+							<field value="company:draftsman" name="arn" type="String"></field>
+						</expected>
+						<expected-state pk="company:draftsman">{
+  "name": "Draftsman",
+  "businessUnits": {
+    "Engineering": {
+      "name": "Engineering",
+      "description": "Hello World!"
+    }
+  }
+}</expected-state>
+					</test-case>
+					<test-case name="AddDuplicateBusinessUnit" trigger-event="AddCompanyBusinessUnitRequested" expected-processing-status="error">
+						<input name="arn" value="company:draftsman" type="String"></input>
+						<input name="name" value="Engineering" type="String"></input>
+						<input name="description" value="..." type="String"></input>
+						<state>{
+  "name": "Draftsman",
+  "businessUnits": {
+    "Engineering": {
+      "name": "Engineering",
+      "description": "Hello World!"
+    }
+  }
+}</state>
+					</test-case>
+					<test-case name="AddBusinessUnitToNonExisstingCompany" trigger-event="AddCompanyBusinessUnitRequested" expected-processing-status="error">
+						<input name="arn" value="company:dummy" type="String"></input>
+						<input name="name" value="Engineering" type="String"></input>
+						<input name="description" value="Hello World!" type="String"></input>
+					</test-case>
+				</command>
 				<command name="UpdateBusinessUnit">
 					<trigger source="UpdateCompanyBusinessUnitRequested" key-field="arn">
 						<mapping target="arn" value="arn"></mapping>
 						<mapping target="name" value="name"></mapping>
 						<mapping target="description" value="description"></mapping>
 					</trigger>
+					<processor type="validator" id="ES1sG9" condition="flow.name in flow.entity.businessUnits" exception="Can not update businessunit, because it does not exist"></processor>
 					<processor type="code" id="nMDsHG" file="" handler="" code='flow.businessUnits = [{|LB|    "name": flow.name,|LB|    "description": flow.description|LB|}]'></processor>
 					<processor type="emit-event" id="CH0OnK" ref="BusinessUnitUpdated">
 						<mapping target="arn" value="#flow.arn"></mapping>
 						<mapping target="businessUnits" value="#flow.businessUnits"></mapping>
 					</processor>
-					<test-case name="AddNewBusinessUnit" trigger-event="UpdateCompanyBusinessUnitRequested">
+					<test-case name="AddNewBusinessUnit" trigger-event="UpdateCompanyBusinessUnitRequested" expected-processing-status="error">
 						<input name="arn" value="company:draftsman" type="String"></input>
 						<input name="name" value="Product Development" type="String"></input>
 						<input name="description" value="Hello World!" type="String"></input>
-						<expected domain-event="BusinessUnitUpdated">
-							<field value="company:draftsman" name="arn" type="String"></field>
-						</expected>
-						<expected-state pk="company:draftsman">{
-  "businessUnits": {
-    "Product Development": {
-      "name": "Product Development",
-      "description": "Hello World!"
-    }
-  }
-}</expected-state>
 					</test-case>
 					<test-case name="UpdateBusinessUnit" trigger-event="UpdateCompanyBusinessUnitRequested">
 						<input name="arn" value="company:draftsman" type="String"></input>
@@ -963,6 +1054,7 @@
 					</test-case>
 				</command>
 				<event-handler on="EmployeeArnUpdated" code='self.employees[event.employeeArn] = {|LB|    "arn": event.employeeArn,|LB|    "username": event.username,|LB|    "businessRole": event.businessRole|LB|}|LB|if event.oldArn in self.employees:|LB|    del self.employees[event.oldArn]|LB|    |LB|self.deletedEmployeeArns.append(event.oldArn)'></event-handler>
+				<event-handler on="LinkedControlFrameworkToCompany" code="if not hasattr(self, 'controlFrameworkLinks'):|LB|    self.controlFrameworkLinks = []|LB|self.controlFrameworkLinks.append(event.controlFrameworkArn)|LB|"></event-handler>
 				<event-handler on="BusinessRoleUpdated" code='self.employees[event.employeeArn] = {|LB|    "arn": event.employeeArn,|LB|    "username": event.employeeArn.split(":")[-1],|LB|    "businessRole": event.businessRole|LB|}'></event-handler>
 				<event-handler on="BusinessUnitRemoved" code="if event.name in self.businessUnits:|LB|    del self.businessUnits[event.name]"></event-handler>
 				<event-handler on="BusinessUnitUpdated">
@@ -971,11 +1063,13 @@
 						<mapping target="description" operand="set" value="description"></mapping>
 					</nested-mapping>
 				</event-handler>
+				<event-handler on="BusinessUnitAdded">
+					<nested-mapping source="businessUnits" target="businessUnits" business-key="name">
+						<mapping target="name" operand="set" value="name"></mapping>
+						<mapping target="description" operand="set" value="description"></mapping>
+					</nested-mapping>
+				</event-handler>
 				<event-handler on="CompanyCreated" code="self.arn = event.arn|LB|self.name = event.name|LB|self.description = event.description|LB|self.companySize = event.companySize|LB|self.revenue = event.revenue|LB|self.industryLink = event.industry.split(';')|LB|self.countryArn = event.country|LB|employeeArn = event.arn + &quot;:employee:&quot; + event.user|LB|self.employees[employeeArn] = {|LB|    &quot;arn&quot;: employeeArn,|LB|    &quot;username&quot;: event.user,|LB|    &quot;businessRole&quot;: &quot;administrator&quot;|LB|    |LB|}"></event-handler>
-				<nested-object name="regulations" business-key="name">
-					<field name="name" type="String"></field>
-					<field name="link" type="String"></field>
-				</nested-object>
 				<nested-object name="businessUnits" business-key="newField">
 					<field name="name" type="String"></field>
 					<field name="description" type="String"></field>
@@ -1076,6 +1170,8 @@ if snapshot.isDeleted != '':
 			<field name="businessUnits" type="ObjectList" ref="BusinessUnit" authorization="authenticated" foreign-key="arn"></field>
 			<field name="countryArn" type="String"></field>
 			<field name="country" type="ManyToOne" ref="Country" authorization="authenticated" foreign-key="countryArn"></field>
+			<field name="controlFrameworkLink" type="StringList"></field>
+			<field name="controlframework" type="ManyToMany" ref="ControlFramework" authorization="authenticated" foreign-key="controlFrameworkLink"></field>
 			<snapshot-handler id="a8vzJw" sub-domain="Customer" aggregate="Company" key-mapping="arn" processor="item">
 				<mapping target="arn" operand="set" value="arn"></mapping>
 				<mapping target="name" operand="set" value="name"></mapping>
@@ -1085,6 +1181,7 @@ if snapshot.isDeleted != '':
 				<mapping target="industryLink" operand="set" value="industryLink"></mapping>
 				<mapping target="businessUnits" operand="convert_items" value="businessUnits" template='{"name": value["name"],"description": value["description"]}'></mapping>
 				<mapping target="countryArn" operand="set" value="countryArn"></mapping>
+				<mapping target="controlFrameworkLink" operand="set" value="controlFrameworkLinks"></mapping>
 				<delete condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="Company" field-name="get" type="get" authorization="role" role="#global.extractRoleFromArn(key, 'viewer')"></query>

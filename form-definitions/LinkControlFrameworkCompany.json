@@ -1,0 +1,22 @@
+[
+  {
+    "type": "meta",
+    "message": "This file is managed by Tracepaper"
+  },
+  {
+    "name": "arn",
+    "title": "Arn",
+    "type": "String",
+    "pattern": "^company:[a-z]+$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "controlFrameworkArn",
+    "title": "Controlframeworkarn",
+    "type": "String",
+    "pattern": "^controlframework:[a-z0-9]+$",
+    "placeholder": "",
+    "default": ""
+  }
+]

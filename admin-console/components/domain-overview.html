@@ -43,6 +43,12 @@
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'LinkControlFrameworkCompany'"
+                                x-show="'linkcontrolframeworkcompany'.includes(search.toLowerCase())">
+                            LinkControlFrameworkCompany
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
                                 @click="Draftsman.empty_track_and_trace_log();component = 'RemoveCompanyBusinessUnit'"
                                 x-show="'removecompanybusinessunit'.includes(search.toLowerCase())">
                             RemoveCompanyBusinessUnit
@@ -58,6 +64,12 @@
                                 @click="Draftsman.empty_track_and_trace_log();component = 'CreateCompany'"
                                 x-show="'createcompany'.includes(search.toLowerCase())">
                             CreateCompany
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'AddCompanyBusinessUnit'"
+                                x-show="'addcompanybusinessunit'.includes(search.toLowerCase())">
+                            AddCompanyBusinessUnit
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
@@ -119,6 +131,14 @@
                 </div>
 
                 
+                <div x-show="component == 'LinkControlFrameworkCompany'" x-cloak x-transition>
+                    <div x-import="commands/LinkControlFrameworkCompany">
+                        <h6>LinkControlFrameworkCompany</h6>
+                        <ui-LinkControlFrameworkCompany></ui-LinkControlFrameworkCompany>
+                    </div>
+                </div>
+
+                
                 <div x-show="component == 'RemoveCompanyBusinessUnit'" x-cloak x-transition>
                     <div x-import="commands/RemoveCompanyBusinessUnit">
                         <h6>RemoveCompanyBusinessUnit</h6>
@@ -139,6 +159,14 @@
                     <div x-import="commands/CreateCompany">
                         <h6>CreateCompany</h6>
                         <ui-CreateCompany></ui-CreateCompany>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'AddCompanyBusinessUnit'" x-cloak x-transition>
+                    <div x-import="commands/AddCompanyBusinessUnit">
+                        <h6>AddCompanyBusinessUnit</h6>
+                        <ui-AddCompanyBusinessUnit></ui-AddCompanyBusinessUnit>
                     </div>
                 </div>
 

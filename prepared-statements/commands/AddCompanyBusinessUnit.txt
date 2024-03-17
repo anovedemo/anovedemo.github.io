@@ -1,0 +1,10 @@
+# This file is managed by Tracepaper
+mutation Add($arn: String = "", $name: String = "", $description: String = "") {
+  Company{
+    BusinessUnit{
+      add(input: {arn: $arn,name: $name,description: $description}) {
+         correlationId
+      }
+    }
+  }
+}
