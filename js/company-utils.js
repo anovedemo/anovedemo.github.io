@@ -27,7 +27,10 @@ async function prepare_employee_arn(company,email){
 }
 
 async function get_frameworks(selected_frameworks){
-    let arns = selected_frameworks.map(x => x.arn);
+    let arns = [];
+    if (selected_frameworks){
+        arns = selected_frameworks.map(x => x.arn);
+    }
     let query = document.getElementById("framework-list").innerText;
     let data = await Draftsman.query(query,{},false);
     return data["ControlFramework"]["filter"]["resultset"].filter(x => !arns.includes(x.arn));

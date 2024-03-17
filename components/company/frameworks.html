@@ -8,7 +8,7 @@
 
     <h1>Selected control frameworks</h1>
     <hr>
-    <table class="table">
+    <table class="table" x-show="company.controlframework" x-cloak x-transition>
       <thead>
       <tr>
         <th>Name</th>
@@ -28,6 +28,13 @@
           <td x-text="framework.edition"></td>
           <td x-text="framework.category"></td>
           <td x-text="framework.active"></td>
+          <td>
+            <a href="#" @click="
+              $store.mutation.send('RemoveCompanyBusinessUnit',{arn:company.arn,name:businessunit.name});
+              document.getElementById('row' + businessunit.name).classList.add('table-danger')">
+              <i class="fa-solid fa-xmark"></i>
+            </a>
+          </td>
         </tr>
       </template>
       </tbody>
@@ -36,7 +43,7 @@
     <!-- Button trigger modal -->
     <div id="framework-list" x-include="/prepared-statements/views/ControlFramework/list.txt" style="display:none;"></div>
 
-    <button @click="command = {arn: company.arn, controlFrameworkArn: ''};frameworks = await get_frameworks($store.Company.get.controlframework);"
+    <button @click="command = {arn: company.arn, controlFrameworkArn: ''};frameworks = await get_frameworks(company.controlframework);"
             type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#frameworkModal">
       Select control framework
     </button>
