@@ -1,0 +1,22 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query FilterControl($key_begins_with: String = "") {
+  Control {
+    filter(key_begins_with: $key_begins_with) {
+       resultset { 
+        key
+        name
+        description
+        ownerArn
+        controlTemplateArn
+        assessmentPeriodicity
+        lastAssessmentDate
+        applicability
+        desiredMaturityLevel
+        businessUnit
+        requirementArns
+        companyArn
+        arn
+      }
+    }
+  }
+}
