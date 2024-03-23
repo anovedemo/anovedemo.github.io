@@ -9,6 +9,7 @@
 		<pattern name="ControlFrameworkArn" regex="^controlframework:[a-z0-9]+$"></pattern>
 		<pattern name="EmployeeArn" regex="^{{CompanyArn}}:employee:[^\s]+$"></pattern>
 		<pattern name="RegionArn" regex="^region:[A-Z]+$"></pattern>
+		<pattern name="RequirementLink" regex="^{{RequirementArn}}(;{{RequirementArn}})*$"></pattern>
 		<pattern name="BusinessRole" regex="^(administrator|guest|blocked)$"></pattern>
 		<pattern name="IndustryLink" regex="^{{IndustryArn}}(;{{IndustryArn}})*$"></pattern>
 		<pattern name="IndustryArn" regex="^industry:[a-z]+$"></pattern>
@@ -65,6 +66,7 @@
 			<field name="desiredMaturityLevel" type="Int"></field>
 			<field name="businessUnit" type="String"></field>
 			<field name="companyArn" type="String" pattern="{{CompanyArn}}"></field>
+			<field name="requirements" type="String" pattern="{{RequirementLink}}"></field>
 		</event>
 		<event graphql-namespace="Company.BusinessUnit" graphql-name="remove" name="RemoveCompanyBusinessUnitRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
 			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
@@ -202,6 +204,9 @@
 				<field name="name" type="String"></field>
 				<field name="description" type="String"></field>
 			</nested-object>
+		</event>
+		<event name="LinkedRequirements" source="Customer.Control" type="DomainEvent">
+			<field name="requirements" type="String"></field>
 		</event>
 		<event name="ControlCreated" source="Customer.Control" type="DomainEvent">
 			<field name="name" type="String"></field>
@@ -1162,6 +1167,7 @@
 						<mapping target="desiredMaturityLevel" value="desiredMaturityLevel"></mapping>
 						<mapping target="businessUnit" value="businessUnit"></mapping>
 						<mapping target="companyArn" value="companyArn"></mapping>
+						<mapping target="requirements" value="requirements"></mapping>
 					</trigger>
 					<processor type="code" id="atEF4m" file="" handler="" code='flow.arn = flow.identity|LB|flow.ownerArn = flow.companyArn + ":employee:" + flow.requestor|LB|flow.lastAssessmentDate = "1970-01-01"|LB|flow.applicability = True'></processor>
 					<processor type="emit-event" id="C8jHy9" ref="ControlCreated">
@@ -1177,6 +1183,9 @@
 						<mapping target="companyArn" value="#flow.companyArn"></mapping>
 						<mapping target="arn" value="#flow.arn"></mapping>
 					</processor>
+					<processor type="emit-event" id="3ywvp5" ref="LinkedRequirements">
+						<mapping target="requirements" value="#flow.requirements"></mapping>
+					</processor>
 					<test-case name="CreateControl" trigger-event="CreateCompanyControlRequested">
 						<input name="name" value="My Control" type="String"></input>
 						<input name="description" value="Hello World!" type="String"></input>
@@ -1185,6 +1194,7 @@
 						<input name="desiredMaturityLevel" value="4" type="Int"></input>
 						<input name="businessUnit" value="Engineering" type="String"></input>
 						<input name="companyArn" value="company:draftsman" type="String"></input>
+						<input name="requirements" value="req1;req2" type="String"></input>
 						<expected domain-event="ControlCreated">
 							<field value="My Control" name="name" type="String"></field>
 							<field value="Hello World!" name="description" type="String"></field>
@@ -1197,8 +1207,26 @@
 							<field value="company:draftsman" name="companyArn" type="String"></field>
 							<field value="company:draftsman:control:mycontrol" name="arn" type="String"></field>
 						</expected>
+						<expected domain-event="LinkedRequirements">
+							<field value="req1;req2" name="requirements" type="String"></field>
+						</expected>
+						<expected-state pk="company:draftsman:control:mycontrol">{
+  "name": "My Control",
+  "description": "Hello World!",
+  "ownerArn": "company:draftsman:employee:default-test-user",
+  "controlTemplateArn": "",
+  "assessmentPeriodicity": "1M",
+  "lastAssessmentDate": "1970-01-01",
+  "applicability": true,
+  "desiredMaturityLevel": 4,
+  "businessUnit": "Engineering",
+  "requirementArns": ["req1","req2"],
+  "companyArn": "company:draftsman",
+  "arn": "company:draftsman:control:mycontrol"
+}</expected-state>
 					</test-case>
 				</command>
+				<event-handler on="LinkedRequirements" code='self.requirementArns = event.requirements.split(";")'></event-handler>
 				<event-handler on="ControlCreated">
 					<mapping target="name" operand="set" value="name"></mapping>
 					<mapping target="description" operand="set" value="description"></mapping>
