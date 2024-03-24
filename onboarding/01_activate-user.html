@@ -31,14 +31,18 @@
     <draftsman-notification
             message="updated"
             type="User"
-            :identifier="localStorge['username']"
+            :identifier="localStorage['username']"
             @notification="
                 Draftsman.clear_cache();
                 location='/';">
     </draftsman-notification>
 
     <main class="form-signin">
-        <form x-data="{command: $persist({}).as(location)}">
+        <div x-import="utils/loading-icon">
+            <ui-update-logs></ui-update-logs>
+        </div>
+        <form x-show="$store.trace.length == 0" x-transition x-cloak
+              x-data="{command: $persist({}).as(location)}">
             <img class="mb-4" src="/assets/logo.png" alt="" width="72" height="57">
             <h1 class="h3 mb-3 fw-normal">Finalize your account</h1>
 

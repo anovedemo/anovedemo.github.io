@@ -1,0 +1,66 @@
+<template x-component="loading-icon">
+    <div x-show="$store.trace.length != 0 && inflight == $prop('command')" x-transition x-cloak>
+        <style>
+            .loading-container {
+                position: absolute;
+                top: 50px;
+                right: 0px;
+            }
+            .loading-icon {
+                width: 100px;
+            }
+            .icon-text {
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              color: rgba(0, 0, 0, 0.1);
+            }
+        </style>
+        <div class="loading-container">
+            <img class="loading-icon" src="/assets/load.gif" />
+            <h4 class="icon-text">Update</h4>
+        </div>
+        <draftsman-trace :command="$prop('command')"
+                         status="success"
+                         @trace="
+                    Draftsman.empty_track_and_trace_log();
+                    $dispatch('setdata', { command: $prop('command'), data: {} });">
+        </draftsman-trace>
+    </div>
+</template>
+<template x-component="update-logs">
+    <ul class="list-group"  x-show="$store.trace.length != 0" x-transition x-cloak>
+        <style>
+            .icon-container {
+                margin: auto;
+                width: 100px;
+            }
+            .loading-icon {
+                width: 100px;
+            }
+            .icon-text {
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              color: rgba(0, 0, 0, 0.1);
+            }
+        </style>
+        <li class="list-group-item d-flex">
+            <div class="icon-container">
+                <img class="loading-icon" src="/assets/load.gif" />
+                <h4 class="icon-text">Update</h4>
+            </div>
+        </li>
+        <template x-for="message in $store.trace">
+            <li class="list-group-item">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1" x-text="message.command != '' ? message.command : message.event"></h5>
+                    <small x-text="message.status"></small>
+                </div>
+                <p class="mb-1" x-text="message.message"></p>
+            </li>
+        </template>
+    </ul>
+</template>

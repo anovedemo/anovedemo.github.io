@@ -23,16 +23,19 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" defer></script>
     <link rel="stylesheet" href="/css/onboarding.css" />
 </head>
-<body x-data="{regions: null, countries: null, industries: null}" class="text-center" x-import="utils/tables">
+<body x-data="{regions: null, countries: null, industries: null}" class="text-center">
 
 <draftsman-mutation command="CreateCompany" x-include="/prepared-statements/commands/CreateCompany.txt" authenticated>
 </draftsman-mutation>
 
 <main class="form-signin">
-    <form x-data="{command: $persist({companySize: 10,country:'',industry:''}).as(location)}">
+    <div x-import="utils/loading-icon">
+        <ui-update-logs></ui-update-logs>
+    </div>
+    <form x-show="$store.trace.length == 0" x-transition x-cloak
+          x-data="{command: $persist({companySize: 10,country:'',industry:''}).as(location)}">
         <img class="mb-4" src="/assets/logo.png" alt="" width="72" height="57">
         <h1 class="h3 mb-3 fw-normal">Onboard Company</h1>
-        <ui-trace-table></ui-trace-table>
 
         <div class="form-floating">
             <input type="text" class="form-control" id="name" placeholder="My Company Name" x-model="command.name"/>
@@ -106,7 +109,7 @@
 
         <button class="w-100 btn btn-lg btn-primary" type="button"
                 @click="$store.mutation.send('CreateCompany',command);window.scrollTo({ top: 0, behavior: 'smooth' });">Save</button>
-        <p class="mt-5 mb-3 text-muted">&copy; 2024</p>
+        <p class="mb-3 text-muted">After adding a new company you need to sign in again.</p>
 
         <draftsman-notification
                 message="updated"

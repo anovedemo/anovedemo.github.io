@@ -1,5 +1,5 @@
 <template x-component="businessunit">
-  <div>
+  <div x-import="utils/loading-icon">
     <draftsman-mutation command="AddCompanyBusinessUnit"
                         x-include="/prepared-statements/commands/AddCompanyBusinessUnit.txt"
                         authenticated>
@@ -8,10 +8,12 @@
                         x-include="/prepared-statements/commands/UpdateCompanyBusinessUnit.txt"
                         authenticated>
     </draftsman-mutation>
+    <ui-loading-icon command="UpdateCompanyBusinessUnit"></ui-loading-icon>
     <draftsman-mutation command="RemoveCompanyBusinessUnit"
                         x-include="/prepared-statements/commands/RemoveCompanyBusinessUnit.txt"
                         authenticated>
     </draftsman-mutation>
+    <ui-loading-icon command="RemoveCompanyBusinessUnit"></ui-loading-icon>
     <h1>Business units</h1>
     <hr>
     <table class="table">

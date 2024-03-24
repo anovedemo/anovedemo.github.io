@@ -71,6 +71,9 @@ function send_mutation(command,data){
             },variables={"correlationId":cid});
         }
     },data,anonymous);
+    setTimeout(function(){
+        inflight = "";
+    },10000);
 }
 
 function list_mutations(){
