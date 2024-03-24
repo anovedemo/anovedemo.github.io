@@ -1,0 +1,70 @@
+[
+  {
+    "type": "meta",
+    "message": "This file is managed by Tracepaper"
+  },
+  {
+    "name": "name",
+    "title": "Name",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "description",
+    "title": "Description",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "controlTemplateArn",
+    "title": "Controltemplatearn",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "assessmentPeriodicity",
+    "title": "Assessmentperiodicity",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "desiredMaturityLevel",
+    "title": "Desiredmaturitylevel",
+    "type": "Int",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "businessUnit",
+    "title": "Businessunit",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "companyArn",
+    "title": "Companyarn",
+    "type": "String",
+    "pattern": "^company:[a-z]+$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "requirements",
+    "title": "Requirements",
+    "type": "String",
+    "pattern": "^controlframework:[a-z0-9]+:[a-z0-9]+(;controlframework:[a-z0-9]+:[a-z0-9]+)*$",
+    "placeholder": "",
+    "default": ""
+  }
+]

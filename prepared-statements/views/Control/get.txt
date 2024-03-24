@@ -1,0 +1,20 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query GetControl($key: ID = "") {
+  Control {
+    get(key: $key) {
+      key
+      name
+      description
+      ownerArn
+      controlTemplateArn
+      assessmentPeriodicity
+      lastAssessmentDate
+      applicability
+      desiredMaturityLevel
+      businessUnit
+      requirementArns
+      companyArn
+      arn
+    }
+  }
+}
