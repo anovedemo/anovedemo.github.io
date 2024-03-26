@@ -30,7 +30,7 @@
 
 <main class="form-signin">
     <div x-import="utils/loading-icon">
-        <ui-update-logs></ui-update-logs>
+        <ui-update-logs command="CreateCompany"></ui-update-logs>
     </div>
     <form x-show="$store.trace.length == 0" x-transition x-cloak
           x-data="{command: $persist({companySize: 10,country:'',industry:''}).as(location)}">

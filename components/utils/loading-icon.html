@@ -30,7 +30,7 @@
     </div>
 </template>
 <template x-component="update-logs">
-    <ul class="list-group"  x-show="$store.trace.length != 0" x-transition x-cloak>
+    <ul class="list-group"  x-show="$store.trace.length != 0 && inflight == $prop('command')" x-transition x-cloak>
         <style>
             .icon-container {
                 margin: auto;

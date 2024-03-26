@@ -1,5 +1,193 @@
 <template x-component="controls">
-  <div>
-    
+  <div x-data="{
+    frameworks: [],
+    requirements: $persist({}).as('requirements' + location),
+    command: $persist({assessmentPeriodicity: '2M','description': '# Title\n\nLorem ipsum...'}).as('createcontrol' + location)}">
+
+    <draftsman-mutation command="CreateCompanyControl" 
+                        x-include="/prepared-statements/commands/CreateCompanyControl.txt" authenticated>
+    </draftsman-mutation>
+
+
+    <div x-import="utils/loading-icon">
+      <ui-update-logs command="CreateCompanyControl"></ui-update-logs>
+      <draftsman-trace command="CreateCompanyControl"
+                       status="success"
+                       @trace="Draftsman.empty_track_and_trace_log();">
+      </draftsman-trace>
+    </div>
+    <draftsman-trace command="$prop('CreateCompanyControl')"
+                     status="success"
+                     @trace="
+                    Draftsman.empty_track_and_trace_log();
+                    $dispatch('setdata', { command: 'CreateCompanyControl', data: {} });">
+    </draftsman-trace>
+
+    <table class="table">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Desired Maturity Level</th>
+        <th>Last Assessment Date</th>
+        <th>Owner</th>
+        <th>Covered requirements</th>
+      </tr>
+      </thead>
+      <tbody>
+      <template x-for="control in company.controls" :key="control.arn">
+        <tr>
+          <td x-text="control.name"></td>
+          <td x-text="control.desiredMaturityLevel"></td>
+          <td x-text="control.lastAssessmentDate"></td>
+          <td>
+            <span x-text="control.owner.user.firstName"></span>
+            <span x-text="control.owner.user.lastName"></span>
+          </td>
+          <td>
+            <ul class="list-group list-group-flush">
+              <template x-for="requirement in control.requirements" :key="requirement.arn">
+                <li class="list-group-item" x-show="requirement.arn" x-cloak x-transition x-text="requirement.name">
+                </li>
+              </template>
+            </ul>
+          </td>
+        </tr>
+      </template>
+      </tbody>
+    </table>
+    <!-- Button trigger modal -->
+    <button @click="Draftsman.empty_track_and_trace_log"
+            type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#controlModal">
+      Add control
+    </button>
+
+    <!-- add Control Modal -->
+    <div class="modal fade" id="controlModal" tabindex="-1" aria-labelledby="controlModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="controlModalLabel">Add control</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form x-effect="command.companyArn = company.arn">
+
+              <div class="row">
+                <div class="col-4">
+                  <div class="form-floating">
+                    <input type="text" id="controlname" class="form-control" x-model="command.name"/>
+                    <label for="controlname">Control name</label>
+                  </div>
+                  <select class="form-select" aria-label="businessunit" @change="command.businessUnit = $el.value">
+                    <option>Business unit</option>
+                    <template x-for="businessunit in company.businessUnits" :key="businessunit.name">
+                      <option :value="businessunit.name" x-text="businessunit.name" :selected="businessunit.name == command.businessUnit"></option>
+                    </template>
+                  </select>
+                </div>
+                <div class="col-4">
+                  <label for="periodicity">Assessment Periodicity:
+                    <span x-text="periodicity_names[command.assessmentPeriodicity]"></span></label>
+                  <input type="range" class="form-range"
+                         @change="command.assessmentPeriodicity = periodicity_templates[$el.value]"
+                         min="0" :max="periodicity_templates.length - 1" step="1" id="periodicity" :value="periodicity_templates.indexOf(command.assessmentPeriodicity)">
+
+                  <label for="maturity">Desired maturity level:
+                    <span x-text="command.desiredMaturityLevel"></span></label>
+                  <input type="range" class="form-range"
+                         x-model="command.desiredMaturityLevel = $el.value"
+                         min="1" max="5" step="1" id="maturity">
+                </div>
+                <div class="col-4">
+
+                  <ul class="list-group list-group-flush">
+                    <template x-for="requirement in command.requirements.split(';')" :key="requirement">
+                      <li class="list-group-item" x-show="requirement" x-cloak x-transition>
+                        <h6 x-text="requirements[requirement].name"></h6>
+                        <span class="badge bg-secondary" x-text="requirements[requirement].framework"></span>
+                        <button type="button" class="btn-close"
+                                @click="
+                                command.requirements = command.requirements.replace(requirement,'').replace(';;',';');
+                                if(command.requirements.endsWith(';')){command.requirements = command.requirements.substring(0,command.requirements.length - 1)};
+                                " aria-label="Close"></button>
+                      </li>
+                    </template>
+                  </ul>
+
+                  <!-- Button trigger modal -->
+                  <button @click="frameworks = await list_frameworks();requirements = await list_requirements()"
+                          type="button" class="btn btn-primary"
+                          data-bs-toggle="modal" data-bs-target="#requirementModal">
+                    Attach requirement
+                  </button>
+
+                  </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-6">
+                  <div class="form-floating">
+                    <textarea type="text" id="controldescription"
+                              style="height:300px"
+                              class="form-control" x-model="command.description"></textarea>
+                    <label for="controldescription">Description</label>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div x-html="converter.makeHtml(command.description)"></div>
+                </div>
+              </div>
+              <pre x-text="JSON.stringify(command,null,2)"></pre>
+              <br>
+              <hr>
+              <button class="w-100 btn btn-sm btn-primary" type="button" data-bs-dismiss="modal"
+                      @click="$store.mutation.send('CreateCompanyControl',command)">Save</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Requirement Modal -->
+    <div class="modal fade" id="requirementModal" tabindex="-1" aria-labelledby="requirementModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="requirementModalLabel">Modal title</h5>
+            <button type="button" class="btn-close" data-bs-toggle="modal" data-bs-target="#controlModal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" x-data="{search: ''}">
+
+            <form class="d-flex">
+              <input class="form-control me-2" type="search"
+                     x-model="search"
+                     placeholder="Search" aria-label="Search">
+            </form>
+            <hr>
+
+            <div class="list-group">
+              <template x-for="framework in frameworks" :key="framework.arn">
+                <template x-for="requirement in framework.requirements" :key="requirement.arn">
+
+                  <a href="#" data-bs-toggle="modal" data-bs-target="#controlModal"
+                     x-show="`${framework.name} ${requirement.name} ${requirement.summary}`.toLowerCase().includes(search.toLowerCase()) && !command.requirements.includes(requirement.arn)"
+                     x-cloak x-transition
+                     @click="if(command.requirements){command.requirements += ';' + requirement.arn}else{command.requirements = requirement.arn}"
+                     class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                      <h5 class="mb-1" x-text="requirement.name"></h5>
+                      <small x-text="framework.name"></small>
+                    </div>
+                    <p class="mb-1" x-text="requirement.summary"></p>
+                  </a>
+
+                </template>
+              </template>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>

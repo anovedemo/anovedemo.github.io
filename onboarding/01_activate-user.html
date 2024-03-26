@@ -39,7 +39,7 @@
 
     <main class="form-signin">
         <div x-import="utils/loading-icon">
-            <ui-update-logs></ui-update-logs>
+            <ui-update-logs command="ActivateUser"></ui-update-logs>
         </div>
         <form x-show="$store.trace.length == 0" x-transition x-cloak
               x-data="{command: $persist({}).as(location)}">
