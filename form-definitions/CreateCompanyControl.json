@@ -55,7 +55,7 @@
     "name": "companyArn",
     "title": "Companyarn",
     "type": "String",
-    "pattern": "^company:[a-z]+$",
+    "pattern": "^[a-z]+:company:[a-z]+$",
     "placeholder": "",
     "default": ""
   },

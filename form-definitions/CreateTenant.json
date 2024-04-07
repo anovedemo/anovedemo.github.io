@@ -4,16 +4,16 @@
     "message": "This file is managed by Tracepaper"
   },
   {
-    "name": "arn",
-    "title": "Arn",
+    "name": "name",
+    "title": "Name",
     "type": "String",
-    "pattern": "^[a-z]+:company:[a-z]+$",
+    "pattern": "^[a-z]+$",
     "placeholder": "",
     "default": ""
   },
   {
-    "name": "name",
-    "title": "Name",
+    "name": "css",
+    "title": "Css",
     "type": "String",
     "pattern": "",
     "placeholder": "",

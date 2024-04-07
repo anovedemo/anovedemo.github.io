@@ -3,10 +3,11 @@
 	<global>
 		<pattern name="RequirementArn" regex="^{{ControlFrameworkArn}}:[a-z0-9]+$"></pattern>
 		<pattern name="CountryArn" regex="^{{RegionArn}}:country:[A-Z]+$"></pattern>
-		<pattern name="CompanyArn" regex="^company:[a-z]+$"></pattern>
+		<pattern name="CompanyArn" regex="^{{TenantName}}:company:[a-z]+$"></pattern>
 		<pattern name="GeoCode" regex="^[A-Z]+$"></pattern>
 		<pattern name="ControlFrameworkType" regex="^(standard|regulation|framework)$"></pattern>
 		<pattern name="ControlFrameworkArn" regex="^controlframework:[a-z0-9]+$"></pattern>
+		<pattern name="TenantName" regex="^[a-z]+$"></pattern>
 		<pattern name="EmployeeArn" regex="^{{CompanyArn}}:employee:[^\s]+$"></pattern>
 		<pattern name="RegionArn" regex="^region:[A-Z]+$"></pattern>
 		<pattern name="RequirementLink" regex="^{{RequirementArn}}(;{{RequirementArn}})*$"></pattern>
@@ -88,6 +89,10 @@
 			<field name="mandatory" type="Boolean"></field>
 			<field name="summary" type="String"></field>
 		</event>
+		<event graphql-namespace="Tenant" graphql-name="create" name="CreateTenantRequested" authorization="role" type="ActorEvent" role="administrator">
+			<field name="name" type="String" pattern="{{TenantName}}"></field>
+			<field name="css" type="String"></field>
+		</event>
 		<event graphql-namespace="ControlFramework" graphql-name="add" name="AddControlFrameworkRequested" authorization="role" type="ActorEvent" role="administrator">
 			<field name="arn" type="String" pattern="{{ControlFrameworkArn}}"></field>
 			<field name="description" type="String"></field>
@@ -147,6 +152,10 @@
 				<field name="code" type="String"></field>
 				<field name="name" type="String"></field>
 			</nested-object>
+		</event>
+		<event name="TenantCreated" source="Admin.Tenant" type="DomainEvent">
+			<field name="name" type="String"></field>
+			<field name="css" type="String"></field>
 		</event>
 		<event name="DemoUpdated" source="Admin.Demo" type="DomainEvent">
 			<field name="identifier" type="String"></field>
@@ -662,6 +671,36 @@
 					<field name="code" type="String"></field>
 					<field name="name" type="String"></field>
 				</nested-object>
+			</aggregate>
+			<aggregate name="Tenant" business-key="name" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
+				<field name="name" type="String"></field>
+				<field name="css" type="String"></field>
+				<command name="Create" create-command="false">
+					<trigger source="CreateTenantRequested" key-field="name">
+						<mapping target="name" value="name"></mapping>
+						<mapping target="css" value="css"></mapping>
+					</trigger>
+					<processor type="emit-event" id="COb5tI" ref="TenantCreated">
+						<mapping target="name" value="#flow.name"></mapping>
+						<mapping target="css" value="#flow.css"></mapping>
+					</processor>
+					<test-case name="CreateTenant" trigger-event="CreateTenantRequested">
+						<input name="name" value="anove" type="String"></input>
+						<input name="css" value=".custom {color: #123456}" type="String"></input>
+						<expected domain-event="TenantCreated">
+							<field value="anove" name="name" type="String"></field>
+							<field value=".custom {color: #123456}" name="css" type="String"></field>
+						</expected>
+						<expected-state pk="anove">{
+  "name": "anove",
+   "css": ".custom {color: #123456}"
+}</expected-state>
+					</test-case>
+				</command>
+				<event-handler on="TenantCreated">
+					<mapping target="name" operand="set" value="name"></mapping>
+					<mapping target="css" operand="set" value="css"></mapping>
+				</event-handler>
 			</aggregate>
 			<aggregate name="Demo" business-key="fieldName" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
 				<field name="identifier" type="String"></field>
@@ -1376,6 +1415,17 @@ if snapshot.isDeleted != '':
 			<field name="company" type="ManyToOne" ref="Company" authorization="role" foreign-key="arn" role="#global.extractRoleFromArn(arn, 'viewer')"></field>
 			<field name="employeeArn" type="String"></field>
 			<field name="employee" type="OneToOne" ref="Employee" authorization="role" foreign-key="employeeArn" role="#global.extractRoleFromArn(employeeArn, 'viewer')"></field>
+		</view>
+		<view name="Tenant" data-retention-days="-1" exclude-notification="false">
+			<field name="name" type="String" pk="true"></field>
+			<field name="css" type="String"></field>
+			<snapshot-handler id="4c3beB" sub-domain="Admin" aggregate="Tenant" key-mapping="name" processor="item">
+				<mapping target="name" operand="set" value="name"></mapping>
+				<mapping target="css" operand="set" value="css"></mapping>
+				<delete condition="#snapshot.isDeleted != ''"></delete>
+			</snapshot-handler>
+			<query graphql-namespace="Tenant" field-name="get" type="get" authorization="authenticated"></query>
+			<query graphql-namespace="Tenant" field-name="filter" type="filter" authorization="authenticated"></query>
 		</view>
 		<view name="Control" data-retention-days="-1" exclude-notification="false">
 			<field name="name" type="String"></field>
