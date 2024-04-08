@@ -1616,7 +1616,7 @@ if snapshot.isDeleted != '':
 				<mapping target="active" value="active"></mapping>
 			</trigger>
 			<activity type="code" id="HZNTTw" code='flow.eligible = flow.active == False and "@" in flow.username|LB|flow.sender = "no-reply@draftsman.io"|LB|flow.receiver = flow.username|LB|flow.subject = "Colleagues are reaching out in Anove"|LB|flow.text = "Create an account at https://anovedemo.github.io"|LB|flow.html = flow.text'></activity>
-			<activity type="send-email" id="2wJ6Y9" condition="flow.eligible" sender="#flow.sender" receiver="#flow.receiver" subject="#flow.subject" text="#flow.text" html="#flow.html"></activity>
+			<activity type="send-email" id="2wJ6Y9" condition="flow.eligible" sender="no-reply@draftsman.io" receiver="#flow.receiver" subject="#flow.subject" text="#flow.text" html="#flow.html"></activity>
 		</notifier>
 		<notifier name="PrepareCompanyTenant">
 			<trigger source="CompanyCreated">
