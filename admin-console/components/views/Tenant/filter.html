@@ -1,0 +1,19 @@
+<!-- This file is managed by Tracepaper -->
+<template x-component="Tenant-filter">
+    <div x-import="tables;query-form">
+
+        <!-- The query object -->
+        <draftsman-query alias="Tenantfilter" x-include="/prepared-statements/views/Tenant/filter.txt" authenticated>
+        </draftsman-query>
+
+        <!-- The form definition -->
+        <div  style="display:none;" id="Tenantfilter"
+              x-include="/form-definitions/Tenant/filter.json"></div>
+
+        <!-- The query form -->
+        <ui-query-form alias="Tenantfilter"></ui-query-form>
+
+        <!-- The data view --><ui-collection-table alias="Tenantfilter" path="filter.resultset"></ui-collection-table>
+
+    </div>
+</template>

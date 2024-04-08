@@ -1,0 +1,10 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query GetTenant($key: ID = "") {
+  Tenant {
+    get(key: $key) {
+      key
+      name
+      css
+    }
+  }
+}

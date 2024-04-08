@@ -7,7 +7,7 @@
     "name": "arn",
     "title": "Arn",
     "type": "String",
-    "pattern": "^company:[a-z]+:employee:[^\\s]+$",
+    "pattern": "^[a-z]+:company:[a-z]+:employee:[^\\s]+$",
     "placeholder": "",
     "default": ""
   },

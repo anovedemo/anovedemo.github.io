@@ -3,10 +3,11 @@
 	<global>
 		<pattern name="RequirementArn" regex="^{{ControlFrameworkArn}}:[a-z0-9]+$"></pattern>
 		<pattern name="CountryArn" regex="^{{RegionArn}}:country:[A-Z]+$"></pattern>
-		<pattern name="CompanyArn" regex="^company:[a-z]+$"></pattern>
+		<pattern name="CompanyArn" regex="^{{TenantName}}:company:[a-z]+$"></pattern>
 		<pattern name="GeoCode" regex="^[A-Z]+$"></pattern>
 		<pattern name="ControlFrameworkType" regex="^(standard|regulation|framework)$"></pattern>
 		<pattern name="ControlFrameworkArn" regex="^controlframework:[a-z0-9]+$"></pattern>
+		<pattern name="TenantName" regex="^[a-z]+$"></pattern>
 		<pattern name="EmployeeArn" regex="^{{CompanyArn}}:employee:[^\s]+$"></pattern>
 		<pattern name="RegionArn" regex="^region:[A-Z]+$"></pattern>
 		<pattern name="RequirementLink" regex="^{{RequirementArn}}(;{{RequirementArn}})*$"></pattern>
@@ -88,6 +89,9 @@
 			<field name="mandatory" type="Boolean"></field>
 			<field name="summary" type="String"></field>
 		</event>
+		<event graphql-namespace="Tenant" graphql-name="create" name="CreateTenantRequested" authorization="role" type="ActorEvent" role="administrator">
+			<field name="name" type="String" pattern="{{TenantName}}"></field>
+		</event>
 		<event graphql-namespace="ControlFramework" graphql-name="add" name="AddControlFrameworkRequested" authorization="role" type="ActorEvent" role="administrator">
 			<field name="arn" type="String" pattern="{{ControlFrameworkArn}}"></field>
 			<field name="description" type="String"></field>
@@ -147,6 +151,12 @@
 				<field name="code" type="String"></field>
 				<field name="name" type="String"></field>
 			</nested-object>
+		</event>
+		<event name="TenantCreated" source="Admin.Tenant" type="DomainEvent">
+			<field name="name" type="String"></field>
+		</event>
+		<event name="StyleSheetLinked" source="Admin.Tenant" type="DomainEvent">
+			<field name="css" type="String"></field>
 		</event>
 		<event name="DemoUpdated" source="Admin.Demo" type="DomainEvent">
 			<field name="identifier" type="String"></field>
@@ -220,6 +230,12 @@
 			<field name="businessUnit" type="String"></field>
 			<field name="companyArn" type="String"></field>
 			<field name="arn" type="String"></field>
+		</event>
+		<event name="FileUploaded" type="DomainEvent" source="appsync">
+			<field name="bucket" type="String"></field>
+			<field name="uri" type="String"></field>
+			<field name="location" type="String"></field>
+			<field name="username" type="String"></field>
 		</event>
 	</events>
 	<domain>
@@ -662,6 +678,64 @@
 					<field name="code" type="String"></field>
 					<field name="name" type="String"></field>
 				</nested-object>
+			</aggregate>
+			<aggregate name="Tenant" business-key="name" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
+				<field name="name" type="String"></field>
+				<field name="css" type="String"></field>
+				<command name="Create" create-command="false">
+					<trigger source="CreateTenantRequested" key-field="name">
+						<mapping target="name" value="name"></mapping>
+					</trigger>
+					<processor type="emit-event" id="ZED04r" ref="TenantCreated">
+						<mapping target="name" value="#flow.name"></mapping>
+					</processor>
+					<test-case name="CreateTenant" trigger-event="CreateTenantRequested">
+						<input name="name" value="anove" type="String"></input>
+						<expected domain-event="TenantCreated">
+							<field value="anove" name="name" type="String"></field>
+						</expected>
+						<expected-state pk="anove">{
+  "name": "anove",
+   "css": ""
+}</expected-state>
+					</test-case>
+				</command>
+				<command name="LinkStyleSheet">
+					<trigger source="FileUploaded" key-field="#event.uri.split('/')[1]">
+						<mapping target="path" value="uri"></mapping>
+						<mapping target="bucket" value="bucket"></mapping>
+						<mapping target="username" value="username"></mapping>
+					</trigger>
+					<processor type="validator" id="NjcSCR" condition="flow.entity.version != 0" exception="May not be initial request"></processor>
+					<processor type="validator" id="FQABQS" condition='"-web-" in flow.bucket' exception="This function only reacts to public uploads 'web-bucket', but the selected bucket was [{flow.bucket}]"></processor>
+					<processor type="emit-event" id="hIfDo8" ref="StyleSheetLinked">
+						<mapping target="css" value="#flow.path"></mapping>
+					</processor>
+					<test-case name="LinkStyleSheet" trigger-event="FileUploaded">
+						<input name="bucket" value="-web-" type="String"></input>
+						<input name="uri" value="dummy/anove/custom.css" type="String"></input>
+						<input name="location" value="-" type="String"></input>
+						<input name="username" value="-" type="String"></input>
+						<state>{
+  "name": "anove",
+  "css": "",
+  "version":1
+}</state>
+						<expected-state pk="anove">{
+  "name": "anove",
+  "css": "dummy/anove/custom.css"
+}</expected-state>
+						<expected domain-event="StyleSheetLinked">
+							<field value="dummy/anove/custom.css" name="css" type="String"></field>
+						</expected>
+					</test-case>
+				</command>
+				<event-handler on="TenantCreated">
+					<mapping target="name" operand="set" value="name"></mapping>
+				</event-handler>
+				<event-handler on="StyleSheetLinked">
+					<mapping target="css" operand="set" value="css"></mapping>
+				</event-handler>
 			</aggregate>
 			<aggregate name="Demo" business-key="fieldName" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
 				<field name="identifier" type="String"></field>
@@ -1376,6 +1450,17 @@ if snapshot.isDeleted != '':
 			<field name="company" type="ManyToOne" ref="Company" authorization="role" foreign-key="arn" role="#global.extractRoleFromArn(arn, 'viewer')"></field>
 			<field name="employeeArn" type="String"></field>
 			<field name="employee" type="OneToOne" ref="Employee" authorization="role" foreign-key="employeeArn" role="#global.extractRoleFromArn(employeeArn, 'viewer')"></field>
+		</view>
+		<view name="Tenant" data-retention-days="-1" exclude-notification="false">
+			<field name="name" type="String" pk="true"></field>
+			<field name="css" type="String"></field>
+			<snapshot-handler id="4c3beB" sub-domain="Admin" aggregate="Tenant" key-mapping="name" processor="item">
+				<mapping target="name" operand="set" value="name"></mapping>
+				<mapping target="css" operand="set" value="css"></mapping>
+				<delete condition="#snapshot.isDeleted != ''"></delete>
+			</snapshot-handler>
+			<query graphql-namespace="Tenant" field-name="get" type="get" authorization="authenticated"></query>
+			<query graphql-namespace="Tenant" field-name="filter" type="filter" authorization="authenticated"></query>
 		</view>
 		<view name="Control" data-retention-days="-1" exclude-notification="false">
 			<field name="name" type="String"></field>

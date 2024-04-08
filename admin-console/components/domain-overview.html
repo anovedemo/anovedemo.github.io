@@ -79,6 +79,12 @@
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'CreateTenant'"
+                                x-show="'createtenant'.includes(search.toLowerCase())">
+                            CreateTenant
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
                                 @click="Draftsman.empty_track_and_trace_log();component = 'AddControlFramework'"
                                 x-show="'addcontrolframework'.includes(search.toLowerCase())">
                             AddControlFramework
@@ -187,6 +193,14 @@
                     <div x-import="commands/AddRequirement">
                         <h6>AddRequirement</h6>
                         <ui-AddRequirement></ui-AddRequirement>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'CreateTenant'" x-cloak x-transition>
+                    <div x-import="commands/CreateTenant">
+                        <h6>CreateTenant</h6>
+                        <ui-CreateTenant></ui-CreateTenant>
                     </div>
                 </div>
 
@@ -313,6 +327,22 @@
                 </div>
 
                 
+                <div x-show="component == 'Tenant/get'" x-cloak x-transition>
+                    <div x-import="views/Tenant/get">
+                        <h6>Tenant.get</h6>
+                        <ui-Tenant-get></ui-Tenant-get>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Tenant/filter'" x-cloak x-transition>
+                    <div x-import="views/Tenant/filter">
+                        <h6>Tenant.filter</h6>
+                        <ui-Tenant-filter></ui-Tenant-filter>
+                    </div>
+                </div>
+
+                
                 <div x-show="component == 'Control/get'" x-cloak x-transition>
                     <div x-import="views/Control/get">
                         <h6>Control.get</h6>
@@ -430,6 +460,16 @@
                     <button type="button" class="btn btn-outline-primary"
                             x-show="'region.filter'.includes(search.toLowerCase())"
                             @click="component = 'Region/filter'">Region.filter
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'tenant.get'.includes(search.toLowerCase())"
+                            @click="component = 'Tenant/get'">Tenant.get
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'tenant.filter'.includes(search.toLowerCase())"
+                            @click="component = 'Tenant/filter'">Tenant.filter
                     </button>
                     
                     <button type="button" class="btn btn-outline-primary"
