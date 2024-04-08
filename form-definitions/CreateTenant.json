@@ -10,13 +10,5 @@
     "pattern": "^[a-z]+$",
     "placeholder": "",
     "default": ""
-  },
-  {
-    "name": "css",
-    "title": "Css",
-    "type": "String",
-    "pattern": "",
-    "placeholder": "",
-    "default": ""
   }
 ]
