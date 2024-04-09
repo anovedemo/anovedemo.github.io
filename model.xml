@@ -1633,6 +1633,6 @@ if snapshot.isDeleted != '':
 			</activity>
 		</notifier>
 	</notifiers>
-	<functional-scenarios clean-db="false" clean-iam="false" minimum-event-coverage="80" minimum-view-coverage="80">
+	<functional-scenarios clean-db="true" clean-iam="true" minimum-event-coverage="80" minimum-view-coverage="80">
 	</functional-scenarios>
 </draftsman>
