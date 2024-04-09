@@ -4,6 +4,11 @@
                         x-include="/prepared-statements/commands/UpdateBusinessRoleCompanyEmployee.txt"
                         authenticated>
     </draftsman-mutation>
+    <draftsman-trace command="ChangeBusinessRole"
+                     status="success"
+                     @trace="Draftsman.force_reload_data">
+    </draftsman-trace>
+
     <h1>Employees with access</h1>
     <hr>
     <table class="table">

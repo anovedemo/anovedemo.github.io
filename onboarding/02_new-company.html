@@ -61,26 +61,33 @@
         <hr>
         <h6>Country of establishment</h6>
         <div x-data="{selectedRegion: $persist('')}">
-            <select class="form-select" aria-label="region selector"
-                    @change="selectedRegion = $el.value;">
-                <option>Region</option>
-                <template x-for="region in regions" :key="region.arn">
-                    <option x-text="region.name"
-                            :value="region.arn"
-                            :selected="command.country.startsWith(region.arn)"></option>
-                </template>
-            </select>
-            <select class="form-select" aria-label="country selector"
-                    @change="command.country = $el.value">
-                <option>Country</option>
+<!--            <select class="form-select" aria-label="region selector"-->
+<!--                    @change="selectedRegion = $el.value;">-->
+<!--                <option>Region</option>-->
+<!--                <template x-for="region in regions" :key="region.arn">-->
+<!--                    <option x-text="region.name"-->
+<!--                            :value="region.arn"-->
+<!--                            :selected="command.country.startsWith(region.arn)"></option>-->
+<!--                </template>-->
+<!--            </select>-->
+            <input class="form-control" list="datalistOptions" x-model="command.country" placeholder="Type to search...">
+            <datalist id="datalistOptions">
                 <template x-for="country in countries" :key="country.arn">
                     <option x-text="country.name"
-                            :selected="command.country == country.arn"
-                            :value="country.arn"
-                            x-show="country.arn.startsWith(selectedRegion)"
-                            x-cloak x-transition></option>
+                            :value="country.arn"></option>
                 </template>
-            </select>
+            </datalist>
+<!--            <select class="form-select" aria-label="country selector"-->
+<!--                    @change="command.country = $el.value">-->
+<!--                <option>Country</option>-->
+<!--                <template x-for="country in countries" :key="country.arn">-->
+<!--                    <option x-text="country.name"-->
+<!--                            :selected="command.country == country.arn"-->
+<!--                            :value="country.arn"-->
+<!--                            x-show="country.arn.startsWith(selectedRegion)"-->
+<!--                            x-cloak x-transition></option>-->
+<!--                </template>-->
+<!--            </select>-->
         </div>
         <hr>
 

@@ -2,7 +2,7 @@
 const requirements_query = `
 query MyQuery {
   Company {
-    get(key: "company:draftsman") {
+    get(key: "#arn#") {
       controlframework {
         requirements {
           arn
@@ -17,10 +17,17 @@ query MyQuery {
 }
 `;
 
+var data = [];
+
+async function load_framework_data(){
+    if (data.length == 0){
+        data = await Draftsman.query(requirements_query.replace("#arn#",Draftsman.fetch_query_parameter("arn")),{},false,true);
+        data = data["Company"]["get"]["controlframework"];
+    }
+}
 async function list_requirements(){
     let requirements = {};
-    let data = await Draftsman.query(requirements_query,{},false);
-    data = data["Company"]["get"]["controlframework"];
+    await load_framework_data()
     data.forEach(framework => {
         framework.requirements.forEach(requirement => {
             requirements[requirement.arn] = {
@@ -33,8 +40,8 @@ async function list_requirements(){
 }
 
 async function list_frameworks(){
-    let data = await Draftsman.query(requirements_query,{},false);
-    return data["Company"]["get"]["controlframework"];
+    await load_framework_data()
+    return data;
 }
 
 const query_string = `
