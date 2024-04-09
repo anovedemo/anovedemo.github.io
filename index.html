@@ -26,7 +26,7 @@
 <ui-navbar></ui-navbar>
 
 <div class="container">
-    <h1>Hello <span x-text="workspace.firstName"></span> <span x-text="workspace.lastName"></span></h1>
+    <h1>Good evening, <span x-text="workspace.firstName"></span> <span x-text="workspace.lastName"></span></h1>
     <div class="row row-cols-1 row-cols-md-4 g-4">
         <template x-for="company in workspace.links" :key="company.employeeArn">
             <div class="col">
