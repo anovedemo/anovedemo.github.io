@@ -1695,7 +1695,7 @@ if snapshot.isDeleted != '':
 				<expected-trace command="Admin.Requirement.Create" status="success"></expected-trace>
 			</activity>
 			<activity type="query" id="5pTozg" description="Assert that framework is added" path="ControlFramework.get" view="ControlFramework">
-				<input name="key" type="String" value="controlframework:eugeneraldataprotectionregulationgdpr:10"></input>
+				<input name="key" type="String" value="controlframework:eugeneraldataprotectionregulationgdpr"></input>
 				<expect-value name="name" type="String" value="The EU General Data Protection Regulation (GDPR), implemented in May 2018, is a comprehensive data privacy law applying to businesses handling personal data of European Union (EU) residents. It mandates transparent and lawful data processing, limiting data collection to necessary purposes, ensuring accuracy, and enforcing data security. The GDPR grants individuals rights over their data and requires organizations to promptly report breaches. Non-compliance may result in substantial fines. Its primary goal is to protect individuals' privacy by setting stringent standards for the processing of personal data within and outside the EU."></expect-value>
 			</activity>
 			<activity type="query" id="OTFRSw" description="Assert that requirement is added" path="Requirement.get" view="Requirement">
