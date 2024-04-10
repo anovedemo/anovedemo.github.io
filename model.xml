@@ -1635,11 +1635,13 @@ if snapshot.isDeleted != '':
 	</notifiers>
 	<functional-scenarios clean-db="true" clean-iam="true" minimum-event-coverage="80" minimum-view-coverage="80">
 		<scenario name="SetupAndOnboardCompany">
-			<activity type="grant-role" id="WqLUX4" role="administrator" description=""></activity>
-			<activity type="set-variables" id="gFlJ1j">
+			<activity type="grant-role" id="WqLUX4" role="administrator" description="Setup requires admin permision"></activity>
+			<activity type="set-variables" id="gFlJ1j" description="Prepare region">
 				<input name="region" type="String" value="region:EMEA"></input>
 				<input name="regionName" type="String" value="Europe, Middle East &amp; Africa"></input>
 				<input name="regionCode" type="String" value="EMEA"></input>
+				<input name="countryArn" type="String" value="region:EMEA:country:NL"></input>
+				<input name="countryName" type="String" value="Netherlands"></input>
 			</activity>
 			<activity type="mutation" id="9TGHOL" path="Region.update" description="Create region">
 				<input name="arn" type="String" value="#region#"></input>
@@ -1652,6 +1654,26 @@ if snapshot.isDeleted != '':
 				<input name="key" type="String" value="#region#"></input>
 				<expect-value name="name" type="String" value="#regionName#"></expect-value>
 				<expect-value name="code" type="String" value="#regionCode#"></expect-value>
+			</activity>
+			<activity type="query" id="UQaJkG" path="Country.get" view="Country" description="Assert that country is created">
+				<input name="key" type="String" value="#countryArn#"></input>
+				<expect-value name="name" type="String" value="#countryName#"></expect-value>
+			</activity>
+			<activity type="set-variables" id="NqvsP2" description="Prepare industry">
+				<input name="industry" type="String" value="industry:informationtechnologyitandservices"></input>
+				<input name="industryName" type="String" value="Information Technology (IT) and Services"></input>
+				<input name="industryDecription" type="String" value="Software development, IT services, and technology innovation."></input>
+			</activity>
+			<activity type="mutation" id="feLiPo" path="Industry.add" description="Create Industry">
+				<input name="arn" type="String" value="#industry#"></input>
+				<input name="name" type="String" value="#industryName#"></input>
+				<input name="description" type="String" value="#industryDecription#"></input>
+				<expected-trace command="Admin.Industry.Create" status="success"></expected-trace>
+			</activity>
+			<activity type="query" id="E4cwX9" description="Assert that industry is created" path="Industry.get" view="Industry">
+				<input name="key" type="String" value="#industry#"></input>
+				<expect-value name="name" type="String" value="#industryName#"></expect-value>
+				<expect-value name="description" type="String" value="#industryDecription#"></expect-value>
 			</activity>
 		</scenario>
 	</functional-scenarios>
