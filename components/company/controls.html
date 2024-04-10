@@ -2,26 +2,23 @@
   <div x-data="{
     frameworks: [],
     requirements: $persist({}).as('requirements' + location),
-    command: $persist({assessmentPeriodicity: '2M','description': '# Title\n\nLorem ipsum...'}).as('createcontrol' + location)}">
+    command: $persist({assessmentPeriodicity: '2M','description': '# Title\n\nLorem ipsum...',requirements:''}).as('createcontrol' + location)}">
 
     <draftsman-mutation command="CreateCompanyControl" 
                         x-include="/prepared-statements/commands/CreateCompanyControl.txt" authenticated>
     </draftsman-mutation>
-
+    <draftsman-trace command="CreateCompanyControl"
+                     status="success"
+                     @trace="
+                     command = {assessmentPeriodicity: '2M','description': '# Title\n\nLorem ipsum...',requirements:''};
+                    setTimeout(Draftsman.force_reload_data,1000);
+                    Draftsman.empty_track_and_trace_log();">
+    </draftsman-trace>
 
     <div x-import="utils/loading-icon">
       <ui-update-logs command="CreateCompanyControl"></ui-update-logs>
-      <draftsman-trace command="CreateCompanyControl"
-                       status="success"
-                       @trace="Draftsman.empty_track_and_trace_log();">
-      </draftsman-trace>
     </div>
-    <draftsman-trace command="$prop('CreateCompanyControl')"
-                     status="success"
-                     @trace="
-                    Draftsman.empty_track_and_trace_log();
-                    $dispatch('setdata', { command: 'CreateCompanyControl', data: {} });">
-    </draftsman-trace>
+
 
     <table class="table">
       <thead>
@@ -137,11 +134,19 @@
                   <div x-html="converter.makeHtml(command.description)"></div>
                 </div>
               </div>
-              <pre x-text="JSON.stringify(command,null,2)"></pre>
               <br>
               <hr>
               <button class="w-100 btn btn-sm btn-primary" type="button" data-bs-dismiss="modal"
-                      @click="$store.mutation.send('CreateCompanyControl',command)">Save</button>
+                      @click="$store.mutation.send('CreateCompanyControl',command);
+                      setTimeout(function(){
+                        if(command['description'].startsWith('base64:')){
+                          command['description'] = atob(command['description'].replace('base64:',''));
+                        }
+                        if(command['name'].startsWith('base64:')){
+                          command['name'] = atob(command['name'].replace('base64:',''));
+                        }
+                      },3000);
+                      ">Save</button>
             </form>
           </div>
         </div>
@@ -168,7 +173,6 @@
             <div class="list-group">
               <template x-for="framework in frameworks" :key="framework.arn">
                 <template x-for="requirement in framework.requirements" :key="requirement.arn">
-
                   <a href="#" data-bs-toggle="modal" data-bs-target="#controlModal"
                      x-show="`${framework.name} ${requirement.name} ${requirement.summary}`.toLowerCase().includes(search.toLowerCase()) && !command.requirements.includes(requirement.arn)"
                      x-cloak x-transition

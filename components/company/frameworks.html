@@ -1,14 +1,16 @@
 <template x-component="frameworks">
-  <div x-data="{command: {}, frameworks: [], selected: ''}">
+  <div x-data="{command: {}, frameworks: [], selected: ''}" x-import="utils/loading-icon">
 
     <draftsman-mutation command="LinkControlFramework"
                         x-include="/prepared-statements/commands/LinkControlFrameworkCompany.txt"
                         authenticated>
     </draftsman-mutation>
+    <ui-loading-icon command="LinkControlFramework"></ui-loading-icon>
 
     <draftsman-mutation command="UnlinkControlFramework"
                         x-include="/prepared-statements/commands/UnlinkControlFrameworkCompany.txt" authenticated>
     </draftsman-mutation>
+    <ui-loading-icon command="UnlinkControlFramework"></ui-loading-icon>
 
     <h1>Selected control frameworks</h1>
     <hr>

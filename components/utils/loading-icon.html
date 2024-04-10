@@ -1,5 +1,7 @@
-<template x-component="loading-icon">
-    <div x-show="$store.trace.length != 0 && inflight == $prop('command')" x-transition x-cloak>
+<template x-component="loading-icon"
+          x-init="setInterval(function(){inflight_command = inflight},1000)"
+          x-data="{inflight_command: ''}">
+    <div x-show="$store.trace.length != 0 && inflight_command == $prop('command')" x-transition x-cloak>
         <style>
             .loading-container {
                 position: absolute;
