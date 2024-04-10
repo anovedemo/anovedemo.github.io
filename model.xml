@@ -1634,5 +1634,25 @@ if snapshot.isDeleted != '':
 		</notifier>
 	</notifiers>
 	<functional-scenarios clean-db="true" clean-iam="true" minimum-event-coverage="80" minimum-view-coverage="80">
+		<scenario name="SetupAndOnboardCompany">
+			<activity type="grant-role" id="WqLUX4" role="administrator" description=""></activity>
+			<activity type="set-variables" id="gFlJ1j">
+				<input name="region" type="String" value="region:EMEA"></input>
+				<input name="regionName" type="String" value="Europe, Middle East &amp; Africa"></input>
+				<input name="regionCode" type="String" value="EMEA"></input>
+			</activity>
+			<activity type="mutation" id="9TGHOL" path="Region.update" description="Create region">
+				<input name="arn" type="String" value="#region#"></input>
+				<input name="code" type="String" value="#regionCode#"></input>
+				<input name="name" type="String" value="#regionName#"></input>
+				<input name="countries" type="Nested" value='[   {     "name": "Netherlands",     "code": "NL"   } ]'></input>
+				<expected-trace command="Admin.Region.CreateOrUpdate" status="success"></expected-trace>
+			</activity>
+			<activity type="query" id="d39qIK" description="Assert that region is created" path="Region.get" view="Region">
+				<input name="key" type="String" value="#region#"></input>
+				<expect-value name="name" type="String" value="#regionName#"></expect-value>
+				<expect-value name="code" type="String" value="#regionCode#"></expect-value>
+			</activity>
+		</scenario>
 	</functional-scenarios>
 </draftsman>

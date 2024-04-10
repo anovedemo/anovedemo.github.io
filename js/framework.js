@@ -26,23 +26,9 @@ function encode_variables(data){
     return data;
 }
 
-function decode_variables(data){
-    Object.keys(data).forEach(key => {
-        if ( (typeof data[key] === 'string' || data[key] instanceof String) && data[key].startsWith("base64:")){
-            data[key] = atob(data[key].replace("base64:",""));
-        } else if (data[key].constructor === Array){
-            data[key] = data.key.map(x => decode_variables(x));
-        } else if (typeof data[key] === 'object' &&
-                       data[key] !== null){
-            data[key] = decode_variables(data[key]);
-        }
-    });
-    return data;
-}
-
 function send_mutation(command,data){
     inflight = command;
-    data = encode_variables(JSON.parse(JSON.stringify(data)));
+    data = encode_variables(data);
     empty_track_and_trace_log();
     let query = mutation_queries[command];
     if (!query){
@@ -269,9 +255,9 @@ setTimeout(function(){
 },100);
 var subscription_reconnect_backoff = 100;
 
-async function query(query,variables,anonymous,force=false){
+async function query(query,variables,anonymous){
     var cache_key = JSON.stringify({query: query,variables: variables});
-    if(!force && cache_enabled && query.indexOf("filter(") == -1) {
+    if(cache_enabled && query.indexOf("filter(") == -1) {
         var cached_response = cacheJS.get(cache_key);
     } else {
         var cached_response = null;
