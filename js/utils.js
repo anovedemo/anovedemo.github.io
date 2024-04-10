@@ -1,5 +1,13 @@
 sessionStorage["hosted-signin"] = "true";
 
+//Make sure connected to tenant
+if (!localStorage.css){
+    location = "/select-tenant";
+}else{
+    document.head.innerHTML += `<link rel="stylesheet" href="https://${bucket}/${localStorage.css}" />`;
+}
+
+
 document.addEventListener('alpine:init', async () => {
     setTimeout(function(){
         //By default draftsman will not wait for teleports
