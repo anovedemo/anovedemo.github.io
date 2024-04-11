@@ -1702,6 +1702,14 @@ if snapshot.isDeleted != '':
 				<input name="key" type="String" value="controlframework:eugeneraldataprotectionregulationgdpr:10"></input>
 				<expect-value name="name" type="String" value="10"></expect-value>
 			</activity>
+			<activity type="mutation" id="138ixT" description="Create tenant" path="Tenant.create">
+				<input name="name" type="String" value="anove"></input>
+				<expected-trace command="Admin.Tenant.Create" status="success"></expected-trace>
+			</activity>
+			<activity type="query" id="9FHqvU" description="Assert that tenant is created" path="Tenant.get" view="Tenant">
+				<input name="key" type="String" value="anove"></input>
+				<expect-value name="name" type="String" value="anove"></expect-value>
+			</activity>
 		</scenario>
 	</functional-scenarios>
 </draftsman>
