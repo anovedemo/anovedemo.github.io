@@ -1830,7 +1830,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<expected-trace command="Customer.Control.Create" status="success"></expected-trace>
 			</activity>
 			<activity type="query" id="cNMn0t" description="Assert that control is created" path="Control.get" view="Control">
-				<input name="key" type="String" value="anove:company:draftsman:control:test"></input>
+				<input name="key" type="String" value="anove:company:gate:control:test"></input>
 				<expect-value name="name" type="String" value="Test"></expect-value>
 				<expect-value name="requirements.0.name" type="String" value="10"></expect-value>
 			</activity>
@@ -1843,6 +1843,21 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<input name="arn" type="String" value="#companyArn#"></input>
 				<input name="controlFrameworkArn" type="String" value="#frameworkArn#"></input>
 				<expected-trace command="Customer.Company.UnlinkControlFramework" status="success"></expected-trace>
+			</activity>
+			<activity type="mutation" id="LrM74s" path="Company.Employee.updateBusinessRole" description="Add employee">
+				<input name="arn" type="String" value="anove:company:gate:employee:anove-invite@endtest-mail.io"></input>
+				<input name="businessRole" type="String" value="guest"></input>
+				<expected-trace command="Customer.Company.UpdateBusinessRole" status="success"></expected-trace>
+				<expected-trace command="Admin.User.LinkCompanyToUser" status="success"></expected-trace>
+				<expected-trace command="UpdateAccessForEmployee-Notifier" status="success"></expected-trace>
+				<expected-trace command="SendInvite-Notifier" status="success"></expected-trace>
+			</activity>
+			<activity type="switch-user" id="pAc5Ek" user-number="2" description="Switch user to accept invite"></activity>
+			<activity type="mutation" id="cc2nHb" description="Accept invite" path="User.activate">
+				<input name="firstName" type="String" value="Invited"></input>
+				<input name="lastName" type="String" value="User"></input>
+				<input name="email" type="String" value="anove-invite@endtest-mail.io"></input>
+				<expected-trace command="Admin.ControlFramework.Create" status="success"></expected-trace>
 			</activity>
 		</scenario>
 	</functional-scenarios>
