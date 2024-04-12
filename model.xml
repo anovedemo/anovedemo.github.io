@@ -1818,6 +1818,32 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<input name="key" type="String" value="#companyArn#"></input>
 				<expect-value name="controlframework.0.name" type="String" value="EU General Data Protection Regulation (GDPR)"></expect-value>
 			</activity>
+			<activity type="mutation" id="eRrGne" description="Create control" path="Company.Control.create">
+				<input name="name" type="String" value="Test"></input>
+				<input name="description" type="String" value="Hello World"></input>
+				<input name="controlTemplateArn" type="String" value=""></input>
+				<input name="assessmentPeriodicity" type="String" value="1M"></input>
+				<input name="desiredMaturityLevel" type="Int" value="3"></input>
+				<input name="businessUnit" type="String" value="Engineering"></input>
+				<input name="companyArn" type="String" value="#companyArn#"></input>
+				<input name="requirements" type="String" value="controlframework:eugeneraldataprotectionregulationgdpr:10"></input>
+				<expected-trace command="Customer.Control.Create" status="success"></expected-trace>
+			</activity>
+			<activity type="query" id="cNMn0t" description="Assert that control is created" path="Control.get" view="Control">
+				<input name="key" type="String" value="anove:company:draftsman:control:test"></input>
+				<expect-value name="name" type="String" value="Test"></expect-value>
+				<expect-value name="requirements.0.name" type="String" value="10"></expect-value>
+			</activity>
+			<activity type="mutation" id="BUhvG6" description="Remove business unit" path="Company.BusinessUnit.remove">
+				<input name="arn" type="String" value="#companyArn#"></input>
+				<input name="name" type="String" value="Engineering"></input>
+				<expected-trace command="Customer.Company.RemoveBusinessUnit" status="success"></expected-trace>
+			</activity>
+			<activity type="mutation" id="4ZqLEA" description="Unlink framework" path="Company.unlinkControlFramework">
+				<input name="arn" type="String" value="#companyArn#"></input>
+				<input name="controlFrameworkArn" type="String" value="#frameworkArn#"></input>
+				<expected-trace command="Customer.Company.UnlinkControlFramework" status="success"></expected-trace>
+			</activity>
 		</scenario>
 	</functional-scenarios>
 </draftsman>
