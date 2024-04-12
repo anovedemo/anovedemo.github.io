@@ -1750,6 +1750,11 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<expect-value name="email" type="String" value="anove@endtest-mail.io"></expect-value>
 				<expect-value name="active" type="Boolean" value="true"></expect-value>
 			</activity>
+			<activity type="query" id="CyBtfQ" description="Check if profile is set" path="Profile.get" view="Profile">
+				<input name="key" type="String" value="#user_name#"></input>
+				<expect-value name="firstName" type="String" value="Test"></expect-value>
+				<expect-value name="lastName" type="String" value="User"></expect-value>
+			</activity>
 			<activity type="set-variables" id="mLEj6G" description="Set company arn">
 				<input name="companyArn" type="String" value="anove:company:gate"></input>
 			</activity>
