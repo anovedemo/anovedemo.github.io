@@ -1852,12 +1852,12 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<expected-trace command="UpdateAccessForEmployee-Notifier" status="success"></expected-trace>
 				<expected-trace command="SendInvite-Notifier" status="success"></expected-trace>
 			</activity>
-			<activity type="switch-user" id="pAc5Ek" user-number="2" description="Switch user to accept invite"></activity>
+			<activity type="switch-user" id="pAc5Ek" user-number="53" description="Switch user to accept invite"></activity>
 			<activity type="mutation" id="cc2nHb" description="Accept invite" path="User.activate">
 				<input name="firstName" type="String" value="Invited"></input>
 				<input name="lastName" type="String" value="User"></input>
 				<input name="email" type="String" value="anove-invite@endtest-mail.io"></input>
-				<expected-trace command="Admin.ControlFramework.Create" status="success"></expected-trace>
+				<expected-trace command="Admin.User.Activate" status="success"></expected-trace>
 			</activity>
 		</scenario>
 	</functional-scenarios>
