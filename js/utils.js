@@ -7,6 +7,20 @@ if (!localStorage.css){
     document.head.innerHTML += `<link rel="stylesheet" href="https://${bucket}/${localStorage.css}" />`;
 }
 
+function get_greeting(){
+    const d = new Date();
+    let hour = d.getHours();
+    console.log(hour);
+    if (3 < hour && hour < 12 ){
+        return "Good morning";
+    } else if (11 < hour && hour < 17) {
+        return "Good afternoon";
+    } else if (16 < hour && hour < 23) {
+        return "Good evening";
+    } else {
+        return "Good night";
+    }
+}
 
 document.addEventListener('alpine:init', async () => {
     setTimeout(function(){
