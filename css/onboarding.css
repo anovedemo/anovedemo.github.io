@@ -1,8 +1,12 @@
+/* FILEPATH: /Users/jean-huguesmigeon/Documents/Projects/Tracepapers/anovedemo.github.io/css/onboarding.css */
+
+/* Set the height of the html and body elements to 100% */
 html,
 body {
   height: 100%;
 }
 
+/* Style the body element */
 body {
   display: flex;
   align-items: center;
@@ -11,6 +15,7 @@ body {
   background-color: #f5f5f5;
 }
 
+/* Style the form-signin class */
 .form-signin {
   width: 100%;
   max-width: 330px;
@@ -18,36 +23,43 @@ body {
   margin: auto;
 }
 
+/* Style the checkbox within the form-signin class */
 .form-signin .checkbox {
   font-weight: 400;
 }
 
+/* Style the form-floating element when focused within the form-signin class */
 .form-signin .form-floating:focus-within {
   z-index: 2;
 }
 
+/* Style the input[type="email"] element within the form-signin class */
 .form-signin input[type="email"] {
   margin-bottom: -1px;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
 }
 
+/* Style the input[type="password"] element within the form-signin class */
 .form-signin input[type="password"] {
   margin-bottom: 10px;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
 
+/* Style the bd-placeholder-img class */
 .bd-placeholder-img {
-    font-size: 1.125rem;
-    text-anchor: middle;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    user-select: none;
-  }
+  font-size: 1.125rem;
+  text-anchor: middle;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
 
-  @media (min-width: 768px) {
-    .bd-placeholder-img-lg {
-      font-size: 3.5rem;
-    }
+/* Media query for screens with a minimum width of 768px */
+@media (min-width: 768px) {
+  /* Style the bd-placeholder-img-lg class */
+  .bd-placeholder-img-lg {
+    font-size: 3.5rem;
   }
+}

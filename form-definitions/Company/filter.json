@@ -1,3 +1,27 @@
+/**
+ * This file defines the filter options for the Company form.
+ * It is NOT managed by Tracepaper and can be customized.
+ *
+ * @typedef {Object} FilterOption
+ * @property {string} type - The type of the filter option.
+ * @property {string} message - A message related to the filter option.
+ * @property {string} name - The name of the filter option.
+ * @property {string} type - The data type of the filter option.
+ * @property {string} title - The title of the filter option.
+ *
+ * @example
+ * {
+ *   "type": "meta",
+ *   "message": "This file is NOT managed by Tracepaper, and can be customized."
+ * }
+ *
+ * @example
+ * {
+ *   "name": "key_begins_with",
+ *   "type": "String",
+ *   "title": "Key Begins With"
+ * }
+ */
 [
   {
     "type": "meta",
