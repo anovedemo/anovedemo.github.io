@@ -963,7 +963,7 @@
 					</test-case>
 				</command>
 				<command name="UpdateBusinessRole">
-					<trigger source="UpdateBusinessRoleCompanyEmployeeRequested" key-field="#global.truncateArn(arn, '2')">
+					<trigger source="UpdateBusinessRoleCompanyEmployeeRequested" key-field="#global.truncateArn(arn, '3')">
 						<mapping target="arn" value="arn"></mapping>
 						<mapping target="businessRole" value="businessRole"></mapping>
 					</trigger>
