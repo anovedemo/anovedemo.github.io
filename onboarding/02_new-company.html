@@ -99,7 +99,10 @@
                 type="Employee"
                 @notification="
                 console.log($event.detail);
-                if($event.detail.identifier == command.arn + ':employee:' + localStorage['username']){Experimental.update_credentials('/')}">
+                if($event.detail.identifier == command.arn + ':employee:' + localStorage['username']){
+                    command = {companySize: 10,country:'',industry:''};
+                    Experimental.update_credentials('/');
+                }">
         </draftsman-notification>
 
         <div class="modal fade" id="industryModal" tabindex="-1" aria-labelledby="industryModalLabel" aria-hidden="true">

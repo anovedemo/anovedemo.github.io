@@ -10,7 +10,6 @@ if (!localStorage.css){
 function get_greeting(){
     const d = new Date();
     let hour = d.getHours();
-    console.log(hour);
     if (3 < hour && hour < 12 ){
         return "Good morning";
     } else if (11 < hour && hour < 17) {
