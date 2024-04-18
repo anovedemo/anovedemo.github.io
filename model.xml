@@ -1900,9 +1900,11 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 		</notifier>
 		<notifier name="InitializeSystemUser">
 			<trigger source="@afterDeployment">
-				<mapping target="dummy" value="#''"></mapping>
+				<mapping target="username" value="#'system-user'"></mapping>
+				<mapping target="group" value="#'administrator'"></mapping>
 			</trigger>
 			<activity type="iam-create-systemuser" fail-silent="true" id="vMB9LZ"></activity>
+			<activity type="add-user-to-iam-group" id="nRRhdb" group-name="#flow.group" username="#flow.username" fail-silent="true"></activity>
 		</notifier>
 		<notifier name="SetupDemo">
 			<trigger source="@cron(0 * * * ? *)">
