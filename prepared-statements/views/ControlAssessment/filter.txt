@@ -1,0 +1,19 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query FilterControlAssessment($key_begins_with: String = "") {
+  ControlAssessment {
+    filter(key_begins_with: $key_begins_with) {
+       resultset { 
+        key
+        dueDate
+        notes
+        completeDate
+        category
+        arn
+        assessedMaturityLevel
+        assessedMaturityDescription
+        linkToEvidence
+        assessorLink
+      }
+    }
+  }
+}

@@ -1,0 +1,17 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query GetTask($key: ID = "") {
+  Task {
+    get(key: $key) {
+      key
+      dueDate
+      notes
+      completeDate
+      arn
+      owner
+      evidence
+      category
+      assessedMaturityLevel
+      assessedMaturityDescription
+    }
+  }
+}

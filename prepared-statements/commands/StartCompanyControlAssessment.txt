@@ -1,0 +1,12 @@
+# This file is managed by Tracepaper
+mutation Start($controlArn: String = "", $dueDate: String = "", $category: String = "", $assessorLink: String = "") {
+  Company{
+    Control{
+      Assessment{
+        start(input: {controlArn: $controlArn,dueDate: $dueDate,category: $category,assessorLink: $assessorLink}) {
+           correlationId
+        }
+      }
+    }
+  }
+}

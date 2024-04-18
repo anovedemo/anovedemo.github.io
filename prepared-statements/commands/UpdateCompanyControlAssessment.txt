@@ -1,0 +1,12 @@
+# This file is managed by Tracepaper
+mutation Update($arn: String = "", $assessment: [UpdateCompanyControlAssessment_Assessment!] = []) {
+  Company{
+    Control{
+      Assessment{
+        update(input: {arn: $arn,assessment: $assessment}) {
+           correlationId
+        }
+      }
+    }
+  }
+}

@@ -66,5 +66,21 @@
     "pattern": "^controlframework:[a-z0-9]+:[a-z0-9]+(;controlframework:[a-z0-9]+:[a-z0-9]+)*$",
     "placeholder": "",
     "default": ""
+  },
+  {
+    "name": "nextAssessmentDate",
+    "title": "Nextassessmentdate",
+    "type": "String",
+    "pattern": "^(?:20)\\d{2}-\\d{2}-\\d{2}$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "controlOwner",
+    "title": "Controlowner",
+    "type": "String",
+    "pattern": "^[a-z]+:company:[a-z]+:employee:[^\\s]+$",
+    "placeholder": "",
+    "default": ""
   }
 ]
