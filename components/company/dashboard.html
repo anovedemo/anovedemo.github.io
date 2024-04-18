@@ -1,39 +1,42 @@
 <template x-component="dashboard">
-  <div>
-    <h1>Dashboard for: <span x-text="company.name"></span></h1>
-    <hr>
-    <table class="table">
-      <tr>
-        <th scope="row">Country of establishment</th>
-        <td>
-          <span x-text="company.country.name"></span>
-          (<span x-text="company.country.region.name"></span>)
-        </td>
-      </tr>
-      <tr>
-        <th scope="row">Industry</th>
-        <td x-text="company.industry.map(x => x.name).join(', ')"></td>
-      </tr>
-      <tr>
-        <th scope="row">What we do</th>
-        <td x-text="company.description"></td>
-      </tr>
-      <tr>
-        <th scope="row">Company size</th>
-        <td x-text="company.companySize"></td>
-      </tr>
-      <tr>
-        <th scope="row">Revenue</th>
-        <td x-text="company.revenue"></td>
-      </tr>
-      <tr>
-        <th scope="row">Businessunits</th>
-        <td x-text="company.businessunits.map(x => x.name).join(', ')"></td>
-      </tr>
-      <tr>
-        <th scope="row">Number of tool users</th>
-        <td x-text="company.employees.length"></td>
-      </tr>
-    </table>
+  <div class="row">
+    <div class="col-8">
+      <h1>Dashboard for: <span x-text="company.name"></span></h1>
+      <hr>
+      <table class="table">
+        <tr>
+          <th scope="row">Country of establishment</th>
+          <td>
+            <span x-text="company.country.name"></span>
+            (<span x-text="company.country.region.name"></span>)
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Industry</th>
+          <td x-text="company.industry.map(x => x.name).join(', ')"></td>
+        </tr>
+        <tr>
+          <th scope="row">What we do</th>
+          <td x-text="company.description"></td>
+        </tr>
+        <tr>
+          <th scope="row">Company size</th>
+          <td x-text="company.companySize"></td>
+        </tr>
+        <tr>
+          <th scope="row">Revenue</th>
+          <td x-text="company.revenue"></td>
+        </tr>
+        <tr>
+          <th scope="row">Businessunits</th>
+          <td x-text="company.businessunits.map(x => x.name).join(', ')"></td>
+        </tr>
+        <tr>
+          <th scope="row">Number of tool users</th>
+          <td x-text="company.employees.length"></td>
+        </tr>
+      </table>
+    </div>
+
   </div>
 </template>

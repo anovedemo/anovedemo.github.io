@@ -75,12 +75,27 @@
                     <input type="text" id="controlname" class="form-control" x-model="command.name"/>
                     <label for="controlname">Control name</label>
                   </div>
-                  <select class="form-select" aria-label="businessunit" @change="command.businessUnit = $el.value">
-                    <option>Business unit</option>
+
+                  <input @change="command.businessUnit = $el.value"
+                         :value="command.businessUnit"
+                         class="form-control" list="businessunits" placeholder="Business unit...">
+                  <datalist id="businessunits">
                     <template x-for="businessunit in company.businessUnits" :key="businessunit.name">
-                      <option :value="businessunit.name" x-text="businessunit.name" :selected="businessunit.name == command.businessUnit"></option>
+                      <option :value="businessunit.name" x-text="businessunit.name"></option>
                     </template>
-                  </select>
+                  </datalist>
+
+                  <input @change="command.controlOwner = $el.value"
+                         :value="command.controlOwner"
+                         class="form-control" list="employees" placeholder="Owner...">
+                  <datalist id="employees">
+                    <template x-for="employee in company.employees" :key="employee.arn">
+                      <option :value="employee.arn">
+                        <span x-text="employee.user.firstName"></span> <span x-text="employee.user.lastName"></span>
+                      </option>
+                    </template>
+                  </datalist>
+
                 </div>
                 <div class="col-4">
                   <label for="periodicity">Assessment Periodicity:
@@ -89,13 +104,18 @@
                          @change="command.assessmentPeriodicity = periodicity_templates[$el.value]"
                          min="0" :max="periodicity_templates.length - 1" step="1" id="periodicity" :value="periodicity_templates.indexOf(command.assessmentPeriodicity)">
 
+                  <label for="date">First assessment date</label>
+                  <input type="date" class="form-range"
+                         @change="command.nextAssessmentDate = $el.value"
+                          id="date" >
+                </div>
+                <div class="col-4">
+
                   <label for="maturity">Desired maturity level:
                     <span x-text="command.desiredMaturityLevel"></span></label>
                   <input type="range" class="form-range"
                          x-model="command.desiredMaturityLevel = $el.value"
                          min="1" max="5" step="1" id="maturity">
-                </div>
-                <div class="col-4">
 
                   <ul class="list-group list-group-flush">
                     <template x-for="requirement in command.requirements.split(';')" :key="requirement">

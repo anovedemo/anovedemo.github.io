@@ -1,9 +1,9 @@
 # This file is managed by Tracepaper
-mutation Create($name: String = "", $description: String = "", $controlTemplateArn: String = "", $assessmentPeriodicity: String = "", $desiredMaturityLevel: Int = 0, $businessUnit: String = "", $companyArn: String = "", $requirements: String = "") {
-  Company{
-    Control{
-      create(input: {name: $name,description: $description,controlTemplateArn: $controlTemplateArn,assessmentPeriodicity: $assessmentPeriodicity,desiredMaturityLevel: $desiredMaturityLevel,businessUnit: $businessUnit,companyArn: $companyArn,requirements: $requirements}) {
-         correlationId
+mutation Create($name: String = "", $description: String = "", $controlTemplateArn: String = "", $assessmentPeriodicity: String = "", $desiredMaturityLevel: Int = 0, $businessUnit: String = "", $companyArn: String = "", $requirements: String = "", $controlOwner: String = "", $nextAssessmentDate: String = "") {
+  Company {
+    Control {
+      create(input: {name: $name, description: $description, controlTemplateArn: $controlTemplateArn, assessmentPeriodicity: $assessmentPeriodicity, desiredMaturityLevel: $desiredMaturityLevel, businessUnit: $businessUnit, companyArn: $companyArn, requirements: $requirements, controlOwner: $controlOwner, nextAssessmentDate: $nextAssessmentDate}) {
+        correlationId
       }
     }
   }
