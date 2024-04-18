@@ -23,7 +23,7 @@
     "name": "category",
     "title": "Category",
     "type": "String",
-    "pattern": "^(self|contro|audit|effectiveness)$",
+    "pattern": "^(self|control|audit|effectiveness)$",
     "placeholder": "",
     "default": ""
   },

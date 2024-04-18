@@ -1,73 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <draftsman project-name="Demo" xmlns="https://tracepaper.draftsman.io">
 	<global>
-		<pattern name="AssesmentCategory" regex="^(self|contro|audit|effectiveness)$"></pattern>
-		<pattern name="BusinessRole" regex="^(administrator|guest|blocked)$"></pattern>
-		<pattern name="CompanyArn" regex="^{{TenantName}}:company:[a-z]+$"></pattern>
-		<pattern name="ControlFrameworkArn" regex="^controlframework:[a-z0-9]+$"></pattern>
-		<pattern name="ControlFrameworkType" regex="^(standard|regulation|framework)$"></pattern>
-		<pattern name="CountryArn" regex="^{{RegionArn}}:country:[A-Z]+$"></pattern>
-		<pattern name="Date" regex="^(?:20)\d{2}-\d{2}-\d{2}$"></pattern>
-		<pattern name="EmployeeArn" regex="^{{CompanyArn}}:employee:[^\s]+$"></pattern>
-		<pattern name="GeoCode" regex="^[A-Z]+$"></pattern>
-		<pattern name="IndustryArn" regex="^industry:[a-z]+$"></pattern>
-		<pattern name="IndustryLink" regex="^{{IndustryArn}}(;{{IndustryArn}})*$"></pattern>
-		<pattern name="MaturityLevel" regex="^(1|2|3|4|5)$"></pattern>
-		<pattern name="RegionArn" regex="^region:[A-Z]+$"></pattern>
 		<pattern name="RequirementArn" regex="^{{ControlFrameworkArn}}:[a-z0-9]+$"></pattern>
-		<pattern name="RequirementLink" regex="^{{RequirementArn}}(;{{RequirementArn}})*$"></pattern>
+		<pattern name="CountryArn" regex="^{{RegionArn}}:country:[A-Z]+$"></pattern>
+		<pattern name="CompanyArn" regex="^{{TenantName}}:company:[a-z]+$"></pattern>
+		<pattern name="GeoCode" regex="^[A-Z]+$"></pattern>
+		<pattern name="ControlFrameworkType" regex="^(standard|regulation|framework)$"></pattern>
+		<pattern name="ControlFrameworkArn" regex="^controlframework:[a-z0-9]+$"></pattern>
 		<pattern name="TenantName" regex="^[a-z]+$"></pattern>
-		<expression name="extractRoleFromArn" type="ActorEventRole" input="arn;role" expression="${arn.split(':')[0]}:${arn.split(':')[1]}:${arn.split(':')[2]}:role"></expression>
+		<pattern name="EmployeeArn" regex="^{{CompanyArn}}:employee:[^\s]+$"></pattern>
+		<pattern name="Date" regex="^(?:20)\d{2}-\d{2}-\d{2}$"></pattern>
+		<pattern name="RegionArn" regex="^region:[A-Z]+$"></pattern>
+		<pattern name="AssesmentCategory" regex="^(self|control|audit|effectiveness)$"></pattern>
+		<pattern name="RequirementLink" regex="^{{RequirementArn}}(;{{RequirementArn}})*$"></pattern>
+		<pattern name="BusinessRole" regex="^(administrator|guest|blocked)$"></pattern>
+		<pattern name="MaturityLevel" regex="^(1|2|3|4|5)$"></pattern>
+		<pattern name="IndustryLink" regex="^{{IndustryArn}}(;{{IndustryArn}})*$"></pattern>
+		<pattern name="IndustryArn" regex="^industry:[a-z]+$"></pattern>
 		<expression name="truncateArn" type="TriggerKeyField" input="arn;length" expression="':'.join(arn.split(':')[:int(length)])"></expression>
+		<expression name="extractRoleFromArn" type="ActorEventRole" input="arn;role" expression="${arn.split(':')[0]}:${arn.split(':')[1]}:${arn.split(':')[2]}:role"></expression>
 	</global>
 	<events>
-		<event graphql-namespace="User" graphql-name="activate" name="ActivateUserRequested" authorization="authenticated" type="ActorEvent">
-			<field name="username" type="String" auto-fill="username"></field>
-			<field name="firstName" type="String"></field>
-			<field name="lastName" type="String"></field>
-			<field name="email" type="String"></field>
-		</event>
-		<event graphql-namespace="Company.BusinessUnit" graphql-name="add" name="AddCompanyBusinessUnitRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
-			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
-			<field name="name" type="String"></field>
-			<field name="description" type="String"></field>
-		</event>
-		<event graphql-namespace="ControlFramework" graphql-name="add" name="AddControlFrameworkRequested" authorization="role" type="ActorEvent" role="administrator">
-			<field name="arn" type="String" pattern="{{ControlFrameworkArn}}"></field>
-			<field name="description" type="String"></field>
-			<field name="name" type="String"></field>
-			<field name="category" type="String" pattern="{{ControlFrameworkType}}"></field>
-			<field name="edition" type="String"></field>
-			<field name="unit" type="String"></field>
-			<field name="acronym" type="String"></field>
-			<field name="active" type="Boolean"></field>
-		</event>
-		<event graphql-namespace="Industry" graphql-name="add" name="AddIndustryRequested" authorization="role" type="ActorEvent" role="administrator">
-			<field name="arn" type="String" pattern="{{IndustryArn}}"></field>
-			<field name="name" type="String"></field>
-			<field name="description" type="String"></field>
-		</event>
-		<event graphql-namespace="Requirement" graphql-name="add" name="AddRequirementRequested" authorization="role" type="ActorEvent" role="administrator">
-			<field name="arn" type="String" pattern="{{RequirementArn}}"></field>
-			<field name="name" type="String"></field>
-			<field name="description" type="String"></field>
-			<field name="mandatory" type="Boolean"></field>
-			<field name="summary" type="String"></field>
+		<event graphql-namespace="Company.Employee" graphql-name="updateBusinessRole" name="UpdateBusinessRoleCompanyEmployeeRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
+			<field name="arn" type="String" pattern="{{EmployeeArn}}"></field>
+			<field name="businessRole" type="String" pattern="{{BusinessRole}}"></field>
 		</event>
 		<event graphql-namespace="Company.Control.Assessment" graphql-name="complete" name="CompleteCompanyControlAssessmentRequested" authorization="authenticated" type="ActorEvent">
 			<field name="arn" type="String"></field>
-		</event>
-		<event graphql-namespace="Company.Control" graphql-name="create" name="CreateCompanyControlRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(companyArn, 'administrator')">
-			<field name="name" type="String"></field>
-			<field name="description" type="String"></field>
-			<field name="controlTemplateArn" type="String" default=""></field>
-			<field name="assessmentPeriodicity" type="String"></field>
-			<field name="desiredMaturityLevel" type="Int"></field>
-			<field name="businessUnit" type="String"></field>
-			<field name="companyArn" type="String" pattern="{{CompanyArn}}"></field>
-			<field name="requirements" type="String" pattern="{{RequirementLink}}"></field>
-			<field name="nextAssessmentDate" type="String" pattern="{{Date}}"></field>
-			<field name="controlOwner" type="String" pattern="{{EmployeeArn}}"></field>
 		</event>
 		<event graphql-namespace="Company" graphql-name="create" name="CreateCompanyRequested" authorization="authenticated" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
@@ -79,32 +38,24 @@
 			<field name="user" type="String" auto-fill="username"></field>
 			<field name="country" type="String" pattern="{{CountryArn}}"></field>
 		</event>
-		<event graphql-namespace="Tenant" graphql-name="create" name="CreateTenantRequested" authorization="role" type="ActorEvent" role="administrator">
-			<field name="name" type="String" pattern="{{TenantName}}"></field>
-		</event>
-		<event graphql-namespace="Company" graphql-name="linkControlFramework" name="LinkControlFrameworkCompanyRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
-			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
-			<field name="controlFrameworkArn" type="String" pattern="{{ControlFrameworkArn}}"></field>
-		</event>
-		<event graphql-namespace="Company.BusinessUnit" graphql-name="remove" name="RemoveCompanyBusinessUnitRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
-			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
-			<field name="name" type="String"></field>
-		</event>
-		<event graphql-namespace="Company.Control.Assessment" graphql-name="start" name="StartCompanyControlAssessmentRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(controlArn, 'administrator')">
-			<field name="controlArn" type="String"></field>
-			<field name="dueDate" type="String" default="" pattern="{{Date}}"></field>
-			<field name="category" type="String" pattern="{{AssesmentCategory}}" default=""></field>
-			<field name="assessorLink" type="String" default="" pattern="{{EmployeeArn}}"></field>
-		</event>
 		<event graphql-namespace="Company" graphql-name="unlinkControlFramework" name="UnlinkControlFrameworkCompanyRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
 			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
 			<field name="controlFrameworkArn" type="String" pattern="{{ControlFrameworkArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.Employee" graphql-name="updateBusinessRole" name="UpdateBusinessRoleCompanyEmployeeRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
-			<field name="arn" type="String" pattern="{{EmployeeArn}}"></field>
-			<field name="businessRole" type="String" pattern="{{BusinessRole}}"></field>
+		<event graphql-namespace="Demo" graphql-name="update" name="UpdateDemoRequested" authorization="anonymous" type="ActorEvent">
+			<field name="identifier" type="String"></field>
+			<field name="value" type="String"></field>
 		</event>
-		<event graphql-namespace="Company.BusinessUnit" graphql-name="update" name="UpdateCompanyBusinessUnitRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
+		<event graphql-namespace="Region" graphql-name="update" name="UpdateRegionRequested" authorization="role" type="ActorEvent" role="administrator">
+			<field name="arn" type="String" pattern="{{RegionArn}}"></field>
+			<field name="code" type="String" pattern="{{GeoCode}}"></field>
+			<field name="name" type="String"></field>
+			<nested-object name="countries">
+				<field name="name" type="String"></field>
+				<field name="code" type="String" pattern="{{GeoCode}}"></field>
+			</nested-object>
+		</event>
+		<event graphql-namespace="Company.BusinessUnit" graphql-name="add" name="AddCompanyBusinessUnitRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
 			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
@@ -121,18 +72,92 @@
 				<field name="assessorLink" type="String" pattern="{{EmployeeArn}}"></field>
 			</nested-object>
 		</event>
-		<event graphql-namespace="Demo" graphql-name="update" name="UpdateDemoRequested" authorization="anonymous" type="ActorEvent">
-			<field name="identifier" type="String"></field>
-			<field name="value" type="String"></field>
+		<event graphql-namespace="Company.Control.Assessment" graphql-name="start" name="StartCompanyControlAssessmentRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(controlArn, 'administrator')">
+			<field name="controlArn" type="String"></field>
+			<field name="dueDate" type="String" default="" pattern="{{Date}}"></field>
+			<field name="category" type="String" pattern="{{AssesmentCategory}}" default=""></field>
+			<field name="assessorLink" type="String" default="" pattern="{{EmployeeArn}}"></field>
 		</event>
-		<event graphql-namespace="Region" graphql-name="update" name="UpdateRegionRequested" authorization="role" type="ActorEvent" role="administrator">
-			<field name="arn" type="String" pattern="{{RegionArn}}"></field>
-			<field name="code" type="String" pattern="{{GeoCode}}"></field>
+		<event graphql-namespace="Company.BusinessUnit" graphql-name="update" name="UpdateCompanyBusinessUnitRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
+			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
 			<field name="name" type="String"></field>
-			<nested-object name="countries">
-				<field name="name" type="String"></field>
-				<field name="code" type="String" pattern="{{GeoCode}}"></field>
+			<field name="description" type="String"></field>
+		</event>
+		<event graphql-namespace="Company.Control" graphql-name="create" name="CreateCompanyControlRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(companyArn, 'administrator')">
+			<field name="name" type="String"></field>
+			<field name="description" type="String"></field>
+			<field name="controlTemplateArn" type="String" default=""></field>
+			<field name="assessmentPeriodicity" type="String"></field>
+			<field name="desiredMaturityLevel" type="Int"></field>
+			<field name="businessUnit" type="String"></field>
+			<field name="companyArn" type="String" pattern="{{CompanyArn}}"></field>
+			<field name="requirements" type="String" pattern="{{RequirementLink}}"></field>
+			<field name="nextAssessmentDate" type="String" pattern="{{Date}}"></field>
+			<field name="controlOwner" type="String" pattern="{{EmployeeArn}}"></field>
+		</event>
+		<event graphql-namespace="Company.BusinessUnit" graphql-name="remove" name="RemoveCompanyBusinessUnitRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
+			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
+			<field name="name" type="String"></field>
+		</event>
+		<event graphql-namespace="Industry" graphql-name="add" name="AddIndustryRequested" authorization="role" type="ActorEvent" role="administrator">
+			<field name="arn" type="String" pattern="{{IndustryArn}}"></field>
+			<field name="name" type="String"></field>
+			<field name="description" type="String"></field>
+		</event>
+		<event graphql-namespace="Company" graphql-name="linkControlFramework" name="LinkControlFrameworkCompanyRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
+			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
+			<field name="controlFrameworkArn" type="String" pattern="{{ControlFrameworkArn}}"></field>
+		</event>
+		<event graphql-namespace="Requirement" graphql-name="add" name="AddRequirementRequested" authorization="role" type="ActorEvent" role="administrator">
+			<field name="arn" type="String" pattern="{{RequirementArn}}"></field>
+			<field name="name" type="String"></field>
+			<field name="description" type="String"></field>
+			<field name="mandatory" type="Boolean"></field>
+			<field name="summary" type="String"></field>
+		</event>
+		<event graphql-namespace="Tenant" graphql-name="create" name="CreateTenantRequested" authorization="role" type="ActorEvent" role="administrator">
+			<field name="name" type="String" pattern="{{TenantName}}"></field>
+		</event>
+		<event graphql-namespace="ControlFramework" graphql-name="add" name="AddControlFrameworkRequested" authorization="role" type="ActorEvent" role="administrator">
+			<field name="arn" type="String" pattern="{{ControlFrameworkArn}}"></field>
+			<field name="description" type="String"></field>
+			<field name="name" type="String"></field>
+			<field name="category" type="String" pattern="{{ControlFrameworkType}}"></field>
+			<field name="edition" type="String"></field>
+			<field name="unit" type="String"></field>
+			<field name="acronym" type="String"></field>
+			<field name="active" type="Boolean"></field>
+		</event>
+		<event graphql-namespace="User" graphql-name="activate" name="ActivateUserRequested" authorization="authenticated" type="ActorEvent">
+			<field name="username" type="String" auto-fill="username"></field>
+			<field name="firstName" type="String"></field>
+			<field name="lastName" type="String"></field>
+			<field name="email" type="String"></field>
+		</event>
+		<event name="UserAddedToCompany" source="Admin.User" type="DomainEvent">
+			<field name="username" type="String"></field>
+			<field name="active" type="Boolean"></field>
+			<nested-object name="companies" business-key="arn">
+				<field name="arn" type="String"></field>
+				<field name="employeeArn" type="String"></field>
 			</nested-object>
+		</event>
+		<event name="UserActivated" source="Admin.User" type="DomainEvent">
+			<field name="username" type="String"></field>
+			<field name="firstName" type="String"></field>
+			<field name="lastName" type="String"></field>
+			<field name="active" type="Boolean"></field>
+			<field name="email" type="String"></field>
+			<field name="companyArn" type="String"></field>
+		</event>
+		<event name="CompanyAdministratorCreated" source="Admin.User" type="DomainEvent">
+			<field name="username" type="String"></field>
+			<field name="companyArn" type="String"></field>
+		</event>
+		<event name="IndustryCreated" source="Admin.Industry" type="DomainEvent">
+			<field name="arn" type="String"></field>
+			<field name="name" type="String"></field>
+			<field name="description" type="String"></field>
 		</event>
 		<event name="ControlFrameworkCreated" source="Admin.ControlFramework" type="DomainEvent">
 			<field name="arn" type="String"></field>
@@ -144,15 +169,6 @@
 			<field name="acronym" type="String"></field>
 			<field name="active" type="Boolean"></field>
 		</event>
-		<event name="DemoUpdated" source="Admin.Demo" type="DomainEvent">
-			<field name="identifier" type="String"></field>
-			<field name="value" type="String"></field>
-		</event>
-		<event name="IndustryCreated" source="Admin.Industry" type="DomainEvent">
-			<field name="arn" type="String"></field>
-			<field name="name" type="String"></field>
-			<field name="description" type="String"></field>
-		</event>
 		<event name="RegionUpdated" source="Admin.Region" type="DomainEvent">
 			<field name="arn" type="String"></field>
 			<field name="name" type="String"></field>
@@ -162,6 +178,16 @@
 				<field name="name" type="String"></field>
 			</nested-object>
 		</event>
+		<event name="TenantCreated" source="Admin.Tenant" type="DomainEvent">
+			<field name="name" type="String"></field>
+		</event>
+		<event name="StyleSheetLinked" source="Admin.Tenant" type="DomainEvent">
+			<field name="css" type="String"></field>
+		</event>
+		<event name="DemoUpdated" source="Admin.Demo" type="DomainEvent">
+			<field name="identifier" type="String"></field>
+			<field name="value" type="String"></field>
+		</event>
 		<event name="RequirementCreated" source="Admin.Requirement" type="DomainEvent">
 			<field name="arn" type="String"></field>
 			<field name="name" type="String"></field>
@@ -169,53 +195,14 @@
 			<field name="mandatory" type="Boolean"></field>
 			<field name="summary" type="String"></field>
 		</event>
-		<event name="StyleSheetLinked" source="Admin.Tenant" type="DomainEvent">
-			<field name="css" type="String"></field>
-		</event>
-		<event name="TenantCreated" source="Admin.Tenant" type="DomainEvent">
-			<field name="name" type="String"></field>
-		</event>
-		<event name="CompanyAdministratorCreated" source="Admin.User" type="DomainEvent">
-			<field name="username" type="String"></field>
-			<field name="companyArn" type="String"></field>
-		</event>
-		<event name="UserActivated" source="Admin.User" type="DomainEvent">
-			<field name="username" type="String"></field>
-			<field name="firstName" type="String"></field>
-			<field name="lastName" type="String"></field>
-			<field name="active" type="Boolean"></field>
-			<field name="email" type="String"></field>
-			<field name="companyArn" type="String"></field>
-		</event>
-		<event name="UserAddedToCompany" source="Admin.User" type="DomainEvent">
-			<field name="username" type="String"></field>
-			<field name="active" type="Boolean"></field>
-			<nested-object name="companies" business-key="arn">
-				<field name="arn" type="String"></field>
-				<field name="employeeArn" type="String"></field>
-			</nested-object>
-		</event>
 		<event name="BusinessRoleUpdated" source="Customer.Company" type="DomainEvent">
 			<field name="employeeArn" type="String"></field>
 			<field name="businessRole" type="String"></field>
 			<field name="username" type="String"></field>
 		</event>
-		<event name="BusinessUnitAdded" source="Customer.Company" type="DomainEvent">
+		<event name="LinkedControlFrameworkToCompany" source="Customer.Company" type="DomainEvent">
 			<field name="arn" type="String"></field>
-			<nested-object name="businessUnits" business-key="newField">
-				<field name="name" type="String"></field>
-				<field name="description" type="String"></field>
-			</nested-object>
-		</event>
-		<event name="BusinessUnitRemoved" source="Customer.Company" type="DomainEvent">
-			<field name="name" type="String"></field>
-		</event>
-		<event name="BusinessUnitUpdated" source="Customer.Company" type="DomainEvent">
-			<field name="arn" type="String"></field>
-			<nested-object name="businessUnits" business-key="newField">
-				<field name="name" type="String"></field>
-				<field name="description" type="String"></field>
-			</nested-object>
+			<field name="controlFrameworkArn" type="String"></field>
 		</event>
 		<event name="CompanyCreated" source="Customer.Company" type="DomainEvent">
 			<field name="arn" type="String"></field>
@@ -227,19 +214,35 @@
 			<field name="user" type="String"></field>
 			<field name="country" type="String"></field>
 		</event>
+		<event name="BusinessUnitRemoved" source="Customer.Company" type="DomainEvent">
+			<field name="name" type="String"></field>
+		</event>
+		<event name="BusinessUnitAdded" source="Customer.Company" type="DomainEvent">
+			<field name="arn" type="String"></field>
+			<nested-object name="businessUnits" business-key="newField">
+				<field name="name" type="String"></field>
+				<field name="description" type="String"></field>
+			</nested-object>
+		</event>
 		<event name="EmployeeArnUpdated" source="Customer.Company" type="DomainEvent">
 			<field name="employeeArn" type="String"></field>
 			<field name="oldArn" type="String"></field>
 			<field name="businessRole" type="String"></field>
 			<field name="username" type="String"></field>
 		</event>
-		<event name="LinkedControlFrameworkToCompany" source="Customer.Company" type="DomainEvent">
-			<field name="arn" type="String"></field>
-			<field name="controlFrameworkArn" type="String"></field>
-		</event>
 		<event name="UnlinkedControlFrameworkFromCompany" source="Customer.Company" type="DomainEvent">
 			<field name="arn" type="String"></field>
 			<field name="controlFrameworkArn" type="String"></field>
+		</event>
+		<event name="BusinessUnitUpdated" source="Customer.Company" type="DomainEvent">
+			<field name="arn" type="String"></field>
+			<nested-object name="businessUnits" business-key="newField">
+				<field name="name" type="String"></field>
+				<field name="description" type="String"></field>
+			</nested-object>
+		</event>
+		<event name="LinkedRequirements" source="Customer.Control" type="DomainEvent">
+			<field name="requirements" type="String"></field>
 		</event>
 		<event name="AssessmentCompleted" source="Customer.Control" type="DomainEvent">
 			<field name="lastAssessmentDate" type="String"></field>
@@ -286,9 +289,6 @@
 			<field name="nextAssessmentDate" type="String"></field>
 			<field name="controlOwner" type="String"></field>
 		</event>
-		<event name="LinkedRequirements" source="Customer.Control" type="DomainEvent">
-			<field name="requirements" type="String"></field>
-		</event>
 		<event name="FileUploaded" type="DomainEvent" source="appsync">
 			<field name="bucket" type="String"></field>
 			<field name="uri" type="String"></field>
@@ -298,6 +298,246 @@
 	</events>
 	<domain>
 		<subdomain name="Admin">
+			<aggregate name="User" business-key="username" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
+				<field name="username" type="String"></field>
+				<field name="firstName" type="String"></field>
+				<field name="lastName" type="String"></field>
+				<field name="active" type="Boolean"></field>
+				<field name="email" type="String"></field>
+				<command name="CreateFirstCompanyUser">
+					<trigger source="CompanyCreated" key-field="user">
+						<mapping target="arn" value="arn"></mapping>
+						<mapping target="user" value="user"></mapping>
+					</trigger>
+					<processor type="emit-event" id="YLK80V" ref="CompanyAdministratorCreated">
+						<mapping target="username" value="#flow.user"></mapping>
+						<mapping target="companyArn" value="#flow.arn"></mapping>
+					</processor>
+					<test-case name="CreateNewUser" trigger-event="CompanyCreated">
+						<input name="arn" value="company:draftsman" type="String"></input>
+						<input name="name" value="dummy" type="String"></input>
+						<input name="description" value="dummy" type="String"></input>
+						<input name="companySize" value="2" type="Int"></input>
+						<input name="revenue" value="dummy" type="String"></input>
+						<input name="industry" value="dummy" type="String"></input>
+						<input name="user" value="j.doe" type="String"></input>
+						<expected domain-event="CompanyAdministratorCreated">
+							<field value="j.doe" name="username" type="String"></field>
+							<field value="company:draftsman" name="companyArn" type="String"></field>
+						</expected>
+						<expected-state pk="j.doe">{
+  "username": "j.doe",
+  "companies": {
+    "company:draftsman": {
+      "arn": "company:draftsman",
+      "employeeArn": "company:draftsman:employee:j.doe"
+    }
+  }
+}</expected-state>
+					</test-case>
+					<test-case name="AddCompanyToUser" trigger-event="CompanyCreated">
+						<input name="arn" value="company:draftsman" type="String"></input>
+						<input name="name" value="dummy" type="String"></input>
+						<input name="description" value="dummy" type="String"></input>
+						<input name="companySize" value="2" type="Int"></input>
+						<input name="revenue" value="dummy" type="String"></input>
+						<input name="industry" value="dummy" type="String"></input>
+						<input name="user" value="j.doe" type="String"></input>
+						<expected domain-event="CompanyAdministratorCreated">
+							<field value="j.doe" name="username" type="String"></field>
+							<field value="company:draftsman" name="companyArn" type="String"></field>
+						</expected>
+						<expected-state pk="j.doe">{
+  "username": "j.doe",
+  "companies": {
+    "company:draftsman": {
+      "arn": "company:draftsman",
+      "employeeArn": "company:draftsman:employee:j.doe"
+    },
+      "company:anove": {
+      "arn": "company:anove"
+    }
+  }
+}</expected-state>
+						<state>{
+  "username": "j.doe",
+  "companies": {
+    "company:anove": {
+      "arn": "company:anove"
+    }
+  }
+}</state>
+					</test-case>
+				</command>
+				<command name="Activate">
+					<trigger source="ActivateUserRequested" key-field="email">
+						<mapping target="username" value="username"></mapping>
+						<mapping target="firstName" value="firstName"></mapping>
+						<mapping target="lastName" value="lastName"></mapping>
+						<mapping target="email" value="email"></mapping>
+					</trigger>
+					<processor type="set-variable" id="ZVMw4u" name="active" expression="True"></processor>
+					<processor type="code" id="PjQOzT" file="" handler="" code='companies = list(flow.entity.companies.keys())|LB|flow.companyArn = companies[0] if len(companies) != 0 else ""'></processor>
+					<processor type="update-key" id="XbL8BP" key="#flow.username"></processor>
+					<processor type="emit-event" id="4W0IuN" ref="UserActivated">
+						<mapping target="username" value="#flow.username"></mapping>
+						<mapping target="firstName" value="#flow.firstName"></mapping>
+						<mapping target="lastName" value="#flow.lastName"></mapping>
+						<mapping target="active" value="#flow.active"></mapping>
+						<mapping target="email" value="#flow.email"></mapping>
+						<mapping target="companyArn" value="#flow.companyArn"></mapping>
+					</processor>
+					<test-case name="ActivateUser" trigger-event="ActivateUserRequested">
+						<input name="username" value="j.doe" type="String"></input>
+						<input name="firstName" value="John" type="String"></input>
+						<input name="lastName" value="Doe" type="String"></input>
+						<input name="email" value="j.doe@example.com" type="String"></input>
+						<state>{
+  "username": "j.doe@example.com",
+  "firstName": "",
+  "lastName": "",
+  "active": false,
+  "companies": {
+    "company:draftsman": {
+      "arn": "company:draftsman",
+      "employeeArn": "company:draftsman:employee:j.doe@example.com"
+    }
+  }
+}</state>
+						<expected domain-event="UserActivated">
+							<field value="j.doe" name="username" type="String"></field>
+							<field value="John" name="firstName" type="String"></field>
+							<field value="Doe" name="lastName" type="String"></field>
+							<field value="true" name="active" type="Boolean"></field>
+							<field value="j.doe@example.com" name="email" type="String"></field>
+							<field value="company:draftsman" name="companyArn" type="String"></field>
+						</expected>
+						<expected-state pk="j.doe@example.com">{
+  "username": "j.doe",
+  "firstName": "John",
+  "lastName": "Doe",
+  "active": true,
+  "companies": {
+    "company:draftsman": {
+      "arn": "company:draftsman",
+      "employeeArn": "company:draftsman:employee:j.doe"
+    }
+  }
+}</expected-state>
+					</test-case>
+				</command>
+				<command name="LinkCompanyToUser">
+					<trigger source="BusinessRoleUpdated" key-field="username">
+						<mapping target="employeeArn" value="employeeArn"></mapping>
+						<mapping target="businessRole" value="businessRole"></mapping>
+						<mapping target="username" value="username"></mapping>
+					</trigger>
+					<processor type="set-variable" id="HRnMzH" name="active" expression="flow.entity.active"></processor>
+					<processor type="code" id="I2C5M7" file="" handler="" code='flow.companies = []|LB|for arn,company in flow.entity.companies.items():|LB|    flow.companies.append(company)|LB||LB|flow.arn = ":".join(flow.employeeArn.split(":")[:2])|LB|if not flow.arn in flow.entity.companies.keys(): |LB|    flow.companies.append({|LB|        "arn": flow.arn,|LB|        "employeeArn": flow.employeeArn|LB|    })'></processor>
+					<processor type="emit-event" id="M3Zqjo" ref="UserAddedToCompany">
+						<mapping target="username" value="#flow.username"></mapping>
+						<mapping target="active" value="#flow.active"></mapping>
+						<mapping target="companies" value="#flow.companies"></mapping>
+					</processor>
+					<test-case name="LinkCompanyToUser" trigger-event="BusinessRoleUpdated">
+						<input name="employeeArn" value="company:tracepaper:employee:j.doe" type="String"></input>
+						<input name="businessRole" value="administrator" type="String"></input>
+						<input name="username" value="j.doe" type="String"></input>
+						<expected domain-event="UserAddedToCompany">
+							<field value="j.doe" name="username" type="String"></field>
+							<field value="true" name="active" type="Boolean"></field>
+						</expected>
+						<state>{
+  "username": "j.doe",
+  "active": true,
+  "companies": {
+    "company:draftsman": {
+      "arn": "company:draftsman",
+      "employeeArn": "company:draftsman:employee:j.doe"
+    }
+  }
+}</state>
+						<expected-state pk="j.doe">{
+  "username": "j.doe",
+  "active": true,
+  "companies": {
+    "company:draftsman": {
+      "arn": "company:draftsman",
+      "employeeArn": "company:draftsman:employee:j.doe"
+    },
+    "company:tracepaper": {
+      "arn": "company:tracepaper",
+      "employeeArn": "company:tracepaper:employee:j.doe"
+    }
+  }
+}</expected-state>
+					</test-case>
+				</command>
+				<event-handler on="UserAddedToCompany">
+					<mapping target="username" operand="set" value="username"></mapping>
+					<mapping target="active" operand="set" value="active"></mapping>
+					<nested-mapping source="companies" target="companies" business-key="arn">
+						<mapping target="arn" operand="set" value="arn"></mapping>
+						<mapping target="employeeArn" operand="set" value="employeeArn"></mapping>
+					</nested-mapping>
+				</event-handler>
+				<event-handler on="UserActivated" code='self.username = event.username|LB|self.firstName = event.firstName|LB|self.lastName = event.lastName|LB|self.active = event.active|LB|self.email = event.email|LB|self.companies = {key:{|LB|    "arn": key,|LB|    "employeeArn": value["employeeArn"].replace(event.email,event.username)|LB|} for key,value in self.companies.items()}|LB|'></event-handler>
+				<event-handler on="CompanyAdministratorCreated" code='self.username = event.username|LB|self.active = True|LB|self.companies[event.companyArn] = {|LB|    "arn": event.companyArn,|LB|    "employeeArn": event.companyArn + ":employee:" + event.username|LB|}|LB|'></event-handler>
+				<nested-object name="companies" business-key="arn">
+					<field name="arn" type="String"></field>
+					<field name="employeeArn" type="String"></field>
+				</nested-object>
+			</aggregate>
+			<aggregate name="Industry" business-key="fieldName" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
+				<field name="arn" type="String"></field>
+				<field name="name" type="String"></field>
+				<field name="description" type="String"></field>
+				<command name="Create" create-command="true">
+					<trigger source="AddIndustryRequested" key-field="arn">
+						<mapping target="arn" value="arn"></mapping>
+						<mapping target="name" value="name"></mapping>
+						<mapping target="description" value="description"></mapping>
+					</trigger>
+					<processor type="emit-event" id="U8J057" ref="IndustryCreated">
+						<mapping target="arn" value="#flow.arn"></mapping>
+						<mapping target="name" value="#flow.name"></mapping>
+						<mapping target="description" value="#flow.description"></mapping>
+					</processor>
+					<processor type="validator" id="r8n5VM" condition='flow.name != ""' exception="Name may not be empty"></processor>
+					<processor type="validator" id="1HirZZ" condition='flow.description != ""' exception="Description may not be empty"></processor>
+					<test-case name="AddNewIndustry" trigger-event="AddIndustryRequested">
+						<input name="arn" value="industry:automotive" type="String"></input>
+						<input name="name" value="Automotive" type="String"></input>
+						<input name="description" value="The automotive industry" type="String"></input>
+						<expected domain-event="IndustryCreated">
+							<field value="industry:automotive" name="arn" type="String"></field>
+							<field value="Automotive" name="name" type="String"></field>
+							<field value="The automotive industry" name="description" type="String"></field>
+						</expected>
+						<expected-state pk="industry:automotive">{
+  "arn": "industry:automotive",
+  "name": "Automotive",
+  "description": "The automotive industry"
+}</expected-state>
+					</test-case>
+					<test-case name="AddDuplicateIndustry" trigger-event="AddIndustryRequested" expected-processing-status="error">
+						<input name="arn" value="industry:automotive" type="String"></input>
+						<input name="name" value="Hello World!" type="String"></input>
+						<input name="description" value="None" type="String"></input>
+						<state>{
+  "arn": "industry:automotive",
+  "name": "Automotive",
+  "description": "The automotive industry",
+      "version": 1
+}</state>
+					</test-case>
+				</command>
+				<event-handler on="IndustryCreated">
+					<mapping target="arn" operand="set" value="arn"></mapping>
+					<mapping target="name" operand="set" value="name"></mapping>
+					<mapping target="description" operand="set" value="description"></mapping>
+				</event-handler>
+			</aggregate>
 			<aggregate name="ControlFramework" business-key="arn" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
 				<field name="arn" type="String"></field>
 				<field name="description" type="String"></field>
@@ -382,86 +622,6 @@
 					<mapping target="unit" operand="set" value="unit"></mapping>
 					<mapping target="acronym" operand="set" value="acronym"></mapping>
 					<mapping target="active" operand="set" value="active"></mapping>
-				</event-handler>
-			</aggregate>
-			<aggregate name="Demo" business-key="fieldName" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
-				<field name="identifier" type="String"></field>
-				<field name="value" type="String"></field>
-				<command name="Update">
-					<trigger source="UpdateDemoRequested" key-field="identifier">
-						<mapping target="identifier" value="identifier"></mapping>
-						<mapping target="value" value="value"></mapping>
-					</trigger>
-					<processor type="emit-event" id="gneYIn" ref="DemoUpdated">
-						<mapping target="identifier" value="#flow.identifier"></mapping>
-						<mapping target="value" value="#flow.value"></mapping>
-					</processor>
-					<test-case name="UpdateDemoObject" trigger-event="UpdateDemoRequested">
-						<input name="identifier" value="myKey" type="String"></input>
-						<input name="value" value="Hello World!" type="String"></input>
-						<expected domain-event="DemoUpdated">
-							<field value="myKey" name="identifier" type="String"></field>
-							<field value="Hello World!" name="value" type="String"></field>
-						</expected>
-						<expected-state pk="myKey">{
-  "identifier": "myKey",
-  "value": "Hello World!"
-}</expected-state>
-					</test-case>
-				</command>
-				<event-handler on="DemoUpdated">
-					<mapping target="identifier" operand="set" value="identifier"></mapping>
-					<mapping target="value" operand="set" value="value"></mapping>
-				</event-handler>
-			</aggregate>
-			<aggregate name="Industry" business-key="fieldName" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
-				<field name="arn" type="String"></field>
-				<field name="name" type="String"></field>
-				<field name="description" type="String"></field>
-				<command name="Create" create-command="true">
-					<trigger source="AddIndustryRequested" key-field="arn">
-						<mapping target="arn" value="arn"></mapping>
-						<mapping target="name" value="name"></mapping>
-						<mapping target="description" value="description"></mapping>
-					</trigger>
-					<processor type="emit-event" id="U8J057" ref="IndustryCreated">
-						<mapping target="arn" value="#flow.arn"></mapping>
-						<mapping target="name" value="#flow.name"></mapping>
-						<mapping target="description" value="#flow.description"></mapping>
-					</processor>
-					<processor type="validator" id="r8n5VM" condition='flow.name != ""' exception="Name may not be empty"></processor>
-					<processor type="validator" id="1HirZZ" condition='flow.description != ""' exception="Description may not be empty"></processor>
-					<test-case name="AddNewIndustry" trigger-event="AddIndustryRequested">
-						<input name="arn" value="industry:automotive" type="String"></input>
-						<input name="name" value="Automotive" type="String"></input>
-						<input name="description" value="The automotive industry" type="String"></input>
-						<expected domain-event="IndustryCreated">
-							<field value="industry:automotive" name="arn" type="String"></field>
-							<field value="Automotive" name="name" type="String"></field>
-							<field value="The automotive industry" name="description" type="String"></field>
-						</expected>
-						<expected-state pk="industry:automotive">{
-  "arn": "industry:automotive",
-  "name": "Automotive",
-  "description": "The automotive industry"
-}</expected-state>
-					</test-case>
-					<test-case name="AddDuplicateIndustry" trigger-event="AddIndustryRequested" expected-processing-status="error">
-						<input name="arn" value="industry:automotive" type="String"></input>
-						<input name="name" value="Hello World!" type="String"></input>
-						<input name="description" value="None" type="String"></input>
-						<state>{
-  "arn": "industry:automotive",
-  "name": "Automotive",
-  "description": "The automotive industry",
-      "version": 1
-}</state>
-					</test-case>
-				</command>
-				<event-handler on="IndustryCreated">
-					<mapping target="arn" operand="set" value="arn"></mapping>
-					<mapping target="name" operand="set" value="name"></mapping>
-					<mapping target="description" operand="set" value="description"></mapping>
 				</event-handler>
 			</aggregate>
 			<aggregate name="Region" business-key="arn" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
@@ -577,6 +737,94 @@
 					<field name="name" type="String"></field>
 				</nested-object>
 			</aggregate>
+			<aggregate name="Tenant" business-key="name" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
+				<field name="name" type="String"></field>
+				<field name="css" type="String"></field>
+				<command name="Create" create-command="false">
+					<trigger source="CreateTenantRequested" key-field="name">
+						<mapping target="name" value="name"></mapping>
+					</trigger>
+					<processor type="emit-event" id="ZED04r" ref="TenantCreated">
+						<mapping target="name" value="#flow.name"></mapping>
+					</processor>
+					<test-case name="CreateTenant" trigger-event="CreateTenantRequested">
+						<input name="name" value="anove" type="String"></input>
+						<expected domain-event="TenantCreated">
+							<field value="anove" name="name" type="String"></field>
+						</expected>
+						<expected-state pk="anove">{
+  "name": "anove",
+   "css": ""
+}</expected-state>
+					</test-case>
+				</command>
+				<command name="LinkStyleSheet">
+					<trigger source="FileUploaded" key-field="#event.uri.split('/')[1]">
+						<mapping target="path" value="uri"></mapping>
+						<mapping target="bucket" value="bucket"></mapping>
+						<mapping target="username" value="username"></mapping>
+					</trigger>
+					<processor type="validator" id="NjcSCR" condition="flow.entity.version != 0" exception="May not be initial request"></processor>
+					<processor type="validator" id="FQABQS" condition='"-web-" in flow.bucket' exception="This function only reacts to public uploads 'web-bucket', but the selected bucket was [{flow.bucket}]"></processor>
+					<processor type="emit-event" id="hIfDo8" ref="StyleSheetLinked">
+						<mapping target="css" value="#flow.path"></mapping>
+					</processor>
+					<test-case name="LinkStyleSheet" trigger-event="FileUploaded">
+						<input name="bucket" value="-web-" type="String"></input>
+						<input name="uri" value="dummy/anove/custom.css" type="String"></input>
+						<input name="location" value="-" type="String"></input>
+						<input name="username" value="-" type="String"></input>
+						<state>{
+  "name": "anove",
+  "css": "",
+  "version":1
+}</state>
+						<expected-state pk="anove">{
+  "name": "anove",
+  "css": "dummy/anove/custom.css"
+}</expected-state>
+						<expected domain-event="StyleSheetLinked">
+							<field value="dummy/anove/custom.css" name="css" type="String"></field>
+						</expected>
+					</test-case>
+				</command>
+				<event-handler on="TenantCreated">
+					<mapping target="name" operand="set" value="name"></mapping>
+				</event-handler>
+				<event-handler on="StyleSheetLinked">
+					<mapping target="css" operand="set" value="css"></mapping>
+				</event-handler>
+			</aggregate>
+			<aggregate name="Demo" business-key="fieldName" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
+				<field name="identifier" type="String"></field>
+				<field name="value" type="String"></field>
+				<command name="Update">
+					<trigger source="UpdateDemoRequested" key-field="identifier">
+						<mapping target="identifier" value="identifier"></mapping>
+						<mapping target="value" value="value"></mapping>
+					</trigger>
+					<processor type="emit-event" id="gneYIn" ref="DemoUpdated">
+						<mapping target="identifier" value="#flow.identifier"></mapping>
+						<mapping target="value" value="#flow.value"></mapping>
+					</processor>
+					<test-case name="UpdateDemoObject" trigger-event="UpdateDemoRequested">
+						<input name="identifier" value="myKey" type="String"></input>
+						<input name="value" value="Hello World!" type="String"></input>
+						<expected domain-event="DemoUpdated">
+							<field value="myKey" name="identifier" type="String"></field>
+							<field value="Hello World!" name="value" type="String"></field>
+						</expected>
+						<expected-state pk="myKey">{
+  "identifier": "myKey",
+  "value": "Hello World!"
+}</expected-state>
+					</test-case>
+				</command>
+				<event-handler on="DemoUpdated">
+					<mapping target="identifier" operand="set" value="identifier"></mapping>
+					<mapping target="value" operand="set" value="value"></mapping>
+				</event-handler>
+			</aggregate>
 			<aggregate name="Requirement" business-key="arn" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
 				<field name="arn" type="String"></field>
 				<field name="name" type="String"></field>
@@ -639,254 +887,6 @@
 					<mapping target="summary" operand="set" value="summary"></mapping>
 				</event-handler>
 			</aggregate>
-			<aggregate name="Tenant" business-key="name" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
-				<field name="name" type="String"></field>
-				<field name="css" type="String"></field>
-				<command name="Create" create-command="false">
-					<trigger source="CreateTenantRequested" key-field="name">
-						<mapping target="name" value="name"></mapping>
-					</trigger>
-					<processor type="emit-event" id="ZED04r" ref="TenantCreated">
-						<mapping target="name" value="#flow.name"></mapping>
-					</processor>
-					<test-case name="CreateTenant" trigger-event="CreateTenantRequested">
-						<input name="name" value="anove" type="String"></input>
-						<expected domain-event="TenantCreated">
-							<field value="anove" name="name" type="String"></field>
-						</expected>
-						<expected-state pk="anove">{
-  "name": "anove",
-   "css": ""
-}</expected-state>
-					</test-case>
-				</command>
-				<command name="LinkStyleSheet">
-					<trigger source="FileUploaded" key-field="#event.uri.split('/')[1]">
-						<mapping target="path" value="uri"></mapping>
-						<mapping target="bucket" value="bucket"></mapping>
-						<mapping target="username" value="username"></mapping>
-					</trigger>
-					<processor type="validator" id="NjcSCR" condition="flow.entity.version != 0" exception="May not be initial request"></processor>
-					<processor type="validator" id="FQABQS" condition='"-web-" in flow.bucket' exception="This function only reacts to public uploads 'web-bucket', but the selected bucket was [{flow.bucket}]"></processor>
-					<processor type="emit-event" id="hIfDo8" ref="StyleSheetLinked">
-						<mapping target="css" value="#flow.path"></mapping>
-					</processor>
-					<test-case name="LinkStyleSheet" trigger-event="FileUploaded">
-						<input name="bucket" value="-web-" type="String"></input>
-						<input name="uri" value="dummy/anove/custom.css" type="String"></input>
-						<input name="location" value="-" type="String"></input>
-						<input name="username" value="-" type="String"></input>
-						<state>{
-  "name": "anove",
-  "css": "",
-  "version":1
-}</state>
-						<expected-state pk="anove">{
-  "name": "anove",
-  "css": "dummy/anove/custom.css"
-}</expected-state>
-						<expected domain-event="StyleSheetLinked">
-							<field value="dummy/anove/custom.css" name="css" type="String"></field>
-						</expected>
-					</test-case>
-				</command>
-				<event-handler on="StyleSheetLinked">
-					<mapping target="css" operand="set" value="css"></mapping>
-				</event-handler>
-				<event-handler on="TenantCreated">
-					<mapping target="name" operand="set" value="name"></mapping>
-				</event-handler>
-			</aggregate>
-			<aggregate name="User" business-key="username" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
-				<field name="username" type="String"></field>
-				<field name="firstName" type="String"></field>
-				<field name="lastName" type="String"></field>
-				<field name="active" type="Boolean"></field>
-				<field name="email" type="String"></field>
-				<command name="Activate">
-					<trigger source="ActivateUserRequested" key-field="email">
-						<mapping target="username" value="username"></mapping>
-						<mapping target="firstName" value="firstName"></mapping>
-						<mapping target="lastName" value="lastName"></mapping>
-						<mapping target="email" value="email"></mapping>
-					</trigger>
-					<processor type="set-variable" id="ZVMw4u" name="active" expression="True"></processor>
-					<processor type="code" id="PjQOzT" file="" handler="" code='companies = list(flow.entity.companies.keys())|LB|flow.companyArn = companies[0] if len(companies) != 0 else ""'></processor>
-					<processor type="update-key" id="XbL8BP" key="#flow.username"></processor>
-					<processor type="emit-event" id="4W0IuN" ref="UserActivated">
-						<mapping target="username" value="#flow.username"></mapping>
-						<mapping target="firstName" value="#flow.firstName"></mapping>
-						<mapping target="lastName" value="#flow.lastName"></mapping>
-						<mapping target="active" value="#flow.active"></mapping>
-						<mapping target="email" value="#flow.email"></mapping>
-						<mapping target="companyArn" value="#flow.companyArn"></mapping>
-					</processor>
-					<test-case name="ActivateUser" trigger-event="ActivateUserRequested">
-						<input name="username" value="j.doe" type="String"></input>
-						<input name="firstName" value="John" type="String"></input>
-						<input name="lastName" value="Doe" type="String"></input>
-						<input name="email" value="j.doe@example.com" type="String"></input>
-						<state>{
-  "username": "j.doe@example.com",
-  "firstName": "",
-  "lastName": "",
-  "active": false,
-  "companies": {
-    "company:draftsman": {
-      "arn": "company:draftsman",
-      "employeeArn": "company:draftsman:employee:j.doe@example.com"
-    }
-  }
-}</state>
-						<expected domain-event="UserActivated">
-							<field value="j.doe" name="username" type="String"></field>
-							<field value="John" name="firstName" type="String"></field>
-							<field value="Doe" name="lastName" type="String"></field>
-							<field value="true" name="active" type="Boolean"></field>
-							<field value="j.doe@example.com" name="email" type="String"></field>
-							<field value="company:draftsman" name="companyArn" type="String"></field>
-						</expected>
-						<expected-state pk="j.doe@example.com">{
-  "username": "j.doe",
-  "firstName": "John",
-  "lastName": "Doe",
-  "active": true,
-  "companies": {
-    "company:draftsman": {
-      "arn": "company:draftsman",
-      "employeeArn": "company:draftsman:employee:j.doe"
-    }
-  }
-}</expected-state>
-					</test-case>
-				</command>
-				<command name="CreateFirstCompanyUser">
-					<trigger source="CompanyCreated" key-field="user">
-						<mapping target="arn" value="arn"></mapping>
-						<mapping target="user" value="user"></mapping>
-					</trigger>
-					<processor type="emit-event" id="YLK80V" ref="CompanyAdministratorCreated">
-						<mapping target="username" value="#flow.user"></mapping>
-						<mapping target="companyArn" value="#flow.arn"></mapping>
-					</processor>
-					<test-case name="CreateNewUser" trigger-event="CompanyCreated">
-						<input name="arn" value="company:draftsman" type="String"></input>
-						<input name="name" value="dummy" type="String"></input>
-						<input name="description" value="dummy" type="String"></input>
-						<input name="companySize" value="2" type="Int"></input>
-						<input name="revenue" value="dummy" type="String"></input>
-						<input name="industry" value="dummy" type="String"></input>
-						<input name="user" value="j.doe" type="String"></input>
-						<expected domain-event="CompanyAdministratorCreated">
-							<field value="j.doe" name="username" type="String"></field>
-							<field value="company:draftsman" name="companyArn" type="String"></field>
-						</expected>
-						<expected-state pk="j.doe">{
-  "username": "j.doe",
-  "companies": {
-    "company:draftsman": {
-      "arn": "company:draftsman",
-      "employeeArn": "company:draftsman:employee:j.doe"
-    }
-  }
-}</expected-state>
-					</test-case>
-					<test-case name="AddCompanyToUser" trigger-event="CompanyCreated">
-						<input name="arn" value="company:draftsman" type="String"></input>
-						<input name="name" value="dummy" type="String"></input>
-						<input name="description" value="dummy" type="String"></input>
-						<input name="companySize" value="2" type="Int"></input>
-						<input name="revenue" value="dummy" type="String"></input>
-						<input name="industry" value="dummy" type="String"></input>
-						<input name="user" value="j.doe" type="String"></input>
-						<expected domain-event="CompanyAdministratorCreated">
-							<field value="j.doe" name="username" type="String"></field>
-							<field value="company:draftsman" name="companyArn" type="String"></field>
-						</expected>
-						<expected-state pk="j.doe">{
-  "username": "j.doe",
-  "companies": {
-    "company:draftsman": {
-      "arn": "company:draftsman",
-      "employeeArn": "company:draftsman:employee:j.doe"
-    },
-      "company:anove": {
-      "arn": "company:anove"
-    }
-  }
-}</expected-state>
-						<state>{
-  "username": "j.doe",
-  "companies": {
-    "company:anove": {
-      "arn": "company:anove"
-    }
-  }
-}</state>
-					</test-case>
-				</command>
-				<command name="LinkCompanyToUser">
-					<trigger source="BusinessRoleUpdated" key-field="username">
-						<mapping target="employeeArn" value="employeeArn"></mapping>
-						<mapping target="businessRole" value="businessRole"></mapping>
-						<mapping target="username" value="username"></mapping>
-					</trigger>
-					<processor type="set-variable" id="HRnMzH" name="active" expression="flow.entity.active"></processor>
-					<processor type="code" id="I2C5M7" file="" handler="" code='flow.companies = []|LB|for arn,company in flow.entity.companies.items():|LB|    flow.companies.append(company)|LB||LB|flow.arn = ":".join(flow.employeeArn.split(":")[:2])|LB|if not flow.arn in flow.entity.companies.keys(): |LB|    flow.companies.append({|LB|        "arn": flow.arn,|LB|        "employeeArn": flow.employeeArn|LB|    })'></processor>
-					<processor type="emit-event" id="M3Zqjo" ref="UserAddedToCompany">
-						<mapping target="username" value="#flow.username"></mapping>
-						<mapping target="active" value="#flow.active"></mapping>
-						<mapping target="companies" value="#flow.companies"></mapping>
-					</processor>
-					<test-case name="LinkCompanyToUser" trigger-event="BusinessRoleUpdated">
-						<input name="employeeArn" value="company:tracepaper:employee:j.doe" type="String"></input>
-						<input name="businessRole" value="administrator" type="String"></input>
-						<input name="username" value="j.doe" type="String"></input>
-						<expected domain-event="UserAddedToCompany">
-							<field value="j.doe" name="username" type="String"></field>
-							<field value="true" name="active" type="Boolean"></field>
-						</expected>
-						<state>{
-  "username": "j.doe",
-  "active": true,
-  "companies": {
-    "company:draftsman": {
-      "arn": "company:draftsman",
-      "employeeArn": "company:draftsman:employee:j.doe"
-    }
-  }
-}</state>
-						<expected-state pk="j.doe">{
-  "username": "j.doe",
-  "active": true,
-  "companies": {
-    "company:draftsman": {
-      "arn": "company:draftsman",
-      "employeeArn": "company:draftsman:employee:j.doe"
-    },
-    "company:tracepaper": {
-      "arn": "company:tracepaper",
-      "employeeArn": "company:tracepaper:employee:j.doe"
-    }
-  }
-}</expected-state>
-					</test-case>
-				</command>
-				<event-handler on="CompanyAdministratorCreated" code='self.username = event.username|LB|self.active = True|LB|self.companies[event.companyArn] = {|LB|    "arn": event.companyArn,|LB|    "employeeArn": event.companyArn + ":employee:" + event.username|LB|}|LB|'></event-handler>
-				<event-handler on="UserActivated" code='self.username = event.username|LB|self.firstName = event.firstName|LB|self.lastName = event.lastName|LB|self.active = event.active|LB|self.email = event.email|LB|self.companies = {key:{|LB|    "arn": key,|LB|    "employeeArn": value["employeeArn"].replace(event.email,event.username)|LB|} for key,value in self.companies.items()}|LB|'></event-handler>
-				<event-handler on="UserAddedToCompany">
-					<mapping target="username" operand="set" value="username"></mapping>
-					<mapping target="active" operand="set" value="active"></mapping>
-					<nested-mapping source="companies" target="companies" business-key="arn">
-						<mapping target="arn" operand="set" value="arn"></mapping>
-						<mapping target="employeeArn" operand="set" value="employeeArn"></mapping>
-					</nested-mapping>
-				</event-handler>
-				<nested-object name="companies" business-key="arn">
-					<field name="arn" type="String"></field>
-					<field name="employeeArn" type="String"></field>
-				</nested-object>
-			</aggregate>
 		</subdomain>
 		<subdomain name="Customer">
 			<aggregate name="Company" business-key="arn" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
@@ -899,57 +899,6 @@
 				<field name="countryArn" type="String"></field>
 				<field name="deletedEmployeeArns" type="StringList"></field>
 				<field name="controlFrameworkLinks" type="StringList"></field>
-				<command name="AddBusinessUnit">
-					<trigger source="AddCompanyBusinessUnitRequested" key-field="arn">
-						<mapping target="arn" value="arn"></mapping>
-						<mapping target="name" value="name"></mapping>
-						<mapping target="description" value="description"></mapping>
-					</trigger>
-					<processor type="validator" id="r3TLgH" condition='flow.entity.name != ""' exception="Company does not exist"></processor>
-					<processor type="validator" id="BM5RG4" condition="flow.name not in flow.entity.businessUnits" exception="Can not add business unit with name {flow.name} because it is already present"></processor>
-					<processor type="code" id="SJBpIu" file="" handler="" code='flow.businessUnits = [{|LB|    "name": flow.name,|LB|    "description": flow.description|LB|}]'></processor>
-					<processor type="emit-event" id="zYKprC" ref="BusinessUnitAdded">
-						<mapping target="arn" value="#flow.arn"></mapping>
-						<mapping target="businessUnits" value="#flow.businessUnits"></mapping>
-					</processor>
-					<test-case name="AddBusinessUnit" trigger-event="AddCompanyBusinessUnitRequested">
-						<input name="arn" value="company:draftsman" type="String"></input>
-						<input name="name" value="Engineering" type="String"></input>
-						<input name="description" value="Hello World!" type="String"></input>
-						<state>{"name":"Draftsman"}</state>
-						<expected domain-event="BusinessUnitAdded">
-							<field value="company:draftsman" name="arn" type="String"></field>
-						</expected>
-						<expected-state pk="company:draftsman">{
-  "name": "Draftsman",
-  "businessUnits": {
-    "Engineering": {
-      "name": "Engineering",
-      "description": "Hello World!"
-    }
-  }
-}</expected-state>
-					</test-case>
-					<test-case name="AddDuplicateBusinessUnit" trigger-event="AddCompanyBusinessUnitRequested" expected-processing-status="error">
-						<input name="arn" value="company:draftsman" type="String"></input>
-						<input name="name" value="Engineering" type="String"></input>
-						<input name="description" value="..." type="String"></input>
-						<state>{
-  "name": "Draftsman",
-  "businessUnits": {
-    "Engineering": {
-      "name": "Engineering",
-      "description": "Hello World!"
-    }
-  }
-}</state>
-					</test-case>
-					<test-case name="AddBusinessUnitToNonExisstingCompany" trigger-event="AddCompanyBusinessUnitRequested" expected-processing-status="error">
-						<input name="arn" value="company:dummy" type="String"></input>
-						<input name="name" value="Engineering" type="String"></input>
-						<input name="description" value="Hello World!" type="String"></input>
-					</test-case>
-				</command>
 				<command name="Create" create-command="true">
 					<trigger source="CreateCompanyRequested" key-field="arn">
 						<mapping target="arn" value="arn"></mapping>
@@ -1013,33 +962,33 @@
       }</state>
 					</test-case>
 				</command>
-				<command name="LinkControlFramework">
-					<trigger source="LinkControlFrameworkCompanyRequested" key-field="arn">
+				<command name="UnlinkControlFramework">
+					<trigger source="UnlinkControlFrameworkCompanyRequested" key-field="arn">
 						<mapping target="arn" value="arn"></mapping>
 						<mapping target="controlFrameworkArn" value="controlFrameworkArn"></mapping>
 					</trigger>
-					<processor type="validator" id="UhPsMB" condition='flow.entity.name != ""' exception="Company is not initialized"></processor>
-					<processor type="emit-event" id="gF6Krh" ref="LinkedControlFrameworkToCompany">
+					<processor type="emit-event" id="RKifTj" ref="UnlinkedControlFrameworkFromCompany">
 						<mapping target="arn" value="#flow.arn"></mapping>
 						<mapping target="controlFrameworkArn" value="#flow.controlFrameworkArn"></mapping>
 					</processor>
-					<test-case name="LinkControlFramework" trigger-event="LinkControlFrameworkCompanyRequested">
+					<test-case name="UnlinkControlFramework" trigger-event="UnlinkControlFrameworkCompanyRequested">
 						<input name="arn" value="company:draftsman" type="String"></input>
-						<input name="controlFrameworkArn" value="controlframework:gdpr" type="String"></input>
-						<expected domain-event="LinkedControlFrameworkToCompany">
+						<input name="controlFrameworkArn" value="first" type="String"></input>
+						<expected domain-event="UnlinkedControlFrameworkFromCompany">
 							<field value="company:draftsman" name="arn" type="String"></field>
-							<field value="controlframework:gdpr" name="controlFrameworkArn" type="String"></field>
+							<field value="first" name="controlFrameworkArn" type="String"></field>
 						</expected>
 						<state>{
-    "name": "Draftsman"
+  "controlFrameworkLinks": [
+        "first",
+         "second"
+   ]
 }</state>
 						<expected-state pk="company:draftsman">{
-  "controlFrameworkLinks": ["controlframework:gdpr"]
+  "controlFrameworkLinks": [
+         "second"
+   ]
 }</expected-state>
-					</test-case>
-					<test-case name="LinkControlFrameworkToNonExistingCompany" trigger-event="LinkControlFrameworkCompanyRequested" expected-processing-status="error">
-						<input name="arn" value="company:tracepaper" type="String"></input>
-						<input name="controlFrameworkArn" value="controlframework:gdpr" type="String"></input>
 					</test-case>
 				</command>
 				<command name="RemoveBusinessUnit">
@@ -1068,35 +1017,6 @@
 						<expected-state pk="company:draftsman">{
   "arn": "company:draftsman",
   "businessUnits": {}
-}</expected-state>
-					</test-case>
-				</command>
-				<command name="UnlinkControlFramework">
-					<trigger source="UnlinkControlFrameworkCompanyRequested" key-field="arn">
-						<mapping target="arn" value="arn"></mapping>
-						<mapping target="controlFrameworkArn" value="controlFrameworkArn"></mapping>
-					</trigger>
-					<processor type="emit-event" id="RKifTj" ref="UnlinkedControlFrameworkFromCompany">
-						<mapping target="arn" value="#flow.arn"></mapping>
-						<mapping target="controlFrameworkArn" value="#flow.controlFrameworkArn"></mapping>
-					</processor>
-					<test-case name="UnlinkControlFramework" trigger-event="UnlinkControlFrameworkCompanyRequested">
-						<input name="arn" value="company:draftsman" type="String"></input>
-						<input name="controlFrameworkArn" value="first" type="String"></input>
-						<expected domain-event="UnlinkedControlFrameworkFromCompany">
-							<field value="company:draftsman" name="arn" type="String"></field>
-							<field value="first" name="controlFrameworkArn" type="String"></field>
-						</expected>
-						<state>{
-  "controlFrameworkLinks": [
-        "first",
-         "second"
-   ]
-}</state>
-						<expected-state pk="company:draftsman">{
-  "controlFrameworkLinks": [
-         "second"
-   ]
 }</expected-state>
 					</test-case>
 				</command>
@@ -1157,50 +1077,6 @@
 }</expected-state>
 					</test-case>
 				</command>
-				<command name="UpdateBusinessUnit">
-					<trigger source="UpdateCompanyBusinessUnitRequested" key-field="arn">
-						<mapping target="arn" value="arn"></mapping>
-						<mapping target="name" value="name"></mapping>
-						<mapping target="description" value="description"></mapping>
-					</trigger>
-					<processor type="validator" id="ES1sG9" condition="flow.name in flow.entity.businessUnits" exception="Can not update businessunit, because it does not exist"></processor>
-					<processor type="code" id="nMDsHG" file="" handler="" code='flow.businessUnits = [{|LB|    "name": flow.name,|LB|    "description": flow.description|LB|}]'></processor>
-					<processor type="emit-event" id="CH0OnK" ref="BusinessUnitUpdated">
-						<mapping target="arn" value="#flow.arn"></mapping>
-						<mapping target="businessUnits" value="#flow.businessUnits"></mapping>
-					</processor>
-					<test-case name="AddNewBusinessUnit" trigger-event="UpdateCompanyBusinessUnitRequested" expected-processing-status="error">
-						<input name="arn" value="company:draftsman" type="String"></input>
-						<input name="name" value="Product Development" type="String"></input>
-						<input name="description" value="Hello World!" type="String"></input>
-					</test-case>
-					<test-case name="UpdateBusinessUnit" trigger-event="UpdateCompanyBusinessUnitRequested">
-						<input name="arn" value="company:draftsman" type="String"></input>
-						<input name="name" value="Product Development" type="String"></input>
-						<input name="description" value="..." type="String"></input>
-						<expected domain-event="BusinessUnitUpdated">
-							<field value="company:draftsman" name="arn" type="String"></field>
-						</expected>
-						<state>{
-  "arn": "company:draftsman",
-  "businessUnits": {
-    "Product Development": {
-      "name": "Product Development",
-      "description": "Hello World!"
-    }
-  }
-}</state>
-						<expected-state pk="company:draftsman">{
-  "arn": "company:draftsman",
-  "businessUnits": {
-    "Product Development": {
-      "name": "Product Development",
-      "description": "..."
-    }
-  }
-}</expected-state>
-					</test-case>
-				</command>
 				<command name="UpdateEmployeeArn">
 					<trigger source="UserActivated" key-field="companyArn">
 						<mapping target="username" value="username"></mapping>
@@ -1249,24 +1125,148 @@
 						</expected>
 					</test-case>
 				</command>
+				<command name="UpdateBusinessUnit">
+					<trigger source="UpdateCompanyBusinessUnitRequested" key-field="arn">
+						<mapping target="arn" value="arn"></mapping>
+						<mapping target="name" value="name"></mapping>
+						<mapping target="description" value="description"></mapping>
+					</trigger>
+					<processor type="validator" id="ES1sG9" condition="flow.name in flow.entity.businessUnits" exception="Can not update businessunit, because it does not exist"></processor>
+					<processor type="code" id="nMDsHG" file="" handler="" code='flow.businessUnits = [{|LB|    "name": flow.name,|LB|    "description": flow.description|LB|}]'></processor>
+					<processor type="emit-event" id="CH0OnK" ref="BusinessUnitUpdated">
+						<mapping target="arn" value="#flow.arn"></mapping>
+						<mapping target="businessUnits" value="#flow.businessUnits"></mapping>
+					</processor>
+					<test-case name="AddNewBusinessUnit" trigger-event="UpdateCompanyBusinessUnitRequested" expected-processing-status="error">
+						<input name="arn" value="company:draftsman" type="String"></input>
+						<input name="name" value="Product Development" type="String"></input>
+						<input name="description" value="Hello World!" type="String"></input>
+					</test-case>
+					<test-case name="UpdateBusinessUnit" trigger-event="UpdateCompanyBusinessUnitRequested">
+						<input name="arn" value="company:draftsman" type="String"></input>
+						<input name="name" value="Product Development" type="String"></input>
+						<input name="description" value="..." type="String"></input>
+						<expected domain-event="BusinessUnitUpdated">
+							<field value="company:draftsman" name="arn" type="String"></field>
+						</expected>
+						<state>{
+  "arn": "company:draftsman",
+  "businessUnits": {
+    "Product Development": {
+      "name": "Product Development",
+      "description": "Hello World!"
+    }
+  }
+}</state>
+						<expected-state pk="company:draftsman">{
+  "arn": "company:draftsman",
+  "businessUnits": {
+    "Product Development": {
+      "name": "Product Development",
+      "description": "..."
+    }
+  }
+}</expected-state>
+					</test-case>
+				</command>
+				<command name="AddBusinessUnit">
+					<trigger source="AddCompanyBusinessUnitRequested" key-field="arn">
+						<mapping target="arn" value="arn"></mapping>
+						<mapping target="name" value="name"></mapping>
+						<mapping target="description" value="description"></mapping>
+					</trigger>
+					<processor type="validator" id="r3TLgH" condition='flow.entity.name != ""' exception="Company does not exist"></processor>
+					<processor type="validator" id="BM5RG4" condition="flow.name not in flow.entity.businessUnits" exception="Can not add business unit with name {flow.name} because it is already present"></processor>
+					<processor type="code" id="SJBpIu" file="" handler="" code='flow.businessUnits = [{|LB|    "name": flow.name,|LB|    "description": flow.description|LB|}]'></processor>
+					<processor type="emit-event" id="zYKprC" ref="BusinessUnitAdded">
+						<mapping target="arn" value="#flow.arn"></mapping>
+						<mapping target="businessUnits" value="#flow.businessUnits"></mapping>
+					</processor>
+					<test-case name="AddBusinessUnit" trigger-event="AddCompanyBusinessUnitRequested">
+						<input name="arn" value="company:draftsman" type="String"></input>
+						<input name="name" value="Engineering" type="String"></input>
+						<input name="description" value="Hello World!" type="String"></input>
+						<state>{"name":"Draftsman"}</state>
+						<expected domain-event="BusinessUnitAdded">
+							<field value="company:draftsman" name="arn" type="String"></field>
+						</expected>
+						<expected-state pk="company:draftsman">{
+  "name": "Draftsman",
+  "businessUnits": {
+    "Engineering": {
+      "name": "Engineering",
+      "description": "Hello World!"
+    }
+  }
+}</expected-state>
+					</test-case>
+					<test-case name="AddDuplicateBusinessUnit" trigger-event="AddCompanyBusinessUnitRequested" expected-processing-status="error">
+						<input name="arn" value="company:draftsman" type="String"></input>
+						<input name="name" value="Engineering" type="String"></input>
+						<input name="description" value="..." type="String"></input>
+						<state>{
+  "name": "Draftsman",
+  "businessUnits": {
+    "Engineering": {
+      "name": "Engineering",
+      "description": "Hello World!"
+    }
+  }
+}</state>
+					</test-case>
+					<test-case name="AddBusinessUnitToNonExisstingCompany" trigger-event="AddCompanyBusinessUnitRequested" expected-processing-status="error">
+						<input name="arn" value="company:dummy" type="String"></input>
+						<input name="name" value="Engineering" type="String"></input>
+						<input name="description" value="Hello World!" type="String"></input>
+					</test-case>
+				</command>
+				<command name="LinkControlFramework">
+					<trigger source="LinkControlFrameworkCompanyRequested" key-field="arn">
+						<mapping target="arn" value="arn"></mapping>
+						<mapping target="controlFrameworkArn" value="controlFrameworkArn"></mapping>
+					</trigger>
+					<processor type="validator" id="UhPsMB" condition='flow.entity.name != ""' exception="Company is not initialized"></processor>
+					<processor type="emit-event" id="gF6Krh" ref="LinkedControlFrameworkToCompany">
+						<mapping target="arn" value="#flow.arn"></mapping>
+						<mapping target="controlFrameworkArn" value="#flow.controlFrameworkArn"></mapping>
+					</processor>
+					<test-case name="LinkControlFramework" trigger-event="LinkControlFrameworkCompanyRequested">
+						<input name="arn" value="company:draftsman" type="String"></input>
+						<input name="controlFrameworkArn" value="controlframework:gdpr" type="String"></input>
+						<expected domain-event="LinkedControlFrameworkToCompany">
+							<field value="company:draftsman" name="arn" type="String"></field>
+							<field value="controlframework:gdpr" name="controlFrameworkArn" type="String"></field>
+						</expected>
+						<state>{
+    "name": "Draftsman"
+}</state>
+						<expected-state pk="company:draftsman">{
+  "controlFrameworkLinks": ["controlframework:gdpr"]
+}</expected-state>
+					</test-case>
+					<test-case name="LinkControlFrameworkToNonExistingCompany" trigger-event="LinkControlFrameworkCompanyRequested" expected-processing-status="error">
+						<input name="arn" value="company:tracepaper" type="String"></input>
+						<input name="controlFrameworkArn" value="controlframework:gdpr" type="String"></input>
+					</test-case>
+				</command>
 				<event-handler on="BusinessRoleUpdated" code='self.employees[event.employeeArn] = {|LB|    "arn": event.employeeArn,|LB|    "username": event.employeeArn.split(":")[-1],|LB|    "businessRole": event.businessRole|LB|}'></event-handler>
+				<event-handler on="LinkedControlFrameworkToCompany" code="if not hasattr(self, 'controlFrameworkLinks'):|LB|    self.controlFrameworkLinks = []|LB|self.controlFrameworkLinks.append(event.controlFrameworkArn)|LB|"></event-handler>
+				<event-handler on="CompanyCreated" code="self.arn = event.arn|LB|self.name = event.name|LB|self.description = event.description|LB|self.companySize = event.companySize|LB|self.revenue = event.revenue|LB|self.industryLink = event.industry.split(';')|LB|self.countryArn = event.country|LB|employeeArn = event.arn + &quot;:employee:&quot; + event.user|LB|self.employees[employeeArn] = {|LB|    &quot;arn&quot;: employeeArn,|LB|    &quot;username&quot;: event.user,|LB|    &quot;businessRole&quot;: &quot;administrator&quot;|LB|    |LB|}"></event-handler>
+				<event-handler on="BusinessUnitRemoved" code="if event.name in self.businessUnits:|LB|    del self.businessUnits[event.name]"></event-handler>
 				<event-handler on="BusinessUnitAdded">
 					<nested-mapping source="businessUnits" target="businessUnits" business-key="name">
 						<mapping target="name" operand="set" value="name"></mapping>
 						<mapping target="description" operand="set" value="description"></mapping>
 					</nested-mapping>
 				</event-handler>
-				<event-handler on="BusinessUnitRemoved" code="if event.name in self.businessUnits:|LB|    del self.businessUnits[event.name]"></event-handler>
+				<event-handler on="EmployeeArnUpdated" code='self.employees[event.employeeArn] = {|LB|    "arn": event.employeeArn,|LB|    "username": event.username,|LB|    "businessRole": event.businessRole|LB|}|LB|if event.oldArn in self.employees:|LB|    del self.employees[event.oldArn]|LB|    |LB|self.deletedEmployeeArns.append(event.oldArn)'></event-handler>
+				<event-handler on="UnlinkedControlFrameworkFromCompany" code="self.controlFrameworkLinks.remove(event.controlFrameworkArn)"></event-handler>
 				<event-handler on="BusinessUnitUpdated">
 					<nested-mapping source="businessUnits" target="businessUnits" business-key="name">
 						<mapping target="name" operand="set" value="name"></mapping>
 						<mapping target="description" operand="set" value="description"></mapping>
 					</nested-mapping>
 				</event-handler>
-				<event-handler on="CompanyCreated" code="self.arn = event.arn|LB|self.name = event.name|LB|self.description = event.description|LB|self.companySize = event.companySize|LB|self.revenue = event.revenue|LB|self.industryLink = event.industry.split(';')|LB|self.countryArn = event.country|LB|employeeArn = event.arn + &quot;:employee:&quot; + event.user|LB|self.employees[employeeArn] = {|LB|    &quot;arn&quot;: employeeArn,|LB|    &quot;username&quot;: event.user,|LB|    &quot;businessRole&quot;: &quot;administrator&quot;|LB|    |LB|}"></event-handler>
-				<event-handler on="EmployeeArnUpdated" code='self.employees[event.employeeArn] = {|LB|    "arn": event.employeeArn,|LB|    "username": event.username,|LB|    "businessRole": event.businessRole|LB|}|LB|if event.oldArn in self.employees:|LB|    del self.employees[event.oldArn]|LB|    |LB|self.deletedEmployeeArns.append(event.oldArn)'></event-handler>
-				<event-handler on="LinkedControlFrameworkToCompany" code="if not hasattr(self, 'controlFrameworkLinks'):|LB|    self.controlFrameworkLinks = []|LB|self.controlFrameworkLinks.append(event.controlFrameworkArn)|LB|"></event-handler>
-				<event-handler on="UnlinkedControlFrameworkFromCompany" code="self.controlFrameworkLinks.remove(event.controlFrameworkArn)"></event-handler>
 				<nested-object name="businessUnits" business-key="newField">
 					<field name="name" type="String"></field>
 					<field name="description" type="String"></field>
@@ -1507,6 +1507,7 @@
 }</expected-state>
 					</test-case>
 				</command>
+				<event-handler on="LinkedRequirements" code='self.requirementArns = event.requirements.split(";")'></event-handler>
 				<event-handler on="AssessmentCompleted">
 					<mapping target="lastAssessmentDate" operand="set" value="lastAssessmentDate"></mapping>
 					<mapping target="nextAssessmentDate" operand="set" value="nextAssessmentDate"></mapping>
@@ -1549,7 +1550,6 @@
 					<mapping target="nextAssessmentDate" operand="set" value="nextAssessmentDate"></mapping>
 					<mapping target="controlOwner" operand="set" value="controlOwner"></mapping>
 				</event-handler>
-				<event-handler on="LinkedRequirements" code='self.requirementArns = event.requirements.split(";")'></event-handler>
 				<nested-object name="assessment" business-key="arn">
 					<field name="dueDate" type="String"></field>
 					<field name="notes" type="String"></field>
@@ -1565,39 +1565,188 @@
 		</subdomain>
 	</domain>
 	<views>
+		<view name="Industry" data-retention-days="-1" exclude-notification="false">
+			<field name="arn" type="String" pk="true"></field>
+			<field name="name" type="String"></field>
+			<field name="description" type="String"></field>
+			<snapshot-handler id="RLB0hK" sub-domain="Admin" aggregate="Industry" key-mapping="arn" processor="item">
+				<mapping target="arn" operand="set" value="arn"></mapping>
+				<mapping target="name" operand="set" value="name"></mapping>
+				<mapping target="description" operand="set" value="description"></mapping>
+				<delete condition="#snapshot.isDeleted != ''"></delete>
+			</snapshot-handler>
+			<query graphql-namespace="Industry" field-name="get" type="get" authorization="authenticated"></query>
+			<query graphql-namespace="Industry" field-name="filter" type="filter" authorization="authenticated"></query>
+		</view>
 		<view name="BusinessUnit" data-retention-days="-1" exclude-notification="false">
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
 		</view>
-		<view name="Company" data-retention-days="-1" exclude-notification="false">
-			<field name="arn" type="String" pk="true"></field>
-			<field name="name" type="String"></field>
-			<field name="description" type="String"></field>
-			<field name="companySize" type="Int"></field>
-			<field name="revenue" type="String"></field>
-			<field name="industryLink" type="StringList"></field>
-			<field name="employees" type="OneToMany" ref="Employee" authorization="authenticated" foreign-key="#canonical"></field>
-			<field name="industry" type="ManyToMany" ref="Industry" authorization="authenticated" foreign-key="industryLink"></field>
-			<field name="businessUnits" type="ObjectList" ref="BusinessUnit" authorization="authenticated" foreign-key="arn"></field>
-			<field name="countryArn" type="String"></field>
-			<field name="country" type="ManyToOne" ref="Country" authorization="authenticated" foreign-key="countryArn"></field>
-			<field name="controlFrameworkLink" type="StringList"></field>
-			<field name="controlframework" type="ManyToMany" ref="ControlFramework" authorization="authenticated" foreign-key="controlFrameworkLink"></field>
-			<field name="controls" type="OneToMany" ref="Control" authorization="authenticated" foreign-key="#canonical"></field>
-			<snapshot-handler id="a8vzJw" sub-domain="Customer" aggregate="Company" key-mapping="arn" processor="item">
-				<mapping target="arn" operand="set" value="arn"></mapping>
-				<mapping target="name" operand="set" value="name"></mapping>
-				<mapping target="description" operand="set" value="description"></mapping>
-				<mapping target="companySize" operand="set" value="companySize"></mapping>
-				<mapping target="revenue" operand="set" value="revenue"></mapping>
-				<mapping target="industryLink" operand="set" value="industryLink"></mapping>
-				<mapping target="businessUnits" operand="convert_items" value="businessUnits" template='{"name": value["name"],"description": value["description"]}'></mapping>
-				<mapping target="countryArn" operand="set" value="countryArn"></mapping>
-				<mapping target="controlFrameworkLink" operand="set" value="controlFrameworkLinks"></mapping>
+		<view name="Demo" data-retention-days="-1" exclude-notification="false">
+			<field name="identifier" type="String" pk="true"></field>
+			<field name="value" type="String"></field>
+			<snapshot-handler id="gK9lTC" sub-domain="Admin" aggregate="Demo" key-mapping="identifier" processor="item">
+				<mapping target="identifier" operand="set" value="identifier"></mapping>
+				<mapping target="value" operand="set" value="value"></mapping>
 				<delete condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
-			<query graphql-namespace="Company" field-name="get" type="get" authorization="role" role="#global.extractRoleFromArn(key, 'viewer')"></query>
-			<query graphql-namespace="Company" field-name="filter" type="filter" authorization="role" role="#global.extractRoleFromArn(key_begins_with, 'viewer')" use-canonical-search="true"></query>
+			<query graphql-namespace="Demo" field-name="get" type="get" authorization="anonymous"></query>
+			<query graphql-namespace="Demo" field-name="filter" type="filter" authorization="anonymous"></query>
+		</view>
+		<view name="Requirement" data-retention-days="-1" exclude-notification="false">
+			<field name="name" type="String"></field>
+			<field name="description" type="String"></field>
+			<field name="mandatory" type="Boolean"></field>
+			<field name="summary" type="String"></field>
+			<field name="arn" type="String" pk="true"></field>
+			<snapshot-handler id="73vD0z" sub-domain="Admin" aggregate="Requirement" key-mapping="arn" processor="item">
+				<mapping target="name" operand="set" value="name"></mapping>
+				<mapping target="description" operand="set" value="description"></mapping>
+				<mapping target="mandatory" operand="set" value="mandatory"></mapping>
+				<mapping target="summary" operand="set" value="summary"></mapping>
+				<mapping target="arn" operand="set" value="arn"></mapping>
+				<delete condition="#snapshot.isDeleted != ''"></delete>
+			</snapshot-handler>
+			<query graphql-namespace="Requirement" field-name="get" type="get" authorization="authenticated"></query>
+			<query graphql-namespace="Requirement" field-name="filter" type="filter" authorization="authenticated"></query>
+		</view>
+		<view name="ControlAssessment" data-retention-days="-1" exclude-notification="false">
+			<field name="dueDate" type="String"></field>
+			<field name="notes" type="String"></field>
+			<field name="completeDate" type="String"></field>
+			<field name="category" type="String"></field>
+			<field name="arn" type="String" pk="true"></field>
+			<field name="assessedMaturityLevel" type="String"></field>
+			<field name="assessedMaturityDescription" type="String"></field>
+			<field name="linkToEvidence" type="String"></field>
+			<field name="assessorLink" type="String" default=""></field>
+			<field name="assesor" type="ManyToMany" ref="Employee" authorization="authenticated" foreign-key="assessorLink"></field>
+			<snapshot-handler id="e7tBLN" sub-domain="Customer" aggregate="Control" key-mapping="arn" processor="dictionary" dictionary="assessment">
+				<mapping target="arn" operand="set" value="arn"></mapping>
+				<mapping target="dueDate" operand="set" value="dueDate"></mapping>
+				<mapping target="notes" operand="set" value="notes"></mapping>
+				<mapping target="completeDate" operand="set" value="completeDate"></mapping>
+				<mapping target="category" operand="set" value="category"></mapping>
+				<mapping target="assessedMaturityLevel" operand="set" value="assessedMaturityLevel"></mapping>
+				<mapping target="assessedMaturityDescription" operand="set" value="assessedMaturityDescription"></mapping>
+				<mapping target="linkToEvidence" operand="set" value="linkToEvidence"></mapping>
+				<mapping target="assessorLink" operand="set" value="assessorLink"></mapping>
+				<delete condition="#snapshot.isDeleted != ''"></delete>
+			</snapshot-handler>
+			<query graphql-namespace="ControlAssessment" field-name="get" type="get" authorization="role" role="#global.extractRoleFromArn(key, 'viewer')"></query>
+			<query graphql-namespace="ControlAssessment" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.extractRoleFromArn(key_begins_with, 'viewer')"></query>
+		</view>
+		<view name="Country" data-retention-days="-1" exclude-notification="false">
+			<field name="arn" type="String" pk="true"></field>
+			<field name="name" type="String"></field>
+			<field name="code" type="String"></field>
+			<field name="regionArn" type="String"></field>
+			<field name="region" type="ManyToOne" ref="Region" authorization="authenticated" foreign-key="regionArn"></field>
+			<custom-handler id="RWpc1Y" sub-domain="Admin" aggregate="Region">for country in snapshot.countries.values():
+    arn = snapshot.arn + ":country:" + country.code
+    entity = EntityManager.get(type="Country", key=arn)
+    entity.arn = arn
+    entity.name = country.name
+    entity.code = country.code
+    entity.regionArn = snapshot.arn
+    if snapshot.isDeleted != '':
+        entity.mark_for_deletion = True</custom-handler>
+			<query graphql-namespace="Country" field-name="get" type="get" authorization="authenticated"></query>
+			<query graphql-namespace="Country" field-name="filter" type="filter" authorization="authenticated" use-canonical-search="true"></query>
+		</view>
+		<view name="User" data-retention-days="-1" exclude-notification="false">
+			<field name="username" type="String" pk="true"></field>
+			<field name="links" type="ObjectList" ref="UserCompanyLink" authorization="authenticated" foreign-key="username"></field>
+			<field name="firstName" type="String"></field>
+			<field name="lastName" type="String"></field>
+			<field name="active" type="Boolean"></field>
+			<field name="email" type="String"></field>
+			<field name="searchIndex" type="String"></field>
+			<snapshot-handler id="svYd9b" sub-domain="Admin" aggregate="User" key-mapping="username" processor="item">
+				<mapping target="username" operand="set" value="username"></mapping>
+				<mapping target="firstName" operand="set" value="firstName"></mapping>
+				<mapping target="lastName" operand="set" value="lastName"></mapping>
+				<mapping target="links" operand="convert_items" value="companies" template='{"arn": value["arn"],"employeeArn": value["employeeArn"]}'></mapping>
+				<mapping target="active" operand="set" value="active"></mapping>
+				<mapping target="email" operand="set" value="email"></mapping>
+				<delete condition="#snapshot.isDeleted != '' or snapshot.active == False"></delete>
+			</snapshot-handler>
+			<query graphql-namespace="User" field-name="get" type="get" authorization="user" username-field="key"></query>
+			<custom-handler id="TRGjhv" sub-domain="Admin" aggregate="User">entity = EntityManager.get(type="User", key=snapshot.username)
+index = f"{snapshot.username} {snapshot.firstName} {snapshot.lastName} {snapshot.email}"
+entity.searchIndex = index.lower()
+if snapshot.isDeleted != '' or snapshot.active == False:
+    entity.mark_for_deletion = True</custom-handler>
+		</view>
+		<view name="Profile" data-retention-days="-1" exclude-notification="false">
+			<field name="username" type="String" pk="true"></field>
+			<field name="firstName" type="String"></field>
+			<field name="lastName" type="String"></field>
+			<snapshot-handler id="71tqcg" sub-domain="Admin" aggregate="User" key-mapping="username" processor="item">
+				<mapping target="username" operand="set" value="username"></mapping>
+				<mapping target="firstName" operand="set" value="firstName"></mapping>
+				<mapping target="lastName" operand="set" value="lastName"></mapping>
+				<delete condition="#snapshot.isDeleted != '' or snapshot.active == False"></delete>
+			</snapshot-handler>
+			<query graphql-namespace="Profile" field-name="get" type="get" authorization="authenticated"></query>
+			<query graphql-namespace="Profile" field-name="filter" type="filter" authorization="authenticated"></query>
+		</view>
+		<view name="Region" data-retention-days="-1" exclude-notification="false">
+			<field name="arn" type="String" pk="true"></field>
+			<field name="name" type="String"></field>
+			<field name="code" type="String"></field>
+			<field name="countries" type="OneToMany" ref="Country" authorization="authenticated" foreign-key="#canonical"></field>
+			<snapshot-handler id="niRRoc" sub-domain="Admin" aggregate="Region" key-mapping="arn" processor="item">
+				<mapping target="arn" operand="set" value="arn"></mapping>
+				<mapping target="name" operand="set" value="name"></mapping>
+				<mapping target="code" operand="set" value="code"></mapping>
+				<delete condition="#snapshot.isDeleted != ''"></delete>
+			</snapshot-handler>
+			<query graphql-namespace="Region" field-name="get" type="get" authorization="authenticated"></query>
+			<query graphql-namespace="Region" field-name="filter" type="filter" authorization="authenticated" use-canonical-search="false"></query>
+		</view>
+		<view name="UserCompanyLink" data-retention-days="-1" exclude-notification="false">
+			<field name="arn" type="String"></field>
+			<field name="company" type="ManyToOne" ref="Company" authorization="role" foreign-key="arn" role="#global.extractRoleFromArn(arn, 'viewer')"></field>
+			<field name="employeeArn" type="String"></field>
+			<field name="employee" type="OneToOne" ref="Employee" authorization="role" foreign-key="employeeArn" role="#global.extractRoleFromArn(employeeArn, 'viewer')"></field>
+		</view>
+		<view name="Task" data-retention-days="-1" exclude-notification="false">
+			<field name="dueDate" type="String"></field>
+			<field name="notes" type="String"></field>
+			<field name="completeDate" type="String"></field>
+			<field name="arn" type="String" pk="true"></field>
+			<field name="owner" type="String" default=""></field>
+			<field name="evidence" type="String"></field>
+			<field name="employee" type="ManyToOne" ref="Employee" authorization="authenticated" foreign-key="owner"></field>
+			<field name="category" type="String"></field>
+			<field name="assessedMaturityLevel" type="String"></field>
+			<field name="assessedMaturityDescription" type="String"></field>
+			<snapshot-handler id="EW0V9R" sub-domain="Customer" aggregate="Control" key-mapping="arn" processor="dictionary" dictionary="assessment">
+				<mapping target="arn" operand="set" value="arn"></mapping>
+				<mapping target="dueDate" operand="set" value="dueDate"></mapping>
+				<mapping target="notes" operand="set" value="notes"></mapping>
+				<mapping target="completeDate" operand="set" value="completeDate"></mapping>
+				<mapping target="owner" operand="set" value="assessorLink"></mapping>
+				<mapping target="evidence" operand="set" value="linkToEvidence"></mapping>
+				<mapping target="category" operand="set" value="category"></mapping>
+				<mapping target="assessedMaturityLevel" operand="set" value="assessedMaturityLevel"></mapping>
+				<mapping target="assessedMaturityDescription" operand="set" value="assessedMaturityDescription"></mapping>
+				<delete condition="#'completeDate' in item and item.completeDate != ''"></delete>
+			</snapshot-handler>
+			<query graphql-namespace="Task" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.extractRoleFromArn(key_begins_with, 'viewer')"></query>
+			<query graphql-namespace="Task" field-name="get" type="get" authorization="role" role="#global.extractRoleFromArn(key, 'viewer')"></query>
+		</view>
+		<view name="Tenant" data-retention-days="-1" exclude-notification="false">
+			<field name="name" type="String" pk="true"></field>
+			<field name="css" type="String"></field>
+			<snapshot-handler id="4c3beB" sub-domain="Admin" aggregate="Tenant" key-mapping="name" processor="item">
+				<mapping target="name" operand="set" value="name"></mapping>
+				<mapping target="css" operand="set" value="css"></mapping>
+				<delete condition="#snapshot.isDeleted != ''"></delete>
+			</snapshot-handler>
+			<query graphql-namespace="Tenant" field-name="get" type="get" authorization="authenticated"></query>
+			<query graphql-namespace="Tenant" field-name="filter" type="filter" authorization="authenticated"></query>
 		</view>
 		<view name="Control" data-retention-days="-1" exclude-notification="false">
 			<field name="name" type="String"></field>
@@ -1638,32 +1787,6 @@
 			<query graphql-namespace="Control" field-name="get" type="get" authorization="role" role="#global.extractRoleFromArn(key, 'viewer')"></query>
 			<query graphql-namespace="Control" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.extractRoleFromArn(key_begins_with, 'viewer')"></query>
 		</view>
-		<view name="ControlAssessment" data-retention-days="-1" exclude-notification="false">
-			<field name="dueDate" type="String"></field>
-			<field name="notes" type="String"></field>
-			<field name="completeDate" type="String"></field>
-			<field name="category" type="String"></field>
-			<field name="arn" type="String" pk="true"></field>
-			<field name="assessedMaturityLevel" type="String"></field>
-			<field name="assessedMaturityDescription" type="String"></field>
-			<field name="linkToEvidence" type="String"></field>
-			<field name="assessorLink" type="String" default=""></field>
-			<field name="assesor" type="ManyToMany" ref="Employee" authorization="authenticated" foreign-key="assessorLink"></field>
-			<snapshot-handler id="e7tBLN" sub-domain="Customer" aggregate="Control" key-mapping="arn" processor="dictionary" dictionary="assessment">
-				<mapping target="arn" operand="set" value="arn"></mapping>
-				<mapping target="dueDate" operand="set" value="dueDate"></mapping>
-				<mapping target="notes" operand="set" value="notes"></mapping>
-				<mapping target="completeDate" operand="set" value="completeDate"></mapping>
-				<mapping target="category" operand="set" value="category"></mapping>
-				<mapping target="assessedMaturityLevel" operand="set" value="assessedMaturityLevel"></mapping>
-				<mapping target="assessedMaturityDescription" operand="set" value="assessedMaturityDescription"></mapping>
-				<mapping target="linkToEvidence" operand="set" value="linkToEvidence"></mapping>
-				<mapping target="assessorLink" operand="set" value="assessorLink"></mapping>
-				<delete condition="#snapshot.isDeleted != ''"></delete>
-			</snapshot-handler>
-			<query graphql-namespace="ControlAssessment" field-name="get" type="get" authorization="role" role="#global.extractRoleFromArn(key, 'viewer')"></query>
-			<query graphql-namespace="ControlAssessment" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.extractRoleFromArn(key_begins_with, 'viewer')"></query>
-		</view>
 		<view name="ControlFramework" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String" pk="true"></field>
 			<field name="description" type="String"></field>
@@ -1688,35 +1811,6 @@
 			<query graphql-namespace="ControlFramework" field-name="get" type="get" authorization="authenticated"></query>
 			<query graphql-namespace="ControlFramework" field-name="filter" type="filter" authorization="authenticated"></query>
 		</view>
-		<view name="Country" data-retention-days="-1" exclude-notification="false">
-			<field name="arn" type="String" pk="true"></field>
-			<field name="name" type="String"></field>
-			<field name="code" type="String"></field>
-			<field name="regionArn" type="String"></field>
-			<field name="region" type="ManyToOne" ref="Region" authorization="authenticated" foreign-key="regionArn"></field>
-			<custom-handler id="RWpc1Y" sub-domain="Admin" aggregate="Region">for country in snapshot.countries.values():
-    arn = snapshot.arn + ":country:" + country.code
-    entity = EntityManager.get(type="Country", key=arn)
-    entity.arn = arn
-    entity.name = country.name
-    entity.code = country.code
-    entity.regionArn = snapshot.arn
-    if snapshot.isDeleted != '':
-        entity.mark_for_deletion = True</custom-handler>
-			<query graphql-namespace="Country" field-name="get" type="get" authorization="authenticated"></query>
-			<query graphql-namespace="Country" field-name="filter" type="filter" authorization="authenticated" use-canonical-search="true"></query>
-		</view>
-		<view name="Demo" data-retention-days="-1" exclude-notification="false">
-			<field name="identifier" type="String" pk="true"></field>
-			<field name="value" type="String"></field>
-			<snapshot-handler id="gK9lTC" sub-domain="Admin" aggregate="Demo" key-mapping="identifier" processor="item">
-				<mapping target="identifier" operand="set" value="identifier"></mapping>
-				<mapping target="value" operand="set" value="value"></mapping>
-				<delete condition="#snapshot.isDeleted != ''"></delete>
-			</snapshot-handler>
-			<query graphql-namespace="Demo" field-name="get" type="get" authorization="anonymous"></query>
-			<query graphql-namespace="Demo" field-name="filter" type="filter" authorization="anonymous"></query>
-		</view>
 		<view name="Employee" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String" pk="true"></field>
 			<field name="username" type="String"></field>
@@ -1732,129 +1826,35 @@
     entity = EntityManager.get(type="Employee", key=depricated)
     entity.mark_for_deletion = True</custom-handler>
 		</view>
-		<view name="Industry" data-retention-days="-1" exclude-notification="false">
+		<view name="Company" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String" pk="true"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
-			<snapshot-handler id="RLB0hK" sub-domain="Admin" aggregate="Industry" key-mapping="arn" processor="item">
+			<field name="companySize" type="Int"></field>
+			<field name="revenue" type="String"></field>
+			<field name="industryLink" type="StringList"></field>
+			<field name="employees" type="OneToMany" ref="Employee" authorization="authenticated" foreign-key="#canonical"></field>
+			<field name="industry" type="ManyToMany" ref="Industry" authorization="authenticated" foreign-key="industryLink"></field>
+			<field name="businessUnits" type="ObjectList" ref="BusinessUnit" authorization="authenticated" foreign-key="arn"></field>
+			<field name="countryArn" type="String"></field>
+			<field name="country" type="ManyToOne" ref="Country" authorization="authenticated" foreign-key="countryArn"></field>
+			<field name="controlFrameworkLink" type="StringList"></field>
+			<field name="controlframework" type="ManyToMany" ref="ControlFramework" authorization="authenticated" foreign-key="controlFrameworkLink"></field>
+			<field name="controls" type="OneToMany" ref="Control" authorization="authenticated" foreign-key="#canonical"></field>
+			<snapshot-handler id="a8vzJw" sub-domain="Customer" aggregate="Company" key-mapping="arn" processor="item">
 				<mapping target="arn" operand="set" value="arn"></mapping>
 				<mapping target="name" operand="set" value="name"></mapping>
 				<mapping target="description" operand="set" value="description"></mapping>
+				<mapping target="companySize" operand="set" value="companySize"></mapping>
+				<mapping target="revenue" operand="set" value="revenue"></mapping>
+				<mapping target="industryLink" operand="set" value="industryLink"></mapping>
+				<mapping target="businessUnits" operand="convert_items" value="businessUnits" template='{"name": value["name"],"description": value["description"]}'></mapping>
+				<mapping target="countryArn" operand="set" value="countryArn"></mapping>
+				<mapping target="controlFrameworkLink" operand="set" value="controlFrameworkLinks"></mapping>
 				<delete condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
-			<query graphql-namespace="Industry" field-name="get" type="get" authorization="authenticated"></query>
-			<query graphql-namespace="Industry" field-name="filter" type="filter" authorization="authenticated"></query>
-		</view>
-		<view name="Profile" data-retention-days="-1" exclude-notification="false">
-			<field name="username" type="String" pk="true"></field>
-			<field name="firstName" type="String"></field>
-			<field name="lastName" type="String"></field>
-			<snapshot-handler id="71tqcg" sub-domain="Admin" aggregate="User" key-mapping="username" processor="item">
-				<mapping target="username" operand="set" value="username"></mapping>
-				<mapping target="firstName" operand="set" value="firstName"></mapping>
-				<mapping target="lastName" operand="set" value="lastName"></mapping>
-				<delete condition="#snapshot.isDeleted != '' or snapshot.active == False"></delete>
-			</snapshot-handler>
-			<query graphql-namespace="Profile" field-name="get" type="get" authorization="authenticated"></query>
-			<query graphql-namespace="Profile" field-name="filter" type="filter" authorization="authenticated"></query>
-		</view>
-		<view name="Region" data-retention-days="-1" exclude-notification="false">
-			<field name="arn" type="String" pk="true"></field>
-			<field name="name" type="String"></field>
-			<field name="code" type="String"></field>
-			<field name="countries" type="OneToMany" ref="Country" authorization="authenticated" foreign-key="#canonical"></field>
-			<snapshot-handler id="niRRoc" sub-domain="Admin" aggregate="Region" key-mapping="arn" processor="item">
-				<mapping target="arn" operand="set" value="arn"></mapping>
-				<mapping target="name" operand="set" value="name"></mapping>
-				<mapping target="code" operand="set" value="code"></mapping>
-				<delete condition="#snapshot.isDeleted != ''"></delete>
-			</snapshot-handler>
-			<query graphql-namespace="Region" field-name="get" type="get" authorization="authenticated"></query>
-			<query graphql-namespace="Region" field-name="filter" type="filter" authorization="authenticated" use-canonical-search="false"></query>
-		</view>
-		<view name="Requirement" data-retention-days="-1" exclude-notification="false">
-			<field name="name" type="String"></field>
-			<field name="description" type="String"></field>
-			<field name="mandatory" type="Boolean"></field>
-			<field name="summary" type="String"></field>
-			<field name="arn" type="String" pk="true"></field>
-			<snapshot-handler id="73vD0z" sub-domain="Admin" aggregate="Requirement" key-mapping="arn" processor="item">
-				<mapping target="name" operand="set" value="name"></mapping>
-				<mapping target="description" operand="set" value="description"></mapping>
-				<mapping target="mandatory" operand="set" value="mandatory"></mapping>
-				<mapping target="summary" operand="set" value="summary"></mapping>
-				<mapping target="arn" operand="set" value="arn"></mapping>
-				<delete condition="#snapshot.isDeleted != ''"></delete>
-			</snapshot-handler>
-			<query graphql-namespace="Requirement" field-name="get" type="get" authorization="authenticated"></query>
-			<query graphql-namespace="Requirement" field-name="filter" type="filter" authorization="authenticated"></query>
-		</view>
-		<view name="Task" data-retention-days="-1" exclude-notification="false">
-			<field name="dueDate" type="String"></field>
-			<field name="notes" type="String"></field>
-			<field name="completeDate" type="String"></field>
-			<field name="arn" type="String" pk="true"></field>
-			<field name="owner" type="String" default=""></field>
-			<field name="evidence" type="String"></field>
-			<field name="employee" type="ManyToMany" ref="Employee" authorization="authenticated" foreign-key="owner"></field>
-			<field name="category" type="String"></field>
-			<field name="assessedMaturityLevel" type="String"></field>
-			<field name="assessedMaturityDescription" type="String"></field>
-			<snapshot-handler id="EW0V9R" sub-domain="Customer" aggregate="Control" key-mapping="arn" processor="dictionary" dictionary="assessment">
-				<mapping target="arn" operand="set" value="arn"></mapping>
-				<mapping target="dueDate" operand="set" value="dueDate"></mapping>
-				<mapping target="notes" operand="set" value="notes"></mapping>
-				<mapping target="completeDate" operand="set" value="completeDate"></mapping>
-				<mapping target="owner" operand="set" value="assessorLink"></mapping>
-				<mapping target="evidence" operand="set" value="linkToEvidence"></mapping>
-				<mapping target="category" operand="set" value="category"></mapping>
-				<mapping target="assessedMaturityLevel" operand="set" value="assessedMaturityLevel"></mapping>
-				<mapping target="assessedMaturityDescription" operand="set" value="assessedMaturityDescription"></mapping>
-				<delete condition="#'completeDate' in item and item.completeDate != ''"></delete>
-			</snapshot-handler>
-			<query graphql-namespace="Task" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.extractRoleFromArn(key_begins_with, 'viewer')"></query>
-			<query graphql-namespace="Task" field-name="get" type="get" authorization="role" role="#global.extractRoleFromArn(key, 'viewer')"></query>
-		</view>
-		<view name="Tenant" data-retention-days="-1" exclude-notification="false">
-			<field name="name" type="String" pk="true"></field>
-			<field name="css" type="String"></field>
-			<snapshot-handler id="4c3beB" sub-domain="Admin" aggregate="Tenant" key-mapping="name" processor="item">
-				<mapping target="name" operand="set" value="name"></mapping>
-				<mapping target="css" operand="set" value="css"></mapping>
-				<delete condition="#snapshot.isDeleted != ''"></delete>
-			</snapshot-handler>
-			<query graphql-namespace="Tenant" field-name="get" type="get" authorization="authenticated"></query>
-			<query graphql-namespace="Tenant" field-name="filter" type="filter" authorization="authenticated"></query>
-		</view>
-		<view name="User" data-retention-days="-1" exclude-notification="false">
-			<field name="username" type="String" pk="true"></field>
-			<field name="links" type="ObjectList" ref="UserCompanyLink" authorization="authenticated" foreign-key="username"></field>
-			<field name="firstName" type="String"></field>
-			<field name="lastName" type="String"></field>
-			<field name="active" type="Boolean"></field>
-			<field name="email" type="String"></field>
-			<field name="searchIndex" type="String"></field>
-			<snapshot-handler id="svYd9b" sub-domain="Admin" aggregate="User" key-mapping="username" processor="item">
-				<mapping target="username" operand="set" value="username"></mapping>
-				<mapping target="firstName" operand="set" value="firstName"></mapping>
-				<mapping target="lastName" operand="set" value="lastName"></mapping>
-				<mapping target="links" operand="convert_items" value="companies" template='{"arn": value["arn"],"employeeArn": value["employeeArn"]}'></mapping>
-				<mapping target="active" operand="set" value="active"></mapping>
-				<mapping target="email" operand="set" value="email"></mapping>
-				<delete condition="#snapshot.isDeleted != '' or snapshot.active == False"></delete>
-			</snapshot-handler>
-			<query graphql-namespace="User" field-name="get" type="get" authorization="user" username-field="key"></query>
-			<custom-handler id="TRGjhv" sub-domain="Admin" aggregate="User">entity = EntityManager.get(type="User", key=snapshot.username)
-index = f"{snapshot.username} {snapshot.firstName} {snapshot.lastName} {snapshot.email}"
-entity.searchIndex = index.lower()
-if snapshot.isDeleted != '' or snapshot.active == False:
-    entity.mark_for_deletion = True</custom-handler>
-		</view>
-		<view name="UserCompanyLink" data-retention-days="-1" exclude-notification="false">
-			<field name="arn" type="String"></field>
-			<field name="company" type="ManyToOne" ref="Company" authorization="role" foreign-key="arn" role="#global.extractRoleFromArn(arn, 'viewer')"></field>
-			<field name="employeeArn" type="String"></field>
-			<field name="employee" type="OneToOne" ref="Employee" authorization="role" foreign-key="employeeArn" role="#global.extractRoleFromArn(employeeArn, 'viewer')"></field>
+			<query graphql-namespace="Company" field-name="get" type="get" authorization="role" role="#global.extractRoleFromArn(key, 'viewer')"></query>
+			<query graphql-namespace="Company" field-name="filter" type="filter" authorization="role" role="#global.extractRoleFromArn(key_begins_with, 'viewer')" use-canonical-search="true"></query>
 		</view>
 	</views>
 	<projections>
@@ -1866,56 +1866,6 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 		</projection>
 	</projections>
 	<notifiers>
-		<notifier name="InitializeSystemUser">
-			<trigger source="@afterDeployment">
-				<mapping target="dummy" value="#''"></mapping>
-			</trigger>
-			<activity type="iam-create-systemuser" fail-silent="true" id="vMB9LZ"></activity>
-		</notifier>
-		<notifier name="PrepareCompanyTenant">
-			<trigger source="CompanyCreated">
-				<mapping target="arn" value="arn"></mapping>
-				<mapping target="user" value="user"></mapping>
-			</trigger>
-			<activity type="code" id="4x5IYY" python-file="lib/AccessManagement.py" handler="retrieve_all_roles" condition=""></activity>
-			<activity type="set-variable" id="9V4dG1" name="systemUser" expression="#'system-user'"></activity>
-			<activity type="loop" id="ytmySk" array="#flow.roles">
-				<activity type="set-variable" id="ILrv7Y" name="role" expression="#item"></activity>
-				<activity type="create-iam-group" id="ONx6ky" group-name="#flow.role"></activity>
-				<activity type="add-user-to-iam-group" id="dri70C" group-name="#flow.role" username="#flow.user"></activity>
-				<activity type="add-user-to-iam-group" id="jBKEw3" group-name="#flow.role" username="#flow.systemUser"></activity>
-			</activity>
-		</notifier>
-		<notifier name="PrepareSelfAssessments">
-			<trigger source="@cron(0 4 * * ? *)">
-				<mapping target="dummy" value="#''"></mapping>
-			</trigger>
-			<activity type="call-internal-api" id="fVAjtj" name="controls" query='query fetchEligible {|LB|  Control {|LB|    fetchEligible(relativeTime: "4") {|LB|      arn|LB|    }|LB|  }|LB|}'></activity>
-			<activity type="set-variable" id="GyOmpH" name="controls" expression="#flow.controls['data']['Control']['fetchEligible']"></activity>
-			<activity type="loop" id="1COpan" array="#flow.controls">
-				<activity type="set-variable" id="UZ496m" name="arn" expression='#item["arn"]'></activity>
-				<activity type="call-internal-api" id="DCAhOj" name="result" query='mutation MyMutation {|LB|  Company {|LB|    Control {|LB|      Assessment {|LB|        start(input: {controlArn: "{{flow.arn}}"}) {|LB|          correlationId|LB|        }|LB|      }|LB|    }|LB|  }|LB|}|LB|'></activity>
-			</activity>
-		</notifier>
-		<notifier name="SendInvite">
-			<trigger source="UserAddedToCompany">
-				<mapping target="username" value="username"></mapping>
-				<mapping target="active" value="active"></mapping>
-			</trigger>
-			<activity type="code" id="HZNTTw" code='flow.eligible = flow.active == False and "@" in flow.username|LB|flow.sender = "no-reply@draftsman.io"|LB|flow.receiver = flow.username|LB|flow.subject = "Colleagues are reaching out in Anove"|LB|flow.text = "Create an account at https://anovedemo.github.io"|LB|flow.html = flow.text'></activity>
-			<activity type="send-email" id="2wJ6Y9" condition="flow.eligible" sender="no-reply@draftsman.io" receiver="#flow.receiver" subject="#flow.subject" text="#flow.text" html="#flow.html"></activity>
-		</notifier>
-		<notifier name="SetupDemo">
-			<trigger source="@cron(0 * * * ? *)">
-				<mapping target="dummy" value="#'dummy'"></mapping>
-			</trigger>
-			<activity type="set-variable" id="6fz0Yx" name="role" expression="#'administrator'"></activity>
-			<activity type="create-iam-group" id="kj95dD" group-name="#flow.role" fail-silent="true"></activity>
-			<activity type="set-variable" id="CqaYqy" name="bo" expression="#'hanssen'" fail-silent="false"></activity>
-			<activity type="set-variable" id="We51UX" name="delano" expression="#'delano'"></activity>
-			<activity type="add-user-to-iam-group" id="bLO2pB" group-name="#flow.role" username="#flow.bo" fail-silent="true"></activity>
-			<activity type="add-user-to-iam-group" id="CvSj37" group-name="#flow.role" username="#flow.delano" fail-silent="true"></activity>
-		</notifier>
 		<notifier name="UpdateAccessForEmployee">
 			<trigger source="BusinessRoleUpdated">
 				<mapping target="arn" value="employeeArn"></mapping>
@@ -1935,6 +1885,56 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<activity type="loop" id="XZC39S" array="#flow.roles">
 				<activity type="set-variable" id="p0OpGd" name="role" expression="#item"></activity>
 				<activity type="add-user-to-iam-group" id="XBvRzc" group-name="#flow.role" username="#flow.username" fail-silent="true"></activity>
+			</activity>
+		</notifier>
+		<notifier name="PrepareSelfAssessments">
+			<trigger source="@cron(0 4 * * ? *)">
+				<mapping target="dummy" value="#''"></mapping>
+			</trigger>
+			<activity type="call-internal-api" id="fVAjtj" name="controls" query='query fetchEligible {|LB|  Control {|LB|    fetchEligible(relativeTime: "4") {|LB|      arn|LB|    }|LB|  }|LB|}'></activity>
+			<activity type="set-variable" id="GyOmpH" name="controls" expression="#flow.controls['data']['Control']['fetchEligible']"></activity>
+			<activity type="loop" id="1COpan" array="#flow.controls">
+				<activity type="set-variable" id="UZ496m" name="arn" expression='#item["arn"]'></activity>
+				<activity type="call-internal-api" id="DCAhOj" name="result" query='mutation MyMutation {|LB|  Company {|LB|    Control {|LB|      Assessment {|LB|        start(input: {controlArn: "{{flow.arn}}"}) {|LB|          correlationId|LB|        }|LB|      }|LB|    }|LB|  }|LB|}|LB|'></activity>
+			</activity>
+		</notifier>
+		<notifier name="InitializeSystemUser">
+			<trigger source="@afterDeployment">
+				<mapping target="dummy" value="#''"></mapping>
+			</trigger>
+			<activity type="iam-create-systemuser" fail-silent="true" id="vMB9LZ"></activity>
+		</notifier>
+		<notifier name="SetupDemo">
+			<trigger source="@cron(0 * * * ? *)">
+				<mapping target="dummy" value="#'dummy'"></mapping>
+			</trigger>
+			<activity type="set-variable" id="6fz0Yx" name="role" expression="#'administrator'"></activity>
+			<activity type="create-iam-group" id="kj95dD" group-name="#flow.role" fail-silent="true"></activity>
+			<activity type="set-variable" id="CqaYqy" name="bo" expression="#'hanssen'" fail-silent="false"></activity>
+			<activity type="set-variable" id="We51UX" name="delano" expression="#'delano'"></activity>
+			<activity type="add-user-to-iam-group" id="bLO2pB" group-name="#flow.role" username="#flow.bo" fail-silent="true"></activity>
+			<activity type="add-user-to-iam-group" id="CvSj37" group-name="#flow.role" username="#flow.delano" fail-silent="true"></activity>
+		</notifier>
+		<notifier name="SendInvite">
+			<trigger source="UserAddedToCompany">
+				<mapping target="username" value="username"></mapping>
+				<mapping target="active" value="active"></mapping>
+			</trigger>
+			<activity type="code" id="HZNTTw" code='flow.eligible = flow.active == False and "@" in flow.username|LB|flow.sender = "no-reply@draftsman.io"|LB|flow.receiver = flow.username|LB|flow.subject = "Colleagues are reaching out in Anove"|LB|flow.text = "Create an account at https://anovedemo.github.io"|LB|flow.html = flow.text'></activity>
+			<activity type="send-email" id="2wJ6Y9" condition="flow.eligible" sender="no-reply@draftsman.io" receiver="#flow.receiver" subject="#flow.subject" text="#flow.text" html="#flow.html"></activity>
+		</notifier>
+		<notifier name="PrepareCompanyTenant">
+			<trigger source="CompanyCreated">
+				<mapping target="arn" value="arn"></mapping>
+				<mapping target="user" value="user"></mapping>
+			</trigger>
+			<activity type="code" id="4x5IYY" python-file="lib/AccessManagement.py" handler="retrieve_all_roles" condition=""></activity>
+			<activity type="set-variable" id="9V4dG1" name="systemUser" expression="#'system-user'"></activity>
+			<activity type="loop" id="ytmySk" array="#flow.roles">
+				<activity type="set-variable" id="ILrv7Y" name="role" expression="#item"></activity>
+				<activity type="create-iam-group" id="ONx6ky" group-name="#flow.role"></activity>
+				<activity type="add-user-to-iam-group" id="dri70C" group-name="#flow.role" username="#flow.user"></activity>
+				<activity type="add-user-to-iam-group" id="jBKEw3" group-name="#flow.role" username="#flow.systemUser"></activity>
 			</activity>
 		</notifier>
 	</notifiers>
