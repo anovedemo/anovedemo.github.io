@@ -1,0 +1,17 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query GetControlAssessment($key: ID = "") {
+  ControlAssessment {
+    get(key: $key) {
+      key
+      dueDate
+      notes
+      completeDate
+      category
+      arn
+      assessedMaturityLevel
+      assessedMaturityDescription
+      linkToEvidence
+      assessorLink
+    }
+  }
+}

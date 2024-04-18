@@ -1,0 +1,77 @@
+[
+  {
+    "type": "meta",
+    "message": "This file is managed by Tracepaper"
+  },
+  {
+    "name": "arn",
+    "title": "Arn",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "assessment",
+    "title": "Assessment",
+    "type": "nested",
+    "fields": [
+      {
+        "name": "dueDate",
+        "title": "Duedate",
+        "type": "String",
+        "pattern": "^(?:20)\\d{2}-\\d{2}-\\d{2}$",
+        "placeholder": "",
+        "default": ""
+      },
+      {
+        "name": "notes",
+        "title": "Notes",
+        "type": "String",
+        "pattern": "",
+        "placeholder": "",
+        "default": ""
+      },
+      {
+        "name": "arn",
+        "title": "Arn",
+        "type": "String",
+        "pattern": "",
+        "placeholder": "",
+        "default": ""
+      },
+      {
+        "name": "assessedMaturityLevel",
+        "title": "Assessedmaturitylevel",
+        "type": "String",
+        "pattern": "^(1|2|3|4|5)$",
+        "placeholder": "",
+        "default": ""
+      },
+      {
+        "name": "assessedMaturityDescription",
+        "title": "Assessedmaturitydescription",
+        "type": "String",
+        "pattern": "",
+        "placeholder": "",
+        "default": ""
+      },
+      {
+        "name": "linkToEvidence",
+        "title": "Linktoevidence",
+        "type": "String",
+        "pattern": "",
+        "placeholder": "",
+        "default": ""
+      },
+      {
+        "name": "assessorLink",
+        "title": "Assessorlink",
+        "type": "String",
+        "pattern": "^[a-z]+:company:[a-z]+:employee:[^\\s]+$",
+        "placeholder": "",
+        "default": ""
+      }
+    ]
+  }
+]

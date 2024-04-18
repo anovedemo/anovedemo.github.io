@@ -1,0 +1,26 @@
+<!-- This file is managed by Tracepaper -->
+<template x-component="CompleteCompanyControlAssessment">
+    <div x-import="basic-form;tables">
+
+        <!-- The command object -->
+        <draftsman-mutation command="CompleteCompanyControlAssessment" x-include="/prepared-statements/commands/CompleteCompanyControlAssessment.txt" authenticated>
+        </draftsman-mutation>
+
+        <!-- The form definition -->
+        <div  style="display:none;" id="CompleteCompanyControlAssessment"
+              x-include="/form-definitions/CompleteCompanyControlAssessment.json"></div>
+
+        <!-- The trace table -->
+        <ui-trace-table></ui-trace-table>
+
+        <!-- The form -->
+        <ui-basic-form alias="CompleteCompanyControlAssessment"></ui-basic-form>
+
+        <draftsman-trace command="CompleteCompanyControlAssessment"
+              status="success"
+              @trace="
+                setTimeout(Draftsman.empty_track_and_trace_log,5000);
+                $dispatch('setdata', { command: 'CompleteCompanyControlAssessment', data: {} });">
+        </draftsman-trace>
+    </div>
+</template>

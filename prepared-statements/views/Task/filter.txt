@@ -1,0 +1,19 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query FilterTask($key_begins_with: String = "") {
+  Task {
+    filter(key_begins_with: $key_begins_with) {
+       resultset { 
+        key
+        dueDate
+        notes
+        completeDate
+        arn
+        owner
+        evidence
+        category
+        assessedMaturityLevel
+        assessedMaturityDescription
+      }
+    }
+  }
+}
