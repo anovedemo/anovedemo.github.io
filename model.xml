@@ -433,14 +433,14 @@
 						<mapping target="username" value="username"></mapping>
 					</trigger>
 					<processor type="set-variable" id="HRnMzH" name="active" expression="flow.entity.active"></processor>
-					<processor type="code" id="I2C5M7" file="" handler="" code='flow.companies = []|LB|for arn,company in flow.entity.companies.items():|LB|    flow.companies.append(company)|LB||LB|flow.arn = ":".join(flow.employeeArn.split(":")[:2])|LB|if not flow.arn in flow.entity.companies.keys(): |LB|    flow.companies.append({|LB|        "arn": flow.arn,|LB|        "employeeArn": flow.employeeArn|LB|    })'></processor>
+					<processor type="code" id="I2C5M7" file="" handler="" code='flow.companies = []|LB|for arn,company in flow.entity.companies.items():|LB|    flow.companies.append(company)|LB||LB|flow.arn = ":".join(flow.employeeArn.split(":")[:3])|LB|if not flow.arn in flow.entity.companies.keys(): |LB|    flow.companies.append({|LB|        "arn": flow.arn,|LB|        "employeeArn": flow.employeeArn|LB|    })'></processor>
 					<processor type="emit-event" id="M3Zqjo" ref="UserAddedToCompany">
 						<mapping target="username" value="#flow.username"></mapping>
 						<mapping target="active" value="#flow.active"></mapping>
 						<mapping target="companies" value="#flow.companies"></mapping>
 					</processor>
 					<test-case name="LinkCompanyToUser" trigger-event="BusinessRoleUpdated">
-						<input name="employeeArn" value="company:tracepaper:employee:j.doe" type="String"></input>
+						<input name="employeeArn" value="anove:company:tracepaper:employee:j.doe" type="String"></input>
 						<input name="businessRole" value="administrator" type="String"></input>
 						<input name="username" value="j.doe" type="String"></input>
 						<expected domain-event="UserAddedToCompany">
@@ -451,9 +451,9 @@
   "username": "j.doe",
   "active": true,
   "companies": {
-    "company:draftsman": {
-      "arn": "company:draftsman",
-      "employeeArn": "company:draftsman:employee:j.doe"
+    "anove:company:draftsman": {
+      "arn": "anove:company:draftsman",
+      "employeeArn": "anove:company:draftsman:employee:j.doe"
     }
   }
 }</state>
@@ -461,13 +461,13 @@
   "username": "j.doe",
   "active": true,
   "companies": {
-    "company:draftsman": {
-      "arn": "company:draftsman",
-      "employeeArn": "company:draftsman:employee:j.doe"
+    "anove:company:draftsman": {
+      "arn": "anove:company:draftsman",
+      "employeeArn": "anove:company:draftsman:employee:j.doe"
     },
-    "company:tracepaper": {
-      "arn": "company:tracepaper",
-      "employeeArn": "company:tracepaper:employee:j.doe"
+    "anove:company:tracepaper": {
+      "arn": "anove:company:tracepaper",
+      "employeeArn": "anove:company:tracepaper:employee:j.doe"
     }
   }
 }</expected-state>
