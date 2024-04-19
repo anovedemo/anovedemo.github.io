@@ -83,7 +83,17 @@
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
 		</event>
-		<event graphql-namespace="Company.Control" graphql-name="update" name="UpdateCompanyControlRequested" authorization="authenticated" type="ActorEvent"></event>
+		<event graphql-namespace="Company.Control" graphql-name="update" name="UpdateCompanyControlRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
+			<field name="description" type="String"></field>
+			<field name="controlTemplateArn" type="String" default=""></field>
+			<field name="assessmentPeriodicity" type="String"></field>
+			<field name="desiredMaturityLevel" type="Int"></field>
+			<field name="businessUnit" type="String"></field>
+			<field name="requirements" type="String" pattern="{{RequirementLink}}"></field>
+			<field name="nextAssessmentDate" type="String" pattern="{{Date}}"></field>
+			<field name="controlOwner" type="String" pattern="{{EmployeeArn}}"></field>
+			<field name="arn" type="String"></field>
+		</event>
 		<event graphql-namespace="Company.Control" graphql-name="create" name="CreateCompanyControlRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(companyArn, 'administrator')">
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
@@ -276,6 +286,16 @@
 				<field name="linkToEvidence" type="String"></field>
 				<field name="assessorLink" type="String" default=""></field>
 			</nested-object>
+		</event>
+		<event name="ControlUpdated" source="Customer.Control" type="DomainEvent">
+			<field name="description" type="String"></field>
+			<field name="controlTemplateArn" type="String"></field>
+			<field name="assessmentPeriodicity" type="String"></field>
+			<field name="desiredMaturityLevel" type="Int"></field>
+			<field name="businessUnit" type="String"></field>
+			<field name="nextAssessmentDate" type="String"></field>
+			<field name="controlOwner" type="String"></field>
+			<field name="requirementArns" type="String"></field>
 		</event>
 		<event name="ControlCreated" source="Customer.Control" type="DomainEvent">
 			<field name="name" type="String"></field>
@@ -1417,6 +1437,63 @@
 }</expected-state>
 					</test-case>
 				</command>
+				<command name="Update">
+					<trigger source="UpdateCompanyControlRequested" key-field="arn">
+						<mapping target="description" value="description"></mapping>
+						<mapping target="controlTemplateArn" value="controlTemplateArn"></mapping>
+						<mapping target="assessmentPeriodicity" value="assessmentPeriodicity"></mapping>
+						<mapping target="desiredMaturityLevel" value="desiredMaturityLevel"></mapping>
+						<mapping target="businessUnit" value="businessUnit"></mapping>
+						<mapping target="requirementArns" value="requirements"></mapping>
+						<mapping target="nextAssessmentDate" value="nextAssessmentDate"></mapping>
+						<mapping target="controlOwner" value="controlOwner"></mapping>
+						<mapping target="arn" value="arn"></mapping>
+					</trigger>
+					<processor type="validator" id="K6SoMJ" condition="flow.entity.version != 0" exception="May not be initial request"></processor>
+					<processor type="code" id="0yyCqe" file="lib/AssessmentUtils.py" handler="prepare_control_update"></processor>
+					<processor type="emit-event" id="o35kOb" ref="ControlUpdated">
+						<mapping target="description" value="#flow.description"></mapping>
+						<mapping target="controlTemplateArn" value="#flow.controlTemplateArn"></mapping>
+						<mapping target="assessmentPeriodicity" value="#flow.assessmentPeriodicity"></mapping>
+						<mapping target="desiredMaturityLevel" value="#flow.desiredMaturityLevel"></mapping>
+						<mapping target="businessUnit" value="#flow.businessUnit"></mapping>
+						<mapping target="nextAssessmentDate" value="#flow.nextAssessmentDate"></mapping>
+						<mapping target="controlOwner" value="#flow.controlOwner"></mapping>
+						<mapping target="requirementArns" value="#flow.requirementArns"></mapping>
+					</processor>
+					<test-case name="UpdateControl" trigger-event="UpdateCompanyControlRequested">
+						<input name="description" value="description" type="String"></input>
+						<input name="controlTemplateArn" value="controlTemplateArn" type="String"></input>
+						<input name="assessmentPeriodicity" value="assessmentPeriodicity" type="String"></input>
+						<input name="desiredMaturityLevel" value="3" type="Int"></input>
+						<input name="businessUnit" value="businessUnit" type="String"></input>
+						<input name="requirements" value="requirementArns" type="String"></input>
+						<input name="nextAssessmentDate" value="nextAssessmentDate" type="String"></input>
+						<input name="controlOwner" value="controlOwner" type="String"></input>
+						<input name="arn" value="arn" type="String"></input>
+						<state>{"version": 1}</state>
+						<expected domain-event="ControlUpdated">
+							<field value="description" name="description" type="String"></field>
+							<field value="controlTemplateArn" name="controlTemplateArn" type="String"></field>
+							<field value="assessmentPeriodicity" name="assessmentPeriodicity" type="String"></field>
+							<field value="3" name="desiredMaturityLevel" type="Int"></field>
+							<field value="businessUnit" name="businessUnit" type="String"></field>
+							<field value="nextAssessmentDate" name="nextAssessmentDate" type="String"></field>
+							<field value="controlOwner" name="controlOwner" type="String"></field>
+							<field value="requirementArns" name="requirementArns" type="String"></field>
+						</expected>
+						<expected-state pk="arn">{
+  "description": "description",
+  "controlTemplateArn": "controlTemplateArn",
+  "assessmentPeriodicity": "assessmentPeriodicity",
+  "desiredMaturityLevel": 3,
+  "businessUnit": "businessUnit",
+  "requirementArns": "requirementArns",
+  "nextAssessmentDate": "nextAssessmentDate",
+  "controlOwner": "controlOwner"
+}</expected-state>
+					</test-case>
+				</command>
 				<command name="CreateAssessment">
 					<trigger source="StartCompanyControlAssessmentRequested" key-field="controlArn">
 						<mapping target="arn" value="controlArn"></mapping>
@@ -1539,6 +1616,16 @@
 						<mapping target="linkToEvidence" operand="set" value="linkToEvidence"></mapping>
 						<mapping target="assessorLink" operand="set" value="assessorLink"></mapping>
 					</nested-mapping>
+				</event-handler>
+				<event-handler on="ControlUpdated">
+					<mapping target="description" operand="set" value="description"></mapping>
+					<mapping target="controlTemplateArn" operand="set" value="controlTemplateArn"></mapping>
+					<mapping target="assessmentPeriodicity" operand="set" value="assessmentPeriodicity"></mapping>
+					<mapping target="desiredMaturityLevel" operand="set" value="desiredMaturityLevel"></mapping>
+					<mapping target="businessUnit" operand="set" value="businessUnit"></mapping>
+					<mapping target="requirementArns" operand="set" value="requirementArns"></mapping>
+					<mapping target="nextAssessmentDate" operand="set" value="nextAssessmentDate"></mapping>
+					<mapping target="controlOwner" operand="set" value="controlOwner"></mapping>
 				</event-handler>
 				<event-handler on="ControlCreated">
 					<mapping target="name" operand="set" value="name"></mapping>
@@ -1904,11 +1991,9 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 		</notifier>
 		<notifier name="InitializeSystemUser">
 			<trigger source="@afterDeployment">
-				<mapping target="username" value="#'system-user'"></mapping>
-				<mapping target="group" value="#'administrator'"></mapping>
+				<mapping target="dummy" value="#''"></mapping>
 			</trigger>
 			<activity type="iam-create-systemuser" fail-silent="true" id="vMB9LZ"></activity>
-			<activity type="add-user-to-iam-group" id="nRRhdb" group-name="#flow.group" username="#flow.username" fail-silent="true"></activity>
 		</notifier>
 		<notifier name="SetupDemo">
 			<trigger source="@cron(0 * * * ? *)">
