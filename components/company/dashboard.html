@@ -1,8 +1,8 @@
 <template x-component="dashboard">
+  <h1>Dashboard for: <span x-text="company.name"></span></h1>
+  <hr>
   <div class="row">
     <div class="col-8">
-      <h1>Dashboard for: <span x-text="company.name"></span></h1>
-      <hr>
       <table class="table">
         <tr>
           <th scope="row">Country of establishment</th>
@@ -37,6 +37,132 @@
         </tr>
       </table>
     </div>
+    <div class="col-4" x-data="{tasks: [],selected_task:{}}">
+      <h4>Tasks</h4>
+      <ul class="list-group list-group-flush">
+        <template x-for="task in tasks">
+          <a href="#" class="list-group-item list-group-item-action" aria-current="true"
+             @click="
+              selected_task = task;
+              if(selected_task.notes == ''){selected_task.notes = '# Notes\n\nlorem ipsum...'};
+              if(selected_task.assessedMaturityLevel == ''){selected_task.assessedMaturityLevel = '1'}"
+             data-bs-toggle="modal" data-bs-target="#taskModal">
+            <div class="d-flex w-100 justify-content-between">
+              <h5 class="mb-1" x-text="label['assessment.' + task.category]"></h5>
+              <small x-text="task.dueDate"></small>
+            </div>
+            <p class="mb-1" x-text="task.arn.split(':').at(4)"></p>
+            <small>
+              <span x-text="task.employee.user.firstName"></span>
+              <span x-text="task.employee.user.lastName"></span>
+            </small>
+          </a>
+        </template>
+      </ul>
 
+      <draftsman-mutation command="UpdateCompanyControlAssessment"
+                          x-include="/prepared-statements/commands/UpdateCompanyControlAssessment.txt" authenticated>
+      </draftsman-mutation>
+      <draftsman-trace command="UpdateCompanyControlAssessment"
+                       status="success"
+                       @trace="
+                    setTimeout(Draftsman.force_reload_data,1000);
+                    Draftsman.empty_track_and_trace_log();">
+      </draftsman-trace>
+
+      <draftsman-mutation command="CompleteCompanyControlAssessment"
+                          x-include="/prepared-statements/commands/CompleteCompanyControlAssessment.txt" authenticated>
+      </draftsman-mutation>
+      <draftsman-trace command="CompleteCompanyControlAssessment"
+                       status="success"
+                       @trace="Draftsman.clear_cache();location.reload()">
+      </draftsman-trace>
+
+      <!-- Modal -->
+      <div class="modal fade" id="taskModal" tabindex="-1" aria-labelledby="taskModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="taskModalLabel">
+                <span x-text="label['assessment.' + selected_task.category]"></span>
+                <span x-text="selected_task.arn.split(':').at(4)"></span>:
+                <span x-text="selected_task.dueDate"></span>
+              </h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" x-import="utils/tables">
+
+              <div @task-updated.debounce="
+                  let arn = selected_task.arn.split(':').slice(0,5).join(':');
+                  $store.mutation.send('UpdateCompanyControlAssessment',{
+                    arn:arn,
+                    assessment:[{
+                      arn: selected_task.arn,
+                      assessedMaturityDescription: selected_task.assessedMaturityDescription,
+                      assessedMaturityLevel: selected_task.assessedMaturityLevel,
+                      assessorLink: selected_task.owner,
+                      dueDate: selected_task.dueDate,
+                      linkToEvidence: selected_task.evidence,
+                      notes: selected_task.notes
+                    }]})">
+                <div class="row">
+                  <div class="col-6">
+                    <div class="mb-3">
+                      <label class="form-label">Notes:</label>
+                      <textarea @change="$dispatch('task-updated')" class="form-control" x-model="selected_task.notes" rows="8"></textarea>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div x-html="converter.makeHtml(selected_task.notes)"></div>
+                  </div>
+                </div>
+
+                <label for="maturity">Assessed maturity level:
+                  <span x-text="selected_task.assessedMaturityLevel"></span></label>
+                <input type="range" class="form-range"
+                       @change="$dispatch('task-updated')"
+                       x-model="selected_task.assessedMaturityLevel"
+                       min="1" max="5" step="1" id="maturity">
+
+                <label class="form-label">Maturity description:</label>
+                <textarea @change="$dispatch('task-updated')" class="form-control"
+                          x-model="selected_task.assessedMaturityDescription" rows="3"></textarea>
+
+                <label class="form-label">Assessor:</label>
+                <input x-model="selected_task.owner"
+                      @change="$dispatch('task-updated')"
+                       class="form-control" list="employees" placeholder="Assessor...">
+                <datalist id="employees">
+                  <template x-for="employee in company.employees" :key="employee.arn">
+                    <option :value="employee.arn">
+                      <span x-text="employee.user.firstName"></span> <span x-text="employee.user.lastName"></span>
+                    </option>
+                  </template>
+                </datalist>
+
+                <label class="form-label">Link to evidence:</label>
+                <input class="form-control" type="text"
+                       @change="$dispatch('task-updated')"
+                       placeholder="Link to evidence..." x-model="selected_task.evidence">
+
+              </div>
+
+              <ui-trace-table></ui-trace-table>
+            </div>
+            <div class="modal-footer">
+              <button type="button"
+                      @click="if(confirm('Are you sure?')){$store.mutation.send('CompleteCompanyControlAssessment',{arn: selected_task.arn})}"
+                      class="btn btn-success">Complete task</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <i x-show="tasks.length == 0">No pending tasks</i>
+      <div class="data-element" @refresh="tasks = $store.Tasks.filter.resultset"></div>
+      <draftsman-query alias="Tasks"
+                       x-include="/prepared-statements/views/Task/filter.txt" authenticated>
+      </draftsman-query>
+    </div>
   </div>
 </template>

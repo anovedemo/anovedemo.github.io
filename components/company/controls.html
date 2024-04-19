@@ -10,7 +10,7 @@
     <draftsman-trace command="CreateCompanyControl"
                      status="success"
                      @trace="
-                     command = {assessmentPeriodicity: '2M','description': '# Title\n\nLorem ipsum...',requirements:''};
+                    command = {assessmentPeriodicity: '2M','description': '# Title\n\nLorem ipsum...',requirements:''};
                     setTimeout(Draftsman.force_reload_data,1000);
                     Draftsman.empty_track_and_trace_log();">
     </draftsman-trace>
@@ -114,7 +114,7 @@
                   <label for="maturity">Desired maturity level:
                     <span x-text="command.desiredMaturityLevel"></span></label>
                   <input type="range" class="form-range"
-                         x-model="command.desiredMaturityLevel = $el.value"
+                         x-model="command.desiredMaturityLevel"
                          min="1" max="5" step="1" id="maturity">
 
                   <ul class="list-group list-group-flush">

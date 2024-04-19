@@ -27,16 +27,18 @@ function decode_variables(data){
 }
 
 function encode_variables(data){
-    Object.keys(data).forEach(key => {
-        if ( (typeof data[key] === 'string' || data[key] instanceof String) && data[key].includes(" ")){
-            data[key] = "base64:" + btoa(unescape(encodeURIComponent(data[key])));
-        } else if (data[key].constructor === Array){
-            data[key] = data.key.map(x => encode_variables(x));
-        } else if (typeof data[key] === 'object' &&
-                       data[key] !== null){
-            data[key] = encode_variables(data[key]);
-        }
-    });
+    try{
+        Object.keys(data).forEach(key => {
+            if ( (typeof data[key] === 'string' || data[key] instanceof String) && data[key].includes(" ")){
+                data[key] = "base64:" + btoa(unescape(encodeURIComponent(data[key])));
+            } else if (data[key].constructor === Array){
+                data[key] = data.key.map(x => encode_variables(x));
+            } else if (typeof data[key] === 'object' &&
+                           data[key] !== null){
+                data[key] = encode_variables(data[key]);
+            }
+        });
+    }catch{}
     return data;
 }
 

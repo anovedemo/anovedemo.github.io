@@ -3,7 +3,9 @@ sessionStorage["hosted-signin"] = "true";
 //Make sure connected to tenant
 if (!localStorage.css){
     location = "/select-tenant";
-}else{
+}else if (localStorage.tenant == "anove"){
+    document.head.innerHTML += '<link rel="stylesheet" href="/css/anove.css" />';
+} else {
     document.head.innerHTML += `<link rel="stylesheet" href="https://${bucket}/${localStorage.css}" />`;
 }
 

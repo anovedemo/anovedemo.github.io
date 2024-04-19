@@ -1,8 +1,7 @@
-# This file is NOT managed by Tracepaper, and can be customized.
-query FilterTask($key_begins_with: String = "") {
+query FilterTask($arn: String = "anove:company:draftsman") {
   Task {
-    filter(key_begins_with: $key_begins_with) {
-       resultset { 
+    filter(key_begins_with: $arn) {
+      resultset {
         key
         dueDate
         notes
@@ -13,6 +12,13 @@ query FilterTask($key_begins_with: String = "") {
         category
         assessedMaturityLevel
         assessedMaturityDescription
+        employee {
+          username
+          user {
+            lastName
+            firstName
+          }
+        }
       }
     }
   }
