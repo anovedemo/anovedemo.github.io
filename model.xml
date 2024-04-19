@@ -25,7 +25,7 @@
 			<field name="arn" type="String" pattern="{{EmployeeArn}}"></field>
 			<field name="businessRole" type="String" pattern="{{BusinessRole}}"></field>
 		</event>
-		<event graphql-namespace="Company.Control.Assessment" graphql-name="complete" name="CompleteCompanyControlAssessmentRequested" authorization="authenticated" type="ActorEvent">
+		<event graphql-namespace="Company.Control.Assessment" graphql-name="complete" name="CompleteCompanyControlAssessmentRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
 			<field name="arn" type="String"></field>
 		</event>
 		<event graphql-namespace="Company" graphql-name="create" name="CreateCompanyRequested" authorization="authenticated" type="ActorEvent">
@@ -60,7 +60,7 @@
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
 		</event>
-		<event graphql-namespace="Company.Control.Assessment" graphql-name="update" name="UpdateCompanyControlAssessmentRequested" authorization="authenticated" type="ActorEvent">
+		<event graphql-namespace="Company.Control.Assessment" graphql-name="update" name="UpdateCompanyControlAssessmentRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
 			<field name="arn" type="String"></field>
 			<nested-object name="assessment">
 				<field name="dueDate" type="String" pattern="{{Date}}"></field>
@@ -83,6 +83,7 @@
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
 		</event>
+		<event graphql-namespace="Company.Control" graphql-name="update" name="UpdateCompanyControlRequested" authorization="authenticated" type="ActorEvent"></event>
 		<event graphql-namespace="Company.Control" graphql-name="create" name="CreateCompanyControlRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(companyArn, 'administrator')">
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>

@@ -1,0 +1,10 @@
+# This file is managed by Tracepaper
+mutation Update() {
+  Company{
+    Control{
+      update(input: {}) {
+         correlationId
+      }
+    }
+  }
+}
