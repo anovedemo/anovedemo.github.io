@@ -2134,6 +2134,8 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<input name="businessUnit" type="String" value="Engineering"></input>
 				<input name="companyArn" type="String" value="#companyArn#"></input>
 				<input name="requirements" type="String" value="controlframework:eugeneraldataprotectionregulationgdpr:10"></input>
+				<input name="nextAssessmentDate" type="String" value="2024-08-01"></input>
+				<input name="controlOwner" type="String" value="anove:company:gate:employee:j.doe"></input>
 				<expected-trace command="Customer.Control.Create" status="success"></expected-trace>
 			</activity>
 			<activity type="query" id="cNMn0t" description="Assert that control is created" path="Control.get" view="Control">
