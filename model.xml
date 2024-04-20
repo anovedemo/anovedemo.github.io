@@ -1544,7 +1544,7 @@
 					<processor type="validator" id="Yzw4Ax" condition="len(flow.assessment) == 1" exception="Request must contain exactly one assessment to be updated"></processor>
 					<processor type="set-variable" id="qGJxgG" name="assessmentArn" expression="flow.assessment[0]['arn']"></processor>
 					<processor type="validator" id="0ef5HL" condition="flow.assessmentArn in flow.entity.assessment.keys()" exception="Invalid assessment"></processor>
-					<processor type="validator" id="oF83OO" condition='flow.entity.assessment[flow.assessmentArn]["assessorLink"].endswith(flow.requestor)' exception="The requestor [{flow.requestor}] is not the owner [{flow.entity.assessment[flow.arn]['assessorLink']}]'"></processor>
+					<processor type="validator" id="oF83OO" condition='flow.entity.assessment[flow.assessmentArn]["assessorLink"] and not flow.entity.assessment[flow.assessmentArn]["assessorLink"].endswith(flow.requestor)' exception="The requestor [{flow.requestor}] is not the owner [{flow.entity.assessment[flow.arn]['assessorLink']}]'"></processor>
 					<processor type="emit-event" id="BboTBH" ref="AssessmentUpdated">
 						<mapping target="arn" value="#flow.arn"></mapping>
 						<mapping target="assessment" value="#flow.assessment"></mapping>
