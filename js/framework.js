@@ -13,6 +13,7 @@ var mutation_queries = {};
 var inflight = "";
 
 function decode_variables(data){
+    try{
     Object.keys(data).forEach(key => {
         if ( (typeof data[key] === 'string' || data[key] instanceof String) && data[key].startsWith("base64:")){
             data[key] = atob(data[key].replace("base64:",""));
@@ -23,10 +24,12 @@ function decode_variables(data){
             data[key] = decode_variables(data[key]);
         }
     });
+    }catch{}
     return data;
 }
 
 function encode_variables(data){
+    try{
     Object.keys(data).forEach(key => {
         if ( (typeof data[key] === 'string' || data[key] instanceof String) && data[key].includes(" ")){
             data[key] = "base64:" + btoa(unescape(encodeURIComponent(data[key])));
@@ -37,6 +40,7 @@ function encode_variables(data){
             data[key] = encode_variables(data[key]);
         }
     });
+    }catch{}
     return data;
 }
 
