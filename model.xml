@@ -25,7 +25,7 @@
 			<field name="arn" type="String" pattern="{{EmployeeArn}}"></field>
 			<field name="businessRole" type="String" pattern="{{BusinessRole}}"></field>
 		</event>
-		<event graphql-namespace="Company.Control.Assessment" graphql-name="complete" name="CompleteCompanyControlAssessmentRequested" authorization="authenticated" type="ActorEvent">
+		<event graphql-namespace="Company.Control.Assessment" graphql-name="complete" name="CompleteCompanyControlAssessmentRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
 			<field name="arn" type="String"></field>
 		</event>
 		<event graphql-namespace="Company" graphql-name="create" name="CreateCompanyRequested" authorization="authenticated" type="ActorEvent">
@@ -60,7 +60,7 @@
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
 		</event>
-		<event graphql-namespace="Company.Control.Assessment" graphql-name="update" name="UpdateCompanyControlAssessmentRequested" authorization="authenticated" type="ActorEvent">
+		<event graphql-namespace="Company.Control.Assessment" graphql-name="update" name="UpdateCompanyControlAssessmentRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
 			<field name="arn" type="String"></field>
 			<nested-object name="assessment">
 				<field name="dueDate" type="String" pattern="{{Date}}"></field>
@@ -82,6 +82,17 @@
 			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
+		</event>
+		<event graphql-namespace="Company.Control" graphql-name="update" name="UpdateCompanyControlRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
+			<field name="description" type="String"></field>
+			<field name="controlTemplateArn" type="String" default=""></field>
+			<field name="assessmentPeriodicity" type="String"></field>
+			<field name="desiredMaturityLevel" type="Int"></field>
+			<field name="businessUnit" type="String"></field>
+			<field name="requirements" type="String" pattern="{{RequirementLink}}"></field>
+			<field name="nextAssessmentDate" type="String" pattern="{{Date}}"></field>
+			<field name="controlOwner" type="String" pattern="{{EmployeeArn}}"></field>
+			<field name="arn" type="String"></field>
 		</event>
 		<event graphql-namespace="Company.Control" graphql-name="create" name="CreateCompanyControlRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(companyArn, 'administrator')">
 			<field name="name" type="String"></field>
@@ -262,6 +273,7 @@
 			</nested-object>
 			<field name="arn" type="String"></field>
 			<field name="hasPendingSelfAssessment" type="Boolean"></field>
+			<field name="nextAssessmentDate" type="String"></field>
 		</event>
 		<event name="AssessmentUpdated" source="Customer.Control" type="DomainEvent">
 			<field name="arn" type="String"></field>
@@ -274,6 +286,16 @@
 				<field name="linkToEvidence" type="String"></field>
 				<field name="assessorLink" type="String" default=""></field>
 			</nested-object>
+		</event>
+		<event name="ControlUpdated" source="Customer.Control" type="DomainEvent">
+			<field name="description" type="String"></field>
+			<field name="controlTemplateArn" type="String"></field>
+			<field name="assessmentPeriodicity" type="String"></field>
+			<field name="desiredMaturityLevel" type="Int"></field>
+			<field name="businessUnit" type="String"></field>
+			<field name="nextAssessmentDate" type="String"></field>
+			<field name="controlOwner" type="String"></field>
+			<field name="requirementArns" type="String"></field>
 		</event>
 		<event name="ControlCreated" source="Customer.Control" type="DomainEvent">
 			<field name="name" type="String"></field>
@@ -1415,6 +1437,63 @@
 }</expected-state>
 					</test-case>
 				</command>
+				<command name="Update">
+					<trigger source="UpdateCompanyControlRequested" key-field="arn">
+						<mapping target="description" value="description"></mapping>
+						<mapping target="controlTemplateArn" value="controlTemplateArn"></mapping>
+						<mapping target="assessmentPeriodicity" value="assessmentPeriodicity"></mapping>
+						<mapping target="desiredMaturityLevel" value="desiredMaturityLevel"></mapping>
+						<mapping target="businessUnit" value="businessUnit"></mapping>
+						<mapping target="requirementArns" value="requirements"></mapping>
+						<mapping target="nextAssessmentDate" value="nextAssessmentDate"></mapping>
+						<mapping target="controlOwner" value="controlOwner"></mapping>
+						<mapping target="arn" value="arn"></mapping>
+					</trigger>
+					<processor type="validator" id="K6SoMJ" condition="flow.entity.version != 0" exception="May not be initial request"></processor>
+					<processor type="code" id="0yyCqe" file="lib/AssessmentUtils.py" handler="prepare_control_update"></processor>
+					<processor type="emit-event" id="o35kOb" ref="ControlUpdated">
+						<mapping target="description" value="#flow.description"></mapping>
+						<mapping target="controlTemplateArn" value="#flow.controlTemplateArn"></mapping>
+						<mapping target="assessmentPeriodicity" value="#flow.assessmentPeriodicity"></mapping>
+						<mapping target="desiredMaturityLevel" value="#flow.desiredMaturityLevel"></mapping>
+						<mapping target="businessUnit" value="#flow.businessUnit"></mapping>
+						<mapping target="nextAssessmentDate" value="#flow.nextAssessmentDate"></mapping>
+						<mapping target="controlOwner" value="#flow.controlOwner"></mapping>
+						<mapping target="requirementArns" value="#flow.requirementArns"></mapping>
+					</processor>
+					<test-case name="UpdateControl" trigger-event="UpdateCompanyControlRequested">
+						<input name="description" value="description" type="String"></input>
+						<input name="controlTemplateArn" value="controlTemplateArn" type="String"></input>
+						<input name="assessmentPeriodicity" value="assessmentPeriodicity" type="String"></input>
+						<input name="desiredMaturityLevel" value="3" type="Int"></input>
+						<input name="businessUnit" value="businessUnit" type="String"></input>
+						<input name="requirements" value="requirementArns" type="String"></input>
+						<input name="nextAssessmentDate" value="nextAssessmentDate" type="String"></input>
+						<input name="controlOwner" value="controlOwner" type="String"></input>
+						<input name="arn" value="arn" type="String"></input>
+						<state>{"version": 1}</state>
+						<expected domain-event="ControlUpdated">
+							<field value="description" name="description" type="String"></field>
+							<field value="controlTemplateArn" name="controlTemplateArn" type="String"></field>
+							<field value="assessmentPeriodicity" name="assessmentPeriodicity" type="String"></field>
+							<field value="3" name="desiredMaturityLevel" type="Int"></field>
+							<field value="businessUnit" name="businessUnit" type="String"></field>
+							<field value="nextAssessmentDate" name="nextAssessmentDate" type="String"></field>
+							<field value="controlOwner" name="controlOwner" type="String"></field>
+							<field value="requirementArns" name="requirementArns" type="String"></field>
+						</expected>
+						<expected-state pk="arn">{
+  "description": "description",
+  "controlTemplateArn": "controlTemplateArn",
+  "assessmentPeriodicity": "assessmentPeriodicity",
+  "desiredMaturityLevel": 3,
+  "businessUnit": "businessUnit",
+  "requirementArns": "requirementArns",
+  "nextAssessmentDate": "nextAssessmentDate",
+  "controlOwner": "controlOwner"
+}</expected-state>
+					</test-case>
+				</command>
 				<command name="CreateAssessment">
 					<trigger source="StartCompanyControlAssessmentRequested" key-field="controlArn">
 						<mapping target="arn" value="controlArn"></mapping>
@@ -1422,11 +1501,12 @@
 						<mapping target="category" value="category"></mapping>
 						<mapping target="assessorLink" value="assessorLink"></mapping>
 					</trigger>
-					<processor type="code" id="TXTvyq" file="" handler="" code='assesment = {}|LB|assesment["category"] = "self" if flow.category == "" else flow.category|LB|assesment["dueDate"] = flow.entity.nextAssessmentDate if flow.dueDate == "" else flow.dueDate|LB|assesment["assessorLink"] = flow.entity.controlOwner if flow.assessorLink == "" else flow.assessorLink|LB|assesment["arn"] = flow.arn + ":" + assesment["dueDate"]|LB|flow.assessmentArn = assesment["arn"]|LB|flow.assessment = [assesment]|LB|flow.hasPendingSelfAssessment = assesment["category"] == "self"'></processor>
+					<processor type="code" id="gB9zmg" file="lib/AssessmentUtils.py" handler="prepare_assessment"></processor>
 					<processor type="validator" id="QEJ9wT" condition="not flow.assessmentArn in flow.entity.assessment.keys()" exception="Assessment ARN is not unique"></processor>
 					<processor type="emit-event" id="HvGE8N" ref="AssessmentStarted">
 						<mapping target="arn" value="#flow.arn"></mapping>
 						<mapping target="hasPendingSelfAssessment" value="#flow.hasPendingSelfAssessment"></mapping>
+						<mapping target="nextAssessmentDate" value="#flow.nextAssessmentDate"></mapping>
 						<mapping target="assessment" value="#flow.assessment"></mapping>
 					</processor>
 					<test-case name="StartSelfAssessment" trigger-event="StartCompanyControlAssesmentRequested">
@@ -1524,6 +1604,7 @@
 						<mapping target="assessorLink" operand="set" value="assessorLink"></mapping>
 					</nested-mapping>
 					<mapping target="hasPendingSelfAssessment" operand="set" value="hasPendingSelfAssessment"></mapping>
+					<mapping target="nextAssessmentDate" operand="set" value="nextAssessmentDate"></mapping>
 				</event-handler>
 				<event-handler on="AssessmentUpdated">
 					<nested-mapping source="assessment" target="assessment" business-key="arn">
@@ -1535,6 +1616,16 @@
 						<mapping target="linkToEvidence" operand="set" value="linkToEvidence"></mapping>
 						<mapping target="assessorLink" operand="set" value="assessorLink"></mapping>
 					</nested-mapping>
+				</event-handler>
+				<event-handler on="ControlUpdated">
+					<mapping target="description" operand="set" value="description"></mapping>
+					<mapping target="controlTemplateArn" operand="set" value="controlTemplateArn"></mapping>
+					<mapping target="assessmentPeriodicity" operand="set" value="assessmentPeriodicity"></mapping>
+					<mapping target="desiredMaturityLevel" operand="set" value="desiredMaturityLevel"></mapping>
+					<mapping target="businessUnit" operand="set" value="businessUnit"></mapping>
+					<mapping target="requirementArns" operand="set" value="requirementArns"></mapping>
+					<mapping target="nextAssessmentDate" operand="set" value="nextAssessmentDate"></mapping>
+					<mapping target="controlOwner" operand="set" value="controlOwner"></mapping>
 				</event-handler>
 				<event-handler on="ControlCreated">
 					<mapping target="name" operand="set" value="name"></mapping>
@@ -1858,7 +1949,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 		</view>
 	</views>
 	<projections>
-		<projection graphql-namespace="Control" field-name="fetchEligible" authorization="role" return="Control" name="FetchEligibleControl" code='from draftsman.ViewStoreApi import Query|LB|from datetime import date,datetime|LB|from math import ceil|LB|from dateutil.relativedelta import relativedelta|LB||LB||LB|def transform(arguments, username):|LB|    # You have access to the username of the requestor and the arguments.|LB|    print(f"Fetch eligible controls [{arguments}/{username}]")|LB|    relative = float(arguments["relativeTime"])|LB|    result = []|LB|    today = date.today()|LB|    items = Query("Control").get_items().equals("hasPendingSelfAssessment", False).run()|LB||LB|    for item in items:|LB|        next = datetime.strptime(item["nextAssessmentDate"], "%Y-%m-%d")|LB|        periodicity = item["assessmentPeriodicity"]|LB|        |LB|        if periodicity.endswith("D"):|LB|            days = ceil(int(periodicity.replace("D","")) / relative)|LB|            delta = relativedelta(days=days)|LB|        elif periodicity.endswith("M"):|LB|            weeks = ceil(int(periodicity.replace("M","")) * 4 / relative)|LB|            delta = relativedelta(weeks=weeks)|LB|        elif periodicity.endswith("Y"):|LB|            months = ceil(int(periodicity.replace("Y","")) * 12 / relative)|LB|            delta = relativedelta(months=months)|LB|        |LB|        reminder_date = next - delta|LB|        if reminder_date.date() &lt;= today:|LB|            result.append(item)|LB|            |LB|    return result|LB|' return-type="result set" role="administrator">
+		<projection graphql-namespace="Control" field-name="fetchEligible" authorization="role" return="Control" name="FetchEligibleControl" code='from draftsman.ViewStoreApi import Query|LB|from datetime import date, datetime|LB|from math import ceil|LB|from dateutil.relativedelta import relativedelta|LB||LB||LB|def transform(arguments, username):|LB|    # You have access to the username of the requestor and the arguments.|LB|    print(f"Fetch eligible controls [{arguments}/{username}]")|LB|    relative = float(arguments["relativeTime"])|LB|    result = []|LB|    today = date.today()|LB|    items = Query("Control").get_items(filter_chain_method="or").not_exists("hasPendingSelfAssessment").equals("hasPendingSelfAssessment", False).run()|LB|    |LB|    print(items)|LB|    for item in items:|LB|        try:|LB|            next = datetime.strptime(item["nextAssessmentDate"], "%Y-%m-%d")|LB|            periodicity = item["assessmentPeriodicity"]|LB|    |LB|            if periodicity.endswith("D"):|LB|                days = ceil(int(periodicity.replace("D", "")) / relative)|LB|                delta = relativedelta(days=days)|LB|            elif periodicity.endswith("M"):|LB|                weeks = ceil(int(periodicity.replace("M", "")) * 4 / relative)|LB|                delta = relativedelta(weeks=weeks)|LB|            elif periodicity.endswith("Y"):|LB|                months = ceil(int(periodicity.replace("Y", "")) * 12 / relative)|LB|                delta = relativedelta(months=months)|LB|    |LB|            reminder_date = next - delta|LB|            if reminder_date.date() &lt;= today:|LB|                result.append(item)|LB|        except KeyError:|LB|            result.append(item)|LB||LB|    return result|LB|' return-type="result set" role="administrator">
 			<input name="relativeTime" type="String" required="true"></input>
 		</projection>
 		<projection graphql-namespace="Profile" return-type="result set" field-name="search" authorization="authenticated" return="Profile" name="SearchProfile" code="|LB|from draftsman.ViewStoreApi import Query|LB||LB||LB|def transform(arguments, username):|LB|    |LB|    print(f&quot;Handle graph request [{arguments}/{username}]&quot;)|LB|    search = arguments[&quot;searchString&quot;]|LB|    |LB|    query = Query('User').get_items()|LB|    for word in search.lower().split(&quot; &quot;):|LB|        query = query.contains(&quot;searchIndex&quot;,word)|LB|    results = query.run()|LB||LB|    return [{|LB|        &quot;key&quot;: result[&quot;username&quot;],|LB|        &quot;username&quot;: result[&quot;username&quot;],|LB|        &quot;firstName&quot;: result[&quot;firstName&quot;],|LB|        &quot;lastName&quot;: result[&quot;lastName&quot;]|LB|    } for result in results]">
@@ -1900,11 +1991,9 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 		</notifier>
 		<notifier name="InitializeSystemUser">
 			<trigger source="@afterDeployment">
-				<mapping target="username" value="#'system-user'"></mapping>
-				<mapping target="group" value="#'administrator'"></mapping>
+				<mapping target="dummy" value="#''"></mapping>
 			</trigger>
 			<activity type="iam-create-systemuser" fail-silent="true" id="vMB9LZ"></activity>
-			<activity type="add-user-to-iam-group" id="nRRhdb" group-name="#flow.group" username="#flow.username" fail-silent="true"></activity>
 		</notifier>
 		<notifier name="SetupDemo">
 			<trigger source="@cron(0 * * * ? *)">

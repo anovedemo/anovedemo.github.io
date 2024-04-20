@@ -1,0 +1,10 @@
+# This file is managed by Tracepaper
+mutation Update($description: String = "", $controlTemplateArn: String = "", $assessmentPeriodicity: String = "", $desiredMaturityLevel: Int = 0, $businessUnit: String = "", $requirements: String = "", $nextAssessmentDate: String = "", $controlOwner: String = "", $arn: String = "") {
+  Company{
+    Control{
+      update(input: {description: $description,controlTemplateArn: $controlTemplateArn,assessmentPeriodicity: $assessmentPeriodicity,desiredMaturityLevel: $desiredMaturityLevel,businessUnit: $businessUnit,requirements: $requirements,nextAssessmentDate: $nextAssessmentDate,controlOwner: $controlOwner,arn: $arn}) {
+         correlationId
+      }
+    }
+  }
+}
