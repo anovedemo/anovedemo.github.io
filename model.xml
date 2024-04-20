@@ -295,7 +295,6 @@
 			<field name="businessUnit" type="String"></field>
 			<field name="nextAssessmentDate" type="String"></field>
 			<field name="controlOwner" type="String"></field>
-			<field name="requirementArns" type="String"></field>
 		</event>
 		<event name="ControlCreated" source="Customer.Control" type="DomainEvent">
 			<field name="name" type="String"></field>
@@ -1459,7 +1458,9 @@
 						<mapping target="businessUnit" value="#flow.businessUnit"></mapping>
 						<mapping target="nextAssessmentDate" value="#flow.nextAssessmentDate"></mapping>
 						<mapping target="controlOwner" value="#flow.controlOwner"></mapping>
-						<mapping target="requirementArns" value="#flow.requirementArns"></mapping>
+					</processor>
+					<processor type="emit-event" id="EiVB1g" ref="LinkedRequirements">
+						<mapping target="requirements" value="#flow.requirementArns"></mapping>
 					</processor>
 					<test-case name="UpdateControl" trigger-event="UpdateCompanyControlRequested">
 						<input name="description" value="description" type="String"></input>
@@ -1480,7 +1481,9 @@
 							<field value="businessUnit" name="businessUnit" type="String"></field>
 							<field value="nextAssessmentDate" name="nextAssessmentDate" type="String"></field>
 							<field value="controlOwner" name="controlOwner" type="String"></field>
-							<field value="requirementArns" name="requirementArns" type="String"></field>
+						</expected>
+						<expected domain-event="LinkedRequirements">
+							<field value="requirementArns" name="requirements" type="String"></field>
 						</expected>
 						<expected-state pk="arn">{
   "description": "description",
@@ -1488,7 +1491,7 @@
   "assessmentPeriodicity": "assessmentPeriodicity",
   "desiredMaturityLevel": 3,
   "businessUnit": "businessUnit",
-  "requirementArns": "requirementArns",
+  "requirementArns": ["requirementArns"],
   "nextAssessmentDate": "nextAssessmentDate",
   "controlOwner": "controlOwner"
 }</expected-state>
@@ -1544,7 +1547,6 @@
 					<processor type="validator" id="Yzw4Ax" condition="len(flow.assessment) == 1" exception="Request must contain exactly one assessment to be updated"></processor>
 					<processor type="set-variable" id="qGJxgG" name="assessmentArn" expression="flow.assessment[0]['arn']"></processor>
 					<processor type="validator" id="0ef5HL" condition="flow.assessmentArn in flow.entity.assessment.keys()" exception="Invalid assessment"></processor>
-					<processor type="validator" id="oF83OO" condition='flow.entity.assessment[flow.assessmentArn]["assessorLink"] and not flow.entity.assessment[flow.assessmentArn]["assessorLink"].endswith(flow.requestor)' exception="The requestor [{flow.requestor}] is not the owner [{flow.entity.assessment[flow.arn]['assessorLink']}]'"></processor>
 					<processor type="emit-event" id="BboTBH" ref="AssessmentUpdated">
 						<mapping target="arn" value="#flow.arn"></mapping>
 						<mapping target="assessment" value="#flow.assessment"></mapping>
@@ -1623,7 +1625,6 @@
 					<mapping target="assessmentPeriodicity" operand="set" value="assessmentPeriodicity"></mapping>
 					<mapping target="desiredMaturityLevel" operand="set" value="desiredMaturityLevel"></mapping>
 					<mapping target="businessUnit" operand="set" value="businessUnit"></mapping>
-					<mapping target="requirementArns" operand="set" value="requirementArns"></mapping>
 					<mapping target="nextAssessmentDate" operand="set" value="nextAssessmentDate"></mapping>
 					<mapping target="controlOwner" operand="set" value="controlOwner"></mapping>
 				</event-handler>
