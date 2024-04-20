@@ -295,7 +295,6 @@
 			<field name="businessUnit" type="String"></field>
 			<field name="nextAssessmentDate" type="String"></field>
 			<field name="controlOwner" type="String"></field>
-			<field name="requirementArns" type="String"></field>
 		</event>
 		<event name="ControlCreated" source="Customer.Control" type="DomainEvent">
 			<field name="name" type="String"></field>
@@ -1459,7 +1458,9 @@
 						<mapping target="businessUnit" value="#flow.businessUnit"></mapping>
 						<mapping target="nextAssessmentDate" value="#flow.nextAssessmentDate"></mapping>
 						<mapping target="controlOwner" value="#flow.controlOwner"></mapping>
-						<mapping target="requirementArns" value="#flow.requirementArns"></mapping>
+					</processor>
+					<processor type="emit-event" id="EiVB1g" ref="LinkedRequirements">
+						<mapping target="requirements" value="#flow.requirementArns"></mapping>
 					</processor>
 					<test-case name="UpdateControl" trigger-event="UpdateCompanyControlRequested">
 						<input name="description" value="description" type="String"></input>
@@ -1480,7 +1481,9 @@
 							<field value="businessUnit" name="businessUnit" type="String"></field>
 							<field value="nextAssessmentDate" name="nextAssessmentDate" type="String"></field>
 							<field value="controlOwner" name="controlOwner" type="String"></field>
-							<field value="requirementArns" name="requirementArns" type="String"></field>
+						</expected>
+						<expected domain-event="LinkedRequirements">
+							<field value="requirementArns" name="requirements" type="String"></field>
 						</expected>
 						<expected-state pk="arn">{
   "description": "description",
@@ -1488,7 +1491,7 @@
   "assessmentPeriodicity": "assessmentPeriodicity",
   "desiredMaturityLevel": 3,
   "businessUnit": "businessUnit",
-  "requirementArns": "requirementArns",
+  "requirementArns": ["requirementArns"],
   "nextAssessmentDate": "nextAssessmentDate",
   "controlOwner": "controlOwner"
 }</expected-state>
@@ -1544,7 +1547,6 @@
 					<processor type="validator" id="Yzw4Ax" condition="len(flow.assessment) == 1" exception="Request must contain exactly one assessment to be updated"></processor>
 					<processor type="set-variable" id="qGJxgG" name="assessmentArn" expression="flow.assessment[0]['arn']"></processor>
 					<processor type="validator" id="0ef5HL" condition="flow.assessmentArn in flow.entity.assessment.keys()" exception="Invalid assessment"></processor>
-					<processor type="validator" id="oF83OO" condition='flow.entity.assessment[flow.assessmentArn]["assessorLink"].endswith(flow.requestor)' exception="The requestor [{flow.requestor}] is not the owner [{flow.entity.assessment[flow.arn]['assessorLink']}]'"></processor>
 					<processor type="emit-event" id="BboTBH" ref="AssessmentUpdated">
 						<mapping target="arn" value="#flow.arn"></mapping>
 						<mapping target="assessment" value="#flow.assessment"></mapping>
@@ -1587,7 +1589,7 @@
 }</expected-state>
 					</test-case>
 				</command>
-				<event-handler on="LinkedRequirements" code='self.requirementArns = event.requirements.split(";")'></event-handler>
+				<event-handler on="LinkedRequirements" code='self.requirementArns = list(dict.fromkeys(event.requirements.split(";")))'></event-handler>
 				<event-handler on="AssessmentCompleted">
 					<mapping target="lastAssessmentDate" operand="set" value="lastAssessmentDate"></mapping>
 					<mapping target="nextAssessmentDate" operand="set" value="nextAssessmentDate"></mapping>
@@ -1623,7 +1625,6 @@
 					<mapping target="assessmentPeriodicity" operand="set" value="assessmentPeriodicity"></mapping>
 					<mapping target="desiredMaturityLevel" operand="set" value="desiredMaturityLevel"></mapping>
 					<mapping target="businessUnit" operand="set" value="businessUnit"></mapping>
-					<mapping target="requirementArns" operand="set" value="requirementArns"></mapping>
 					<mapping target="nextAssessmentDate" operand="set" value="nextAssessmentDate"></mapping>
 					<mapping target="controlOwner" operand="set" value="controlOwner"></mapping>
 				</event-handler>
@@ -2230,7 +2231,62 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<activity type="query" id="cNMn0t" description="Assert that control is created" path="Control.get" view="Control">
 				<input name="key" type="String" value="anove:company:gate:control:test"></input>
 				<expect-value name="name" type="String" value="Test"></expect-value>
+				<expect-value name="assessmentPeriodicity" type="String" value="1M"></expect-value>
 				<expect-value name="requirements.0.name" type="String" value="10"></expect-value>
+				<extract-value name="arn" put-key="controlArn"></extract-value>
+			</activity>
+			<activity type="query" id="tvvozya" path="Company.get" view="Company" description="Fetch employee ARN">
+				<input name="key" type="String" value="#companyArn#"></input>
+				<extract-value name="employees.0.arn" put-key="employeeArn"></extract-value>
+			</activity>
+			<activity type="mutation" id="WxdXdu" description="Update Control" path="Company.Control.update">
+				<input name="description" type="String" value="Hello World!"></input>
+				<input name="controlTemplateArn" type="String" value=""></input>
+				<input name="assessmentPeriodicity" type="String" value="6M"></input>
+				<input name="desiredMaturityLevel" type="Int" value="4"></input>
+				<input name="businessUnit" type="String" value="Engineering"></input>
+				<input name="requirements" type="String" value="controlframework:eugeneraldataprotectionregulationgdpr:10"></input>
+				<input name="nextAssessmentDate" type="String" value="2024-08-01"></input>
+				<input name="controlOwner" type="String" value="#employeeArn#"></input>
+				<input name="arn" type="String" value="#controlArn#"></input>
+				<expected-trace command="Customer.Control.Update" status="success"></expected-trace>
+			</activity>
+			<activity type="query" id="cNMn0ta" description="Assert that control is updated" path="Control.get" view="Control">
+				<input name="key" type="String" value="anove:company:gate:control:test"></input>
+				<expect-value name="assessmentPeriodicity" type="String" value="6M"></expect-value>
+			</activity>
+			<activity type="mutation" id="Tho3JN" description="Start self assessment" path="Company.Control.Assessment.start">
+				<input name="controlArn" type="String" value="#controlArn#"></input>
+				<input name="dueDate" type="String" value=""></input>
+				<input name="category" type="String" value=""></input>
+				<input name="assessorLink" type="String" value=""></input>
+				<expected-trace command="Customer.Control.CreateAssessment" status="success"></expected-trace>
+			</activity>
+			<activity type="query" id="lPOoFp" path="ControlAssessment.filter" view="ControlAssessment" description="Assert that the assessment is created">
+				<input name="key_begins_with" type="String" value="#companyArn#"></input>
+				<expect-value name="resultset.0.dueDate" type="String" value="2024-08-01"></expect-value>
+				<extract-value name="resultset.0.arn" put-key="assessmentArn"></extract-value>
+			</activity>
+			<activity type="query" id="BBtJXf" description="Assert that a task is created" path="Task.get" view="Task">
+				<input name="key" type="String" value="#assessmentArn#"></input>
+				<expect-value name="dueDate" type="String" value="2024-08-01"></expect-value>
+			</activity>
+			<activity type="mutation" id="btIaPX" description="Update assessment" path="Company.Control.Assessment.update">
+				<input name="arn" type="String" value="#controlArn#"></input>
+				<input name="assessment" type="Nested" value='[   {     "dueDate": "2024-08-01",     "notes": "Hello World!",     "arn": "#assessmentArn#",     "assessedMaturityLevel": "3",     "assessedMaturityDescription": "-",     "linkToEvidence": "abc",     "assessorLink": "#employeeArn#"   } ]'></input>
+				<expected-trace command="Customer.Control.UpdateAssessment" status="success"></expected-trace>
+			</activity>
+			<activity type="query" id="BBtJXfa" description="Assert that the task is updated" path="Task.get" view="Task">
+				<input name="key" type="String" value="#assessmentArn#"></input>
+				<expect-value name="notes" type="String" value="Hello World!"></expect-value>
+			</activity>
+			<activity type="mutation" id="IqGs9b" description="Complete assessment" path="Company.Control.Assessment.complete">
+				<input name="arn" type="String" value="#assessmentArn#"></input>
+				<expected-trace command="Customer.Control.CompleteAssessment" status="success"></expected-trace>
+			</activity>
+			<activity type="query" id="jD4RSp" description="Assert that there is no pending self assessment" path="Control.get" view="Control">
+				<input name="key" type="String" value="#controlArn#"></input>
+				<expect-value name="hasPendingSelfAssessment" type="Boolean" value="false"></expect-value>
 			</activity>
 			<activity type="mutation" id="BUhvG6" description="Remove business unit" path="Company.BusinessUnit.remove">
 				<input name="arn" type="String" value="#companyArn#"></input>

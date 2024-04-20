@@ -24,7 +24,7 @@ function decode_variables(data){
             data[key] = decode_variables(data[key]);
         }
     });
-    }catch{}
+    }catch{ }
     return data;
 }
 
