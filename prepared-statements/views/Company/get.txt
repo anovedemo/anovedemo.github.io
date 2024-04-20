@@ -38,6 +38,7 @@ query GetCompany($arn: ID = "") {
       controls {
         arn
         assessmentPeriodicity
+        nextAssessmentDate
         businessUnit
         applicability
         controlTemplateArn
@@ -51,6 +52,7 @@ query GetCompany($arn: ID = "") {
             lastName
           }
         }
+        requirementArns
         requirements {
           arn
           name

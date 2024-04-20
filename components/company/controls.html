@@ -1,5 +1,7 @@
 <template x-component="controls">
   <div x-data="{
+    mode: '',
+    selected_control: {},
     frameworks: [],
     requirements: $persist({}).as('requirements' + location),
     command: $persist({assessmentPeriodicity: '2M','description': '# Title\n\nLorem ipsum...',requirements:''}).as('createcontrol' + location)}">
@@ -20,22 +22,30 @@
     </div>
 
 
-    <table class="table">
+    <table class="table table-hover">
       <thead>
       <tr>
         <th>Name</th>
         <th>Desired Maturity Level</th>
         <th>Last Assessment Date</th>
+        <th>Next Assessment Date</th>
+        <th>Periodicity</th>
         <th>Owner</th>
         <th>Covered requirements</th>
       </tr>
       </thead>
       <tbody>
       <template x-for="control in company.controls" :key="control.arn">
-        <tr>
+        <tr @click="
+            Draftsman.empty_track_and_trace_log();
+            selected_control = control;
+            selected_control.selected_requirements = control.requirementArns.join(';')
+            mode='edit';" data-bs-toggle="modal" data-bs-target="#editControlModal">
           <td x-text="control.name"></td>
           <td x-text="control.desiredMaturityLevel"></td>
           <td x-text="control.lastAssessmentDate"></td>
+          <td x-text="control.nextAssessmentDate"></td>
+          <td x-text="control.assessmentPeriodicity"></td>
           <td>
             <span x-text="control.owner.user.firstName"></span>
             <span x-text="control.owner.user.lastName"></span>
@@ -52,8 +62,112 @@
       </template>
       </tbody>
     </table>
+
+    <div class="modal fade" id="editControlModal" tabindex="-1" aria-labelledby="editControlModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="editControlModalLabel">Control: <span x-text="selected_control.name"></span></h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+
+              <div class="row">
+                <div class="col-4">
+                  <div class="form-floating">
+                    <input type="text" id="C77C21850" class="form-control" x-model="selected_control.name"/>
+                    <label for="C77C21850">Control name</label>
+                  </div>
+
+                  <input x-model="selected_control.businessUnit"
+                         class="form-control" list="C77C225D3" placeholder="Business unit...">
+                  <datalist id="C77C225D3">
+                    <template x-for="businessunit in company.businessUnits" :key="businessunit.name">
+                      <option :value="businessunit.name" x-text="businessunit.name"></option>
+                    </template>
+                  </datalist>
+
+                  <input x-model="selected_control.controlOwner"
+                         class="form-control" list="C77C22B21" placeholder="Owner...">
+                  <datalist id="C77C22B21">
+                    <template x-for="employee in company.employees" :key="employee.arn">
+                      <option :value="employee.arn">
+                        <span x-text="employee.user.firstName"></span> <span x-text="employee.user.lastName"></span>
+                      </option>
+                    </template>
+                  </datalist>
+
+                </div>
+                <div class="col-4">
+                  <label for="C77C2333F">Assessment Periodicity:
+                    <span x-text="periodicity_names[selected_control.assessmentPeriodicity]"></span></label>
+                  <input type="range" class="form-range"
+                         @change="selected_control.assessmentPeriodicity = periodicity_templates[$el.value]"
+                         min="0" :max="periodicity_templates.length - 1" step="1" id="C77C2333F"
+                         :value="periodicity_templates.indexOf(selected_control.assessmentPeriodicity)">
+
+                  <label for="C77C23CC0">First assessment date</label>
+                  <input type="date" class="form-range"
+                         x-model="selected_control.nextAssessmentDate"
+                         id="C77C23CC0" >
+                </div>
+                <div class="col-4">
+
+                  <label for="C77C23EA6">Desired maturity level:
+                    <span x-text="selected_control.desiredMaturityLevel"></span></label>
+                  <input type="range" class="form-range"
+                         x-model="selected_control.desiredMaturityLevel"
+                         min="1" max="5" step="1" id="C77C23EA6">
+
+                  <ul class="list-group list-group-flush">
+                    <template x-for="requirement in selected_control.selected_requirements.split(';')" :key="requirement">
+                      <li class="list-group-item" x-show="requirement" x-cloak x-transition>
+                        <b x-text="requirements[requirement].name"></b>
+                        <span class="badge bg-secondary" x-text="requirements[requirement].framework"></span>
+                        <button type="button" class="btn-close"
+                                @click="
+                                selected_control.selected_requirements = selected_control.selected_requirements.replace(requirement,'').replace(';;',';');
+                                if(selected_control.selected_requirements.endsWith(';')){selected_control.selected_requirements = selected_control.selected_requirements.substring(0,selected_control.selected_requirements.length - 1)};
+                                " aria-label="Close"></button>
+                      </li>
+                    </template>
+                  </ul>
+
+                  <!-- Button trigger modal -->
+                  <button @click="frameworks = await list_frameworks();requirements = await list_requirements()"
+                          type="button" class="btn btn-primary"
+                          data-bs-toggle="modal" data-bs-target="#requirementModal">
+                    Attach requirement
+                  </button>
+
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-6">
+                  <div class="form-floating">
+                    <textarea type="text" id="C77C25D60"
+                              style="height:300px"
+                              class="form-control" x-model="selected_control.description"></textarea>
+                    <label for="C77C25D60">Description</label>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div x-html="converter.makeHtml(selected_control.description)"></div>
+                </div>
+              </div>
+              <br>
+              <hr>
+
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    
     <!-- Button trigger modal -->
-    <button @click="Draftsman.empty_track_and_trace_log"
+    <button @click="Draftsman.empty_track_and_trace_log();mode='create'"
             type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#controlModal">
       Add control
     </button>
@@ -120,7 +234,7 @@
                   <ul class="list-group list-group-flush">
                     <template x-for="requirement in command.requirements.split(';')" :key="requirement">
                       <li class="list-group-item" x-show="requirement" x-cloak x-transition>
-                        <h6 x-text="requirements[requirement].name"></h6>
+                        <b x-text="requirements[requirement].name"></b>
                         <span class="badge bg-secondary" x-text="requirements[requirement].framework"></span>
                         <button type="button" class="btn-close"
                                 @click="
@@ -179,7 +293,8 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="requirementModalLabel">Modal title</h5>
-            <button type="button" class="btn-close" data-bs-toggle="modal" data-bs-target="#controlModal" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-toggle="modal"
+                    :data-bs-target="mode == 'create' ? '#controlModal' : '#editControlModal'" aria-label="Close"></button>
           </div>
           <div class="modal-body" x-data="{search: ''}">
 
@@ -193,10 +308,17 @@
             <div class="list-group">
               <template x-for="framework in frameworks" :key="framework.arn">
                 <template x-for="requirement in framework.requirements" :key="requirement.arn">
-                  <a href="#" data-bs-toggle="modal" data-bs-target="#controlModal"
+                  <a href="#" data-bs-toggle="modal" :data-bs-target="mode == 'create' ? '#controlModal' : '#editControlModal'"
                      x-show="`${framework.name} ${requirement.name} ${requirement.summary}`.toLowerCase().includes(search.toLowerCase()) && !command.requirements.includes(requirement.arn)"
                      x-cloak x-transition
-                     @click="if(command.requirements){command.requirements += ';' + requirement.arn}else{command.requirements = requirement.arn}"
+                     @click="
+                     if (mode == 'create'){
+                       if(command.requirements){command.requirements += ';' + requirement.arn}
+                       else{command.requirements = requirement.arn}
+                     } else if (mode == 'edit'){
+                       if(selected_control.selected_requirements){selected_control.selected_requirements += ';' + requirement.arn}
+                       else{selected_control.selected_requirements = requirement.arn}
+                     }"
                      class="list-group-item list-group-item-action">
                     <div class="d-flex w-100 justify-content-between">
                       <h5 class="mb-1" x-text="requirement.name"></h5>
