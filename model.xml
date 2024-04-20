@@ -1589,7 +1589,7 @@
 }</expected-state>
 					</test-case>
 				</command>
-				<event-handler on="LinkedRequirements" code='self.requirementArns = event.requirements.split(";")'></event-handler>
+				<event-handler on="LinkedRequirements" code='self.requirementArns = list(dict.fromkeys(event.requirements.split(";")))'></event-handler>
 				<event-handler on="AssessmentCompleted">
 					<mapping target="lastAssessmentDate" operand="set" value="lastAssessmentDate"></mapping>
 					<mapping target="nextAssessmentDate" operand="set" value="nextAssessmentDate"></mapping>
