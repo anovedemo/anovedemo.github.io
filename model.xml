@@ -2272,7 +2272,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<expect-value name="dueDate" type="String" value="2024-08-01"></expect-value>
 			</activity>
 			<activity type="mutation" id="btIaPX" description="Update assessment" path="Company.Control.Assessment.update">
-				<input name="arn" type="String" value="#assessmentArn#"></input>
+				<input name="arn" type="String" value="#controlArn#"></input>
 				<input name="assessment" type="Nested" value='[   {     "dueDate": "2024-08-01",     "notes": "Hello World!",     "arn": "#assessmentArn#",     "assessedMaturityLevel": "3",     "assessedMaturityDescription": "-",     "linkToEvidence": "abc",     "assessorLink": "#employeeArn#"   } ]'></input>
 				<expected-trace command="Customer.Control.UpdateAssessment" status="success"></expected-trace>
 			</activity>
