@@ -28,7 +28,7 @@ document.addEventListener('alpine:init', async () => {
         //By default draftsman will not wait for teleports
         Draftsman.contains_teleports = false;
         //Optionally you can disable data caching for this page
-        //Draftsman.disable_cache_for_page();
+        Draftsman.disable_cache_for_page();
     },1);
 });
 
@@ -142,4 +142,8 @@ function create_toc(element){
         update_toc_highlight(element);
     },100);
     return toc;
+}
+
+function deep_copy(data){
+    return JSON.parse(JSON.stringify(data));
 }

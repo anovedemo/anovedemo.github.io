@@ -47,6 +47,7 @@ query GetCompany($arn: ID = "") {
         lastAssessmentDate
         name
         owner {
+          arn
           user {
             firstName
             lastName

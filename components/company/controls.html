@@ -1,10 +1,11 @@
 <template x-component="controls">
   <div x-data="{
+    pending_update:false,
     mode: '',
     selected_control: {},
     frameworks: [],
     requirements: $persist({}).as('requirements' + location),
-    command: $persist({assessmentPeriodicity: '2M','description': '# Title\n\nLorem ipsum...',requirements:''}).as('createcontrol' + location)}">
+    command: $persist({assessmentPeriodicity: '2M','description': '# Title\n\nLorem ipsum...',requirements:'',desiredMaturityLevel: '3'}).as('createcontrol' + location)}">
 
     <draftsman-mutation command="CreateCompanyControl" 
                         x-include="/prepared-statements/commands/CreateCompanyControl.txt" authenticated>
@@ -12,8 +13,19 @@
     <draftsman-trace command="CreateCompanyControl"
                      status="success"
                      @trace="
-                    command = {assessmentPeriodicity: '2M','description': '# Title\n\nLorem ipsum...',requirements:''};
+                    command = {assessmentPeriodicity: '2M','description': '# Title\n\nLorem ipsum...',requirements:'',desiredMaturityLevel: '3'};
                     setTimeout(Draftsman.force_reload_data,1000);
+                    Draftsman.empty_track_and_trace_log();">
+    </draftsman-trace>
+
+    <draftsman-mutation command="UpdateCompanyControl"
+                        x-include="/prepared-statements/commands/UpdateCompanyControl.txt" authenticated>
+    </draftsman-mutation>
+    <draftsman-trace command="UpdateCompanyControl"
+                     status="success"
+                     @trace="
+                    setTimeout(Draftsman.force_reload_data,1000);
+                    pending_update=false;
                     Draftsman.empty_track_and_trace_log();">
     </draftsman-trace>
 
@@ -39,7 +51,12 @@
         <tr @click="
             Draftsman.empty_track_and_trace_log();
             selected_control = control;
-            selected_control.selected_requirements = control.requirementArns.join(';')
+            try{
+              selected_control.selected_requirements = control.requirementArns.join(';');
+            }catch{
+              selected_control.selected_requirements = '';
+            }
+            selected_control.controlOwner = control.owner.arn;
             mode='edit';" data-bs-toggle="modal" data-bs-target="#editControlModal">
           <td x-text="control.name"></td>
           <td x-text="control.desiredMaturityLevel"></td>
@@ -64,23 +81,26 @@
     </table>
 
     <div class="modal fade" id="editControlModal" tabindex="-1" aria-labelledby="editControlModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-fullscreen">
+      <div class="modal-dialog modal-fullscreen" @update-control.window="pending_update=true">
         <div class="modal-content">
           <div class="modal-header">
             <h1 class="modal-title fs-5" id="editControlModalLabel">Control: <span x-text="selected_control.name"></span></h1>
+            &nbsp;<span class="badge rounded-pill bg-info text-dark" x-show="pending_update" x-transition x-cloak>Unsaved changes...</span>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <div class="modal-body">
-            <form>
+          <div class="modal-body" x-import="utils/tables">
+            <form @update-control.window.debounce.3000ms="
+              let update = deep_copy(selected_control);
+              update.requirements = selected_control.selected_requirements;
+              console.log(update);
+              $store.mutation.send('UpdateCompanyControl',update);
+              ">
 
               <div class="row">
                 <div class="col-4">
-                  <div class="form-floating">
-                    <input type="text" id="C77C21850" class="form-control" x-model="selected_control.name"/>
-                    <label for="C77C21850">Control name</label>
-                  </div>
 
                   <input x-model="selected_control.businessUnit"
+                         @change="$dispatch('update-control')"
                          class="form-control" list="C77C225D3" placeholder="Business unit...">
                   <datalist id="C77C225D3">
                     <template x-for="businessunit in company.businessUnits" :key="businessunit.name">
@@ -89,6 +109,7 @@
                   </datalist>
 
                   <input x-model="selected_control.controlOwner"
+                         @change="$dispatch('update-control')"
                          class="form-control" list="C77C22B21" placeholder="Owner...">
                   <datalist id="C77C22B21">
                     <template x-for="employee in company.employees" :key="employee.arn">
@@ -103,12 +124,13 @@
                   <label for="C77C2333F">Assessment Periodicity:
                     <span x-text="periodicity_names[selected_control.assessmentPeriodicity]"></span></label>
                   <input type="range" class="form-range"
-                         @change="selected_control.assessmentPeriodicity = periodicity_templates[$el.value]"
+                         @change="selected_control.assessmentPeriodicity = periodicity_templates[$el.value];$dispatch('update-control')"
                          min="0" :max="periodicity_templates.length - 1" step="1" id="C77C2333F"
                          :value="periodicity_templates.indexOf(selected_control.assessmentPeriodicity)">
 
-                  <label for="C77C23CC0">First assessment date</label>
+                  <label for="C77C23CC0">Next assessment date</label>
                   <input type="date" class="form-range"
+                         @change="$dispatch('update-control')"
                          x-model="selected_control.nextAssessmentDate"
                          id="C77C23CC0" >
                 </div>
@@ -118,6 +140,7 @@
                     <span x-text="selected_control.desiredMaturityLevel"></span></label>
                   <input type="range" class="form-range"
                          x-model="selected_control.desiredMaturityLevel"
+                         @change="$dispatch('update-control')"
                          min="1" max="5" step="1" id="C77C23EA6">
 
                   <ul class="list-group list-group-flush">
@@ -129,6 +152,7 @@
                                 @click="
                                 selected_control.selected_requirements = selected_control.selected_requirements.replace(requirement,'').replace(';;',';');
                                 if(selected_control.selected_requirements.endsWith(';')){selected_control.selected_requirements = selected_control.selected_requirements.substring(0,selected_control.selected_requirements.length - 1)};
+                                $dispatch('update-control');
                                 " aria-label="Close"></button>
                       </li>
                     </template>
@@ -149,6 +173,7 @@
                   <div class="form-floating">
                     <textarea type="text" id="C77C25D60"
                               style="height:300px"
+                              @change="$dispatch('update-control')"
                               class="form-control" x-model="selected_control.description"></textarea>
                     <label for="C77C25D60">Description</label>
                   </div>
@@ -159,7 +184,7 @@
               </div>
               <br>
               <hr>
-
+              <ui-trace-table></ui-trace-table>
             </form>
           </div>
         </div>
@@ -309,7 +334,7 @@
               <template x-for="framework in frameworks" :key="framework.arn">
                 <template x-for="requirement in framework.requirements" :key="requirement.arn">
                   <a href="#" data-bs-toggle="modal" :data-bs-target="mode == 'create' ? '#controlModal' : '#editControlModal'"
-                     x-show="`${framework.name} ${requirement.name} ${requirement.summary}`.toLowerCase().includes(search.toLowerCase()) && !command.requirements.includes(requirement.arn)"
+                     x-show="`${framework.name} ${requirement.name} ${requirement.summary}`.toLowerCase().includes(search.toLowerCase()) && (mode == 'create' ? !command.requirements.includes(requirement.arn) : !selected_control.selected_requirements.includes(requirement.arn))"
                      x-cloak x-transition
                      @click="
                      if (mode == 'create'){
@@ -318,6 +343,7 @@
                      } else if (mode == 'edit'){
                        if(selected_control.selected_requirements){selected_control.selected_requirements += ';' + requirement.arn}
                        else{selected_control.selected_requirements = requirement.arn}
+                       $dispatch('update-control');
                      }"
                      class="list-group-item list-group-item-action">
                     <div class="d-flex w-100 justify-content-between">

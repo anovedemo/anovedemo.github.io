@@ -37,12 +37,13 @@
         </tr>
       </table>
     </div>
-    <div class="col-4" x-data="{tasks: [],selected_task:{}}">
+    <div class="col-4" x-data="{tasks: [],selected_task:{},pending_update: false}">
       <h4>Tasks</h4>
       <ul class="list-group list-group-flush">
         <template x-for="task in tasks">
           <a href="#" class="list-group-item list-group-item-action" aria-current="true"
              @click="
+              Draftsman.empty_track_and_trace_log();
               selected_task = task;
               if(selected_task.notes == ''){selected_task.notes = '# Notes\n\nlorem ipsum...'};
               if(selected_task.assessedMaturityLevel == ''){selected_task.assessedMaturityLevel = '1'}"
@@ -66,6 +67,7 @@
       <draftsman-trace command="UpdateCompanyControlAssessment"
                        status="success"
                        @trace="
+                    pending_update=false;
                     setTimeout(Draftsman.force_reload_data,1000);
                     Draftsman.empty_track_and_trace_log();">
       </draftsman-trace>
@@ -75,7 +77,7 @@
       </draftsman-mutation>
       <draftsman-trace command="CompleteCompanyControlAssessment"
                        status="success"
-                       @trace="Draftsman.clear_cache();location.reload()">
+                       @trace="location.reload()">
       </draftsman-trace>
 
       <!-- Modal -->
@@ -87,12 +89,13 @@
                 <span x-text="label['assessment.' + selected_task.category]"></span>
                 <span x-text="selected_task.arn.split(':').at(4)"></span>:
                 <span x-text="selected_task.dueDate"></span>
+                &nbsp;<span class="badge rounded-pill bg-info text-dark" x-show="pending_update" x-transition x-cloak>Unsaved changes...</span>
               </h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body" x-import="utils/tables">
+            <div class="modal-body" x-import="utils/tables" @task-updated="pending_update=true">
 
-              <div @task-updated.debounce="
+              <div @task-updated.debounce.3000ms="
                   let arn = selected_task.arn.split(':').slice(0,5).join(':');
                   $store.mutation.send('UpdateCompanyControlAssessment',{
                     arn:arn,
@@ -151,6 +154,12 @@
             </div>
             <div class="modal-footer">
               <button type="button"
+                      :disabled="
+                        !selected_task.evidence ||
+                        !selected_task.owner ||
+                        !selected_task.assessedMaturityLevel ||
+                        !selected_task.assessedMaturityDescription ||
+                        !selected_task.notes"
                       @click="if(confirm('Are you sure?')){$store.mutation.send('CompleteCompanyControlAssessment',{arn: selected_task.arn})}"
                       class="btn btn-success">Complete task</button>
             </div>
