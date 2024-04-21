@@ -146,4 +146,4 @@ function create_toc(element){
 
 function deep_copy(data){
     return JSON.parse(JSON.stringify(data));
-}
+} 
