@@ -1,5 +1,5 @@
 <template x-component="controls">
-  <div x-data="{
+  <div x-init="frameworks = await list_frameworks();requirements = await list_requirements();" x-data="{
     pending_update:false,
     mode: '',
     selected_control: {},
@@ -143,8 +143,9 @@
                          @change="$dispatch('update-control')"
                          min="1" max="5" step="1" id="C77C23EA6">
 
-                  <ul class="list-group list-group-flush">
-                    <template x-for="requirement in selected_control.selected_requirements.split(';')" :key="requirement">
+                  <ul class="list-group list-group-flush" x-data="{items: []}"
+                      x-effect="items = selected_control.selected_requirements.split(';')">
+                    <template x-for="requirement in items" :key="requirement">
                       <li class="list-group-item" x-show="requirement" x-cloak x-transition>
                         <b x-text="requirements[requirement].name"></b>
                         <span class="badge bg-secondary" x-text="requirements[requirement].framework"></span>
@@ -159,8 +160,7 @@
                   </ul>
 
                   <!-- Button trigger modal -->
-                  <button @click="frameworks = await list_frameworks();requirements = await list_requirements()"
-                          type="button" class="btn btn-primary"
+                  <button type="button" class="btn btn-primary"
                           data-bs-toggle="modal" data-bs-target="#requirementModal">
                     Attach requirement
                   </button>
@@ -271,8 +271,7 @@
                   </ul>
 
                   <!-- Button trigger modal -->
-                  <button @click="frameworks = await list_frameworks();requirements = await list_requirements()"
-                          type="button" class="btn btn-primary"
+                  <button type="button" class="btn btn-primary"
                           data-bs-toggle="modal" data-bs-target="#requirementModal">
                     Attach requirement
                   </button>
