@@ -921,7 +921,7 @@
 				<field name="deletedEmployeeArns" type="StringList"></field>
 				<field name="controlFrameworkLinks" type="StringList"></field>
 				<command name="Create" create-command="true">
-					<trigger source="CreateCompanyRequested" key-field="arn">
+					<trigger source="CreateCompanyRequested" key-field="arn" idempotency-key="arn" idempotency-ttl="2 * 24 * 60 * 60">
 						<mapping target="arn" value="arn"></mapping>
 						<mapping target="name" value="name"></mapping>
 						<mapping target="description" value="description"></mapping>
@@ -1191,7 +1191,7 @@
 					</test-case>
 				</command>
 				<command name="AddBusinessUnit">
-					<trigger source="AddCompanyBusinessUnitRequested" key-field="arn">
+					<trigger source="AddCompanyBusinessUnitRequested" key-field="arn" idempotency-key="">
 						<mapping target="arn" value="arn"></mapping>
 						<mapping target="name" value="name"></mapping>
 						<mapping target="description" value="description"></mapping>
@@ -2016,7 +2016,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<activity type="send-email" id="2wJ6Y9" condition="flow.eligible" sender="no-reply@draftsman.io" receiver="#flow.receiver" subject="#flow.subject" text="#flow.text" html="#flow.html"></activity>
 		</notifier>
 		<notifier name="PrepareCompanyTenant">
-			<trigger source="CompanyCreated">
+			<trigger source="CompanyCreated" idempotency-key="arn user">
 				<mapping target="arn" value="arn"></mapping>
 				<mapping target="user" value="user"></mapping>
 			</trigger>
