@@ -19,14 +19,14 @@
 		<pattern name="IndustryArn" regex="^industry:[a-z]+$"></pattern>
 		<expression name="truncateArn" type="TriggerKeyField" input="arn;length" expression="':'.join(arn.split(':')[:int(length)])"></expression>
 		<expression name="isAdministrator" type="ActorEventRole" input="arn" expression="${arn.split(':')[0]}:${arn.split(':')[1]}:${arn.split(':')[2]}:administrator"></expression>
-		<expression name="extractRoleFromArn" type="ActorEventRole" input="arn;role" expression="${arn.split(':')[0]}:${arn.split(':')[1]}:${arn.split(':')[2]}:role"></expression>
+		<expression name="isViewer" type="ActorEventRole" input="arn" expression="${arn.split(':')[0]}:${arn.split(':')[1]}:${arn.split(':')[2]}:viewer"></expression>
 	</global>
 	<events>
-		<event graphql-namespace="Company.Employee" graphql-name="updateBusinessRole" name="UpdateBusinessRoleCompanyEmployeeRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
+		<event graphql-namespace="Company.Employee" graphql-name="updateBusinessRole" name="UpdateBusinessRoleCompanyEmployeeRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
 			<field name="arn" type="String" pattern="{{EmployeeArn}}"></field>
 			<field name="businessRole" type="String" pattern="{{BusinessRole}}"></field>
 		</event>
-		<event graphql-namespace="Company.Control.Assessment" graphql-name="complete" name="CompleteCompanyControlAssessmentRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
+		<event graphql-namespace="Company.Control.Assessment" graphql-name="complete" name="CompleteCompanyControlAssessmentRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
 			<field name="arn" type="String"></field>
 		</event>
 		<event graphql-namespace="Company" graphql-name="create" name="CreateCompanyRequested" authorization="authenticated" type="ActorEvent">
@@ -39,7 +39,7 @@
 			<field name="user" type="String" auto-fill="username"></field>
 			<field name="country" type="String" pattern="{{CountryArn}}"></field>
 		</event>
-		<event graphql-namespace="Company" graphql-name="unlinkControlFramework" name="UnlinkControlFrameworkCompanyRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
+		<event graphql-namespace="Company" graphql-name="unlinkControlFramework" name="UnlinkControlFrameworkCompanyRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
 			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
 			<field name="controlFrameworkArn" type="String" pattern="{{ControlFrameworkArn}}"></field>
 		</event>
@@ -56,12 +56,12 @@
 				<field name="code" type="String" pattern="{{GeoCode}}"></field>
 			</nested-object>
 		</event>
-		<event graphql-namespace="Company.BusinessUnit" graphql-name="add" name="AddCompanyBusinessUnitRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
+		<event graphql-namespace="Company.BusinessUnit" graphql-name="add" name="AddCompanyBusinessUnitRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
 			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
 		</event>
-		<event graphql-namespace="Company.Control.Assessment" graphql-name="update" name="UpdateCompanyControlAssessmentRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
+		<event graphql-namespace="Company.Control.Assessment" graphql-name="update" name="UpdateCompanyControlAssessmentRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
 			<field name="arn" type="String"></field>
 			<nested-object name="assessment">
 				<field name="dueDate" type="String" pattern="{{Date}}"></field>
@@ -73,7 +73,7 @@
 				<field name="assessorLink" type="String" pattern="{{EmployeeArn}}"></field>
 			</nested-object>
 		</event>
-		<event graphql-namespace="Company.Risk" graphql-name="create" name="CreateCompanyRiskRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
+		<event graphql-namespace="Company.Risk" graphql-name="create" name="CreateCompanyRiskRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
 			<field name="arn" type="String"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
@@ -94,18 +94,18 @@
 				<field name="impactDecrease" type="Int"></field>
 			</nested-object>
 		</event>
-		<event graphql-namespace="Company.Control.Assessment" graphql-name="start" name="StartCompanyControlAssessmentRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(controlArn, 'administrator')">
+		<event graphql-namespace="Company.Control.Assessment" graphql-name="start" name="StartCompanyControlAssessmentRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(controlArn)">
 			<field name="controlArn" type="String"></field>
 			<field name="dueDate" type="String" default="" pattern="{{Date}}"></field>
 			<field name="category" type="String" pattern="{{AssesmentCategory}}" default=""></field>
 			<field name="assessorLink" type="String" default="" pattern="{{EmployeeArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.BusinessUnit" graphql-name="update" name="UpdateCompanyBusinessUnitRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
+		<event graphql-namespace="Company.BusinessUnit" graphql-name="update" name="UpdateCompanyBusinessUnitRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
 			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
 		</event>
-		<event graphql-namespace="Company.Control" graphql-name="update" name="UpdateCompanyControlRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
+		<event graphql-namespace="Company.Control" graphql-name="update" name="UpdateCompanyControlRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
 			<field name="description" type="String"></field>
 			<field name="controlTemplateArn" type="String" default=""></field>
 			<field name="assessmentPeriodicity" type="String"></field>
@@ -116,7 +116,7 @@
 			<field name="controlOwner" type="String" pattern="{{EmployeeArn}}"></field>
 			<field name="arn" type="String"></field>
 		</event>
-		<event graphql-namespace="Company.Control" graphql-name="create" name="CreateCompanyControlRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(companyArn, 'administrator')">
+		<event graphql-namespace="Company.Control" graphql-name="create" name="CreateCompanyControlRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(companyArn)">
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
 			<field name="controlTemplateArn" type="String" default=""></field>
@@ -128,7 +128,7 @@
 			<field name="nextAssessmentDate" type="String" pattern="{{Date}}"></field>
 			<field name="controlOwner" type="String" pattern="{{EmployeeArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.BusinessUnit" graphql-name="remove" name="RemoveCompanyBusinessUnitRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
+		<event graphql-namespace="Company.BusinessUnit" graphql-name="remove" name="RemoveCompanyBusinessUnitRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
 			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
 			<field name="name" type="String"></field>
 		</event>
@@ -137,7 +137,7 @@
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
 		</event>
-		<event graphql-namespace="Company" graphql-name="linkControlFramework" name="LinkControlFrameworkCompanyRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
+		<event graphql-namespace="Company" graphql-name="linkControlFramework" name="LinkControlFrameworkCompanyRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
 			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
 			<field name="controlFrameworkArn" type="String" pattern="{{ControlFrameworkArn}}"></field>
 		</event>
@@ -1966,8 +1966,8 @@
 				<mapping target="assessorLink" operand="set" value="assessorLink"></mapping>
 				<delete condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
-			<query graphql-namespace="ControlAssessment" field-name="get" type="get" authorization="role" role="#global.extractRoleFromArn(key, 'viewer')"></query>
-			<query graphql-namespace="ControlAssessment" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.extractRoleFromArn(key_begins_with, 'viewer')"></query>
+			<query graphql-namespace="ControlAssessment" field-name="get" type="get" authorization="role" role="#global.isViewer(arn)"></query>
+			<query graphql-namespace="ControlAssessment" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isViewer(arn)"></query>
 		</view>
 		<view name="Country" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String" pk="true"></field>
@@ -2046,9 +2046,9 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 		</view>
 		<view name="UserCompanyLink" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String"></field>
-			<field name="company" type="ManyToOne" ref="Company" authorization="role" foreign-key="arn" role="#global.extractRoleFromArn(arn, 'viewer')"></field>
+			<field name="company" type="ManyToOne" ref="Company" authorization="role" foreign-key="arn" role="#global.isViewer(arn)"></field>
 			<field name="employeeArn" type="String"></field>
-			<field name="employee" type="OneToOne" ref="Employee" authorization="role" foreign-key="employeeArn" role="#global.extractRoleFromArn(employeeArn, 'viewer')"></field>
+			<field name="employee" type="OneToOne" ref="Employee" authorization="role" foreign-key="employeeArn" role="#global.isViewer(employeeArn)"></field>
 		</view>
 		<view name="Task" data-retention-days="-1" exclude-notification="false">
 			<field name="dueDate" type="String"></field>
@@ -2073,8 +2073,8 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping target="assessedMaturityDescription" operand="set" value="assessedMaturityDescription"></mapping>
 				<delete condition="#'completeDate' in item and item.completeDate != ''"></delete>
 			</snapshot-handler>
-			<query graphql-namespace="Task" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.extractRoleFromArn(key_begins_with, 'viewer')"></query>
-			<query graphql-namespace="Task" field-name="get" type="get" authorization="role" role="#global.extractRoleFromArn(key, 'viewer')"></query>
+			<query graphql-namespace="Task" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isViewer(arn)"></query>
+			<query graphql-namespace="Task" field-name="get" type="get" authorization="role" role="#global.isViewer(arn)"></query>
 		</view>
 		<view name="RiskControlLink" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String"></field>
@@ -2122,8 +2122,8 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping target="treatmentPlan" operand="convert_items" value="treatmentPlan" template='{"type": value["type"],"description": value["description"],"likelihoodDecrease": value["likelihoodDecrease"],"impactDecrease": value["impactDecrease"]}'></mapping>
 				<delete condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
-			<query graphql-namespace="Risk" field-name="get" type="get" authorization="role" role='#global.extractRoleFromArn(key, "viewer")'></query>
-			<query graphql-namespace="Risk" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role='#global.extractRoleFromArn(key_begins_with, "viewer")'></query>
+			<query graphql-namespace="Risk" field-name="get" type="get" authorization="role" role="#global.isViewer(key)"></query>
+			<query graphql-namespace="Risk" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isViewer(key_begins_with)"></query>
 		</view>
 		<view name="Control" data-retention-days="-1" exclude-notification="false">
 			<field name="name" type="String"></field>
@@ -2161,8 +2161,8 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping target="hasPendingSelfAssessment" operand="set" value="hasPendingSelfAssessment"></mapping>
 				<delete condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
-			<query graphql-namespace="Control" field-name="get" type="get" authorization="role" role="#global.extractRoleFromArn(key, 'viewer')"></query>
-			<query graphql-namespace="Control" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.extractRoleFromArn(key_begins_with, 'viewer')"></query>
+			<query graphql-namespace="Control" field-name="get" type="get" authorization="role" role="#global.isViewer(arn)"></query>
+			<query graphql-namespace="Control" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isViewer(arn)"></query>
 		</view>
 		<view name="ControlFramework" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String" pk="true"></field>
@@ -2236,8 +2236,8 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping target="controlFrameworkLink" operand="set" value="controlFrameworkLinks"></mapping>
 				<delete condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
-			<query graphql-namespace="Company" field-name="get" type="get" authorization="role" role="#global.extractRoleFromArn(key, 'viewer')"></query>
-			<query graphql-namespace="Company" field-name="filter" type="filter" authorization="role" role="#global.extractRoleFromArn(key_begins_with, 'viewer')" use-canonical-search="true"></query>
+			<query graphql-namespace="Company" field-name="get" type="get" authorization="role" role="#global.isViewer(arn)"></query>
+			<query graphql-namespace="Company" field-name="filter" type="filter" authorization="role" role="#global.isViewer(arn)" use-canonical-search="true"></query>
 		</view>
 	</views>
 	<projections>
