@@ -1,0 +1,140 @@
+[
+  {
+    "type": "meta",
+    "message": "This file is managed by Tracepaper"
+  },
+  {
+    "name": "arn",
+    "title": "Arn",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "name",
+    "title": "Name",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "description",
+    "title": "Description",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "grossLikelihood",
+    "title": "Grosslikelihood",
+    "type": "Int",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "grossImpact",
+    "title": "Grossimpact",
+    "type": "Int",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "apetiteLikelihood",
+    "title": "Apetitelikelihood",
+    "type": "Int",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "apetiteImpact",
+    "title": "Apetiteimpact",
+    "type": "Int",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "reviewPeriodicity",
+    "title": "Reviewperiodicity",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "nextReviewDate",
+    "title": "Nextreviewdate",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "controlLinks",
+    "title": "Controllinks",
+    "type": "nested",
+    "fields": [
+      {
+        "name": "arn",
+        "title": "Arn",
+        "type": "String",
+        "pattern": "",
+        "placeholder": "",
+        "default": ""
+      },
+      {
+        "name": "impactOnRisk",
+        "title": "Impactonrisk",
+        "type": "Int",
+        "pattern": "",
+        "placeholder": "",
+        "default": ""
+      }
+    ]
+  },
+  {
+    "name": "treatmentPlan",
+    "title": "Treatmentplan",
+    "type": "nested",
+    "fields": [
+      {
+        "name": "type",
+        "title": "Type",
+        "type": "String",
+        "pattern": "",
+        "placeholder": "",
+        "default": ""
+      },
+      {
+        "name": "description",
+        "title": "Description",
+        "type": "String",
+        "pattern": "",
+        "placeholder": "",
+        "default": ""
+      },
+      {
+        "name": "likelihoodDecrease",
+        "title": "Likelihooddecrease",
+        "type": "Int",
+        "pattern": "",
+        "placeholder": "",
+        "default": ""
+      },
+      {
+        "name": "impactDecrease",
+        "title": "Impactdecrease",
+        "type": "Int",
+        "pattern": "",
+        "placeholder": "",
+        "default": ""
+      }
+    ]
+  }
+]
