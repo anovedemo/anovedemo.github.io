@@ -1966,8 +1966,8 @@
 				<mapping target="assessorLink" operand="set" value="assessorLink"></mapping>
 				<delete condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
-			<query graphql-namespace="ControlAssessment" field-name="get" type="get" authorization="role" role="#global.isViewer(arn)"></query>
-			<query graphql-namespace="ControlAssessment" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isViewer(arn)"></query>
+			<query graphql-namespace="ControlAssessment" field-name="get" type="get" authorization="role" role="#global.isViewer(key)"></query>
+			<query graphql-namespace="ControlAssessment" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isViewer(key_begins_with)"></query>
 		</view>
 		<view name="Country" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String" pk="true"></field>
@@ -2073,8 +2073,8 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping target="assessedMaturityDescription" operand="set" value="assessedMaturityDescription"></mapping>
 				<delete condition="#'completeDate' in item and item.completeDate != ''"></delete>
 			</snapshot-handler>
-			<query graphql-namespace="Task" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isViewer(arn)"></query>
-			<query graphql-namespace="Task" field-name="get" type="get" authorization="role" role="#global.isViewer(arn)"></query>
+			<query graphql-namespace="Task" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isViewer(key_begins_with)"></query>
+			<query graphql-namespace="Task" field-name="get" type="get" authorization="role" role="#global.isViewer(key)"></query>
 		</view>
 		<view name="RiskControlLink" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String"></field>
@@ -2161,8 +2161,8 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping target="hasPendingSelfAssessment" operand="set" value="hasPendingSelfAssessment"></mapping>
 				<delete condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
-			<query graphql-namespace="Control" field-name="get" type="get" authorization="role" role="#global.isViewer(arn)"></query>
-			<query graphql-namespace="Control" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isViewer(arn)"></query>
+			<query graphql-namespace="Control" field-name="get" type="get" authorization="role" role="#global.isViewer(key)"></query>
+			<query graphql-namespace="Control" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isViewer(key_begins_with)"></query>
 		</view>
 		<view name="ControlFramework" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String" pk="true"></field>
@@ -2236,8 +2236,8 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping target="controlFrameworkLink" operand="set" value="controlFrameworkLinks"></mapping>
 				<delete condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
-			<query graphql-namespace="Company" field-name="get" type="get" authorization="role" role="#global.isViewer(arn)"></query>
-			<query graphql-namespace="Company" field-name="filter" type="filter" authorization="role" role="#global.isViewer(arn)" use-canonical-search="true"></query>
+			<query graphql-namespace="Company" field-name="get" type="get" authorization="role" role="#global.isViewer(key)"></query>
+			<query graphql-namespace="Company" field-name="filter" type="filter" authorization="role" role="#global.isViewer(key_begins_with)" use-canonical-search="true"></query>
 		</view>
 	</views>
 	<projections>
