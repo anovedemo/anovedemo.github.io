@@ -1,0 +1,16 @@
+<template x-component="risks">
+  <div>
+
+    <draftsman-mutation command="CreateCompanyRisk"
+                        x-include="/prepared-statements/commands/CreateCompanyControl.txt" authenticated>
+    </draftsman-mutation>
+    <draftsman-trace command="CreateCompanyControl"
+                     status="success"
+                     @trace="
+                    command = {assessmentPeriodicity: '2M','description': '# Title\n\nLorem ipsum...',requirements:'',desiredMaturityLevel: '3'};
+                    setTimeout(Draftsman.force_reload_data,1000);
+                    Draftsman.empty_track_and_trace_log();">
+    </draftsman-trace>
+
+  </div>
+</template>

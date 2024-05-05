@@ -44,6 +44,15 @@
             </a>
           </li>
           <li class="nav-item">
+            <a @click="navigation = 'risks'"
+               :class="navigation == 'risks' ? 'active' : ''"
+               class="nav-link d-flex align-items-center gap-2" aria-current="page"
+               href="#">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              Risks
+            </a>
+          </li>
+          <li class="nav-item">
             <a @click="navigation = 'controls'"
                :class="navigation == 'controls' ? 'active' : ''"
                class="nav-link d-flex align-items-center gap-2" aria-current="page"
