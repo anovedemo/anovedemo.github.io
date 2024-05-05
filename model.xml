@@ -18,14 +18,15 @@
 		<pattern name="IndustryLink" regex="^{{IndustryArn}}(;{{IndustryArn}})*$"></pattern>
 		<pattern name="IndustryArn" regex="^industry:[a-z]+$"></pattern>
 		<expression name="truncateArn" type="TriggerKeyField" input="arn;length" expression="':'.join(arn.split(':')[:int(length)])"></expression>
-		<expression name="extractRoleFromArn" type="ActorEventRole" input="arn;role" expression="${arn.split(':')[0]}:${arn.split(':')[1]}:${arn.split(':')[2]}:role"></expression>
+		<expression name="isAdministrator" type="ActorEventRole" input="arn" expression="${arn.split(':')[0]}:${arn.split(':')[1]}:${arn.split(':')[2]}:administrator"></expression>
+		<expression name="isViewer" type="ActorEventRole" input="arn" expression="${arn.split(':')[0]}:${arn.split(':')[1]}:${arn.split(':')[2]}:viewer"></expression>
 	</global>
 	<events>
-		<event graphql-namespace="Company.Employee" graphql-name="updateBusinessRole" name="UpdateBusinessRoleCompanyEmployeeRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
+		<event graphql-namespace="Company.Employee" graphql-name="updateBusinessRole" name="UpdateBusinessRoleCompanyEmployeeRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
 			<field name="arn" type="String" pattern="{{EmployeeArn}}"></field>
 			<field name="businessRole" type="String" pattern="{{BusinessRole}}"></field>
 		</event>
-		<event graphql-namespace="Company.Control.Assessment" graphql-name="complete" name="CompleteCompanyControlAssessmentRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
+		<event graphql-namespace="Company.Control.Assessment" graphql-name="complete" name="CompleteCompanyControlAssessmentRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
 			<field name="arn" type="String"></field>
 		</event>
 		<event graphql-namespace="Company" graphql-name="create" name="CreateCompanyRequested" authorization="authenticated" type="ActorEvent">
@@ -38,7 +39,7 @@
 			<field name="user" type="String" auto-fill="username"></field>
 			<field name="country" type="String" pattern="{{CountryArn}}"></field>
 		</event>
-		<event graphql-namespace="Company" graphql-name="unlinkControlFramework" name="UnlinkControlFrameworkCompanyRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
+		<event graphql-namespace="Company" graphql-name="unlinkControlFramework" name="UnlinkControlFrameworkCompanyRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
 			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
 			<field name="controlFrameworkArn" type="String" pattern="{{ControlFrameworkArn}}"></field>
 		</event>
@@ -55,12 +56,12 @@
 				<field name="code" type="String" pattern="{{GeoCode}}"></field>
 			</nested-object>
 		</event>
-		<event graphql-namespace="Company.BusinessUnit" graphql-name="add" name="AddCompanyBusinessUnitRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
+		<event graphql-namespace="Company.BusinessUnit" graphql-name="add" name="AddCompanyBusinessUnitRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
 			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
 		</event>
-		<event graphql-namespace="Company.Control.Assessment" graphql-name="update" name="UpdateCompanyControlAssessmentRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
+		<event graphql-namespace="Company.Control.Assessment" graphql-name="update" name="UpdateCompanyControlAssessmentRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
 			<field name="arn" type="String"></field>
 			<nested-object name="assessment">
 				<field name="dueDate" type="String" pattern="{{Date}}"></field>
@@ -72,18 +73,39 @@
 				<field name="assessorLink" type="String" pattern="{{EmployeeArn}}"></field>
 			</nested-object>
 		</event>
-		<event graphql-namespace="Company.Control.Assessment" graphql-name="start" name="StartCompanyControlAssessmentRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(controlArn, 'administrator')">
+		<event graphql-namespace="Company.Risk" graphql-name="create" name="CreateCompanyRiskRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
+			<field name="arn" type="String"></field>
+			<field name="name" type="String"></field>
+			<field name="description" type="String"></field>
+			<field name="grossLikelihood" type="Int"></field>
+			<field name="grossImpact" type="Int"></field>
+			<field name="apetiteLikelihood" type="Int"></field>
+			<field name="apetiteImpact" type="Int"></field>
+			<field name="reviewPeriodicity" type="String"></field>
+			<field name="nextReviewDate" type="String"></field>
+			<nested-object name="controlLinks">
+				<field name="arn" type="String"></field>
+				<field name="impactOnRisk" type="Int"></field>
+			</nested-object>
+			<nested-object name="treatmentPlan">
+				<field name="type" type="String"></field>
+				<field name="description" type="String"></field>
+				<field name="likelihoodDecrease" type="Int"></field>
+				<field name="impactDecrease" type="Int"></field>
+			</nested-object>
+		</event>
+		<event graphql-namespace="Company.Control.Assessment" graphql-name="start" name="StartCompanyControlAssessmentRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(controlArn)">
 			<field name="controlArn" type="String"></field>
 			<field name="dueDate" type="String" default="" pattern="{{Date}}"></field>
 			<field name="category" type="String" pattern="{{AssesmentCategory}}" default=""></field>
 			<field name="assessorLink" type="String" default="" pattern="{{EmployeeArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.BusinessUnit" graphql-name="update" name="UpdateCompanyBusinessUnitRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
+		<event graphql-namespace="Company.BusinessUnit" graphql-name="update" name="UpdateCompanyBusinessUnitRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
 			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
 		</event>
-		<event graphql-namespace="Company.Control" graphql-name="update" name="UpdateCompanyControlRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
+		<event graphql-namespace="Company.Control" graphql-name="update" name="UpdateCompanyControlRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
 			<field name="description" type="String"></field>
 			<field name="controlTemplateArn" type="String" default=""></field>
 			<field name="assessmentPeriodicity" type="String"></field>
@@ -94,7 +116,7 @@
 			<field name="controlOwner" type="String" pattern="{{EmployeeArn}}"></field>
 			<field name="arn" type="String"></field>
 		</event>
-		<event graphql-namespace="Company.Control" graphql-name="create" name="CreateCompanyControlRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(companyArn, 'administrator')">
+		<event graphql-namespace="Company.Control" graphql-name="create" name="CreateCompanyControlRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(companyArn)">
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
 			<field name="controlTemplateArn" type="String" default=""></field>
@@ -106,7 +128,7 @@
 			<field name="nextAssessmentDate" type="String" pattern="{{Date}}"></field>
 			<field name="controlOwner" type="String" pattern="{{EmployeeArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.BusinessUnit" graphql-name="remove" name="RemoveCompanyBusinessUnitRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
+		<event graphql-namespace="Company.BusinessUnit" graphql-name="remove" name="RemoveCompanyBusinessUnitRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
 			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
 			<field name="name" type="String"></field>
 		</event>
@@ -115,7 +137,7 @@
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
 		</event>
-		<event graphql-namespace="Company" graphql-name="linkControlFramework" name="LinkControlFrameworkCompanyRequested" authorization="role" type="ActorEvent" role="#global.extractRoleFromArn(arn, 'administrator')">
+		<event graphql-namespace="Company" graphql-name="linkControlFramework" name="LinkControlFrameworkCompanyRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
 			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
 			<field name="controlFrameworkArn" type="String" pattern="{{ControlFrameworkArn}}"></field>
 		</event>
@@ -205,6 +227,32 @@
 			<field name="description" type="String"></field>
 			<field name="mandatory" type="Boolean"></field>
 			<field name="summary" type="String"></field>
+		</event>
+		<event name="RiskCreated" source="Customer.Risk" type="DomainEvent">
+			<field name="arn" type="String"></field>
+			<field name="name" type="String"></field>
+			<field name="description" type="String"></field>
+			<field name="grossLikelihood" type="Int"></field>
+			<field name="grossImpact" type="Int"></field>
+			<field name="apetiteLikelihood" type="Int"></field>
+			<field name="apetiteImpact" type="Int"></field>
+			<field name="reviewPeriodicity" type="String"></field>
+			<field name="nextReviewDate" type="String"></field>
+			<nested-object name="changeLog" business-key="timestamp">
+				<field name="timestamp" type="String"></field>
+				<field name="description" type="String"></field>
+				<field name="user" type="String"></field>
+			</nested-object>
+			<nested-object name="controlLinks" business-key="newField">
+				<field name="arn" type="String"></field>
+				<field name="impactOnRisk" type="Int"></field>
+			</nested-object>
+			<nested-object name="treatmentPlan" business-key="type">
+				<field name="type" type="String"></field>
+				<field name="description" type="String"></field>
+				<field name="likelihoodDecrease" type="Int"></field>
+				<field name="impactDecrease" type="Int"></field>
+			</nested-object>
 		</event>
 		<event name="BusinessRoleUpdated" source="Customer.Company" type="DomainEvent">
 			<field name="employeeArn" type="String"></field>
@@ -910,6 +958,199 @@
 			</aggregate>
 		</subdomain>
 		<subdomain name="Customer">
+			<aggregate name="Risk" business-key="arn" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
+				<field name="arn" type="String"></field>
+				<field name="name" type="String"></field>
+				<field name="description" type="String"></field>
+				<field name="grossLikelihood" type="Int"></field>
+				<field name="grossImpact" type="Int"></field>
+				<field name="apetiteLikelihood" type="Int"></field>
+				<field name="apetiteImpact" type="Int"></field>
+				<field name="reviewPeriodicity" type="String"></field>
+				<field name="lastReviewDate" type="String"></field>
+				<field name="nextReviewDate" type="String"></field>
+				<command name="Create">
+					<trigger source="CreateCompanyRiskRequested" key-field="arn">
+						<mapping target="arn" value="arn"></mapping>
+						<mapping target="name" value="name"></mapping>
+						<mapping target="description" value="description"></mapping>
+						<mapping target="grossLikelihood" value="grossLikelihood"></mapping>
+						<mapping target="grossImpact" value="grossImpact"></mapping>
+						<mapping target="apetiteLikelihood" value="apetiteLikelihood"></mapping>
+						<mapping target="apetiteImpact" value="apetiteImpact"></mapping>
+						<mapping target="reviewPeriodicity" value="reviewPeriodicity"></mapping>
+						<mapping target="nextReviewDate" value="nextReviewDate"></mapping>
+						<mapping target="controlLinks" value="controlLinks"></mapping>
+						<mapping target="treatmentPlan" value="treatmentPlan"></mapping>
+					</trigger>
+					<processor type="code" id="fu0wDy" file="lib/RiskUtils.py" handler="calculate_combined_impact_on_risk"></processor>
+					<processor type="validator" id="N65bEm" condition="flow.risk_impact == 100 or flow.risk_impact == 0" exception="When controls are linked, the combined impact on the gross risk score must be exactly 100%"></processor>
+					<processor type="code" id="7lt4Ys" file="lib/RiskUtils.py" handler="generate_change_log"></processor>
+					<processor type="emit-event" id="UuX1Ch" ref="RiskCreated">
+						<mapping target="arn" value="#flow.arn"></mapping>
+						<mapping target="name" value="#flow.name"></mapping>
+						<mapping target="description" value="#flow.description"></mapping>
+						<mapping target="grossLikelihood" value="#flow.grossLikelihood"></mapping>
+						<mapping target="grossImpact" value="#flow.grossImpact"></mapping>
+						<mapping target="apetiteLikelihood" value="#flow.apetiteLikelihood"></mapping>
+						<mapping target="apetiteImpact" value="#flow.apetiteImpact"></mapping>
+						<mapping target="reviewPeriodicity" value="#flow.reviewPeriodicity"></mapping>
+						<mapping target="nextReviewDate" value="#flow.nextReviewDate"></mapping>
+						<mapping target="changeLog" value="#flow.changeLog"></mapping>
+						<mapping target="controlLinks" value="#flow.controlLinks"></mapping>
+						<mapping target="treatmentPlan" value="#flow.treatmentPlan"></mapping>
+					</processor>
+					<test-case name="CreateRisk" trigger-event="CreateCompanyRiskRequested">
+						<input name="arn" value="anove:company:draftsman:risk:myrisk" type="String"></input>
+						<input name="name" value="myrisk" type="String"></input>
+						<input name="description" value="Hello World!" type="String"></input>
+						<input name="grossLikelihood" value="3" type="Int"></input>
+						<input name="grossImpact" value="3" type="Int"></input>
+						<input name="apetiteLikelihood" value="2" type="Int"></input>
+						<input name="apetiteImpact" value="2" type="Int"></input>
+						<input name="reviewPeriodicity" value="1Y" type="String"></input>
+						<input name="nextReviewDate" value="01-08-2024" type="String"></input>
+						<input name="controlLinks" type="NestedObject">[
+  {
+    "arn": "anove:company:draftsman:control:mycontrol",
+    "impactOnRisk": 100
+  }
+]</input>
+						<input name="treatmentPlan" type="NestedObject">[
+  {
+    "type": "mitigate",
+    "description": "hello world!",
+    "likelihoodDecrease": 1,
+    "impactDecrease": 1
+  }
+]</input>
+						<expected domain-event="RiskCreated">
+							<field value="anove:company:draftsman:risk:myrisk" name="arn" type="String"></field>
+							<field value="myrisk" name="name" type="String"></field>
+							<field value="Hello World!" name="description" type="String"></field>
+							<field value="3" name="grossLikelihood" type="Int"></field>
+							<field value="3" name="grossImpact" type="Int"></field>
+							<field value="2" name="apetiteLikelihood" type="Int"></field>
+							<field value="2" name="apetiteImpact" type="Int"></field>
+							<field value="1Y" name="reviewPeriodicity" type="String"></field>
+							<field value="01-08-2024" name="nextReviewDate" type="String"></field>
+						</expected>
+						<expected-state pk="anove:company:draftsman:risk:myrisk">{
+  "controlLinks": {
+    "anove:company:draftsman:control:mycontrol": {
+      "arn": "anove:company:draftsman:control:mycontrol",
+      "impactOnRisk": 100
+    }
+  },
+  "treatmentPlan": {
+    "mitigate": {
+      "type": "mitigate",
+      "description": "hello world!",
+      "likelihoodDecrease": 1,
+      "impactDecrease": 1
+    }
+  }
+}</expected-state>
+					</test-case>
+					<test-case name="IncorrectImpact" trigger-event="CreateCompanyRiskRequested" expected-processing-status="error">
+						<input name="arn" value="anove:company:draftsman:risk:myrisk" type="String"></input>
+						<input name="name" value="myrisk" type="String"></input>
+						<input name="description" value="Hello World!" type="String"></input>
+						<input name="grossLikelihood" value="3" type="Int"></input>
+						<input name="grossImpact" value="3" type="Int"></input>
+						<input name="apetiteLikelihood" value="2" type="Int"></input>
+						<input name="apetiteImpact" value="2" type="Int"></input>
+						<input name="reviewPeriodicity" value="1Y" type="String"></input>
+						<input name="nextReviewDate" value="01-08-2024" type="String"></input>
+						<input name="controlLinks" type="NestedObject">[
+  {
+    "arn": "anove:company:draftsman:control:mycontrol",
+    "impactOnRisk": 50
+  }
+]</input>
+						<input name="treatmentPlan" type="NestedObject">[
+  {
+    "type": "mitigate",
+    "description": "hello world!",
+    "likelihoodDecrease": 1,
+    "impactDecrease": 1
+  }
+]</input>
+					</test-case>
+					<test-case name="CreateInitialRisk" trigger-event="CreateCompanyRiskRequested">
+						<input name="arn" value="anove:company:draftsman:risk:myrisk" type="String"></input>
+						<input name="name" value="myrisk" type="String"></input>
+						<input name="description" value="Hello World!" type="String"></input>
+						<input name="grossLikelihood" value="3" type="Int"></input>
+						<input name="grossImpact" value="3" type="Int"></input>
+						<input name="apetiteLikelihood" value="2" type="Int"></input>
+						<input name="apetiteImpact" value="2" type="Int"></input>
+						<input name="reviewPeriodicity" value="1Y" type="String"></input>
+						<input name="nextReviewDate" value="01-08-2024" type="String"></input>
+						<input name="controlLinks" type="NestedObject">[]</input>
+						<input name="treatmentPlan" type="NestedObject">[]</input>
+						<expected domain-event="RiskCreated">
+							<field value="anove:company:draftsman:risk:myrisk" name="arn" type="String"></field>
+							<field value="myrisk" name="name" type="String"></field>
+							<field value="Hello World!" name="description" type="String"></field>
+							<field value="3" name="grossLikelihood" type="Int"></field>
+							<field value="3" name="grossImpact" type="Int"></field>
+							<field value="2" name="apetiteLikelihood" type="Int"></field>
+							<field value="2" name="apetiteImpact" type="Int"></field>
+							<field value="1Y" name="reviewPeriodicity" type="String"></field>
+							<field value="01-08-2024" name="nextReviewDate" type="String"></field>
+						</expected>
+					</test-case>
+				</command>
+				<event-handler on="RiskCreated">
+					<mapping target="arn" operand="set" value="arn"></mapping>
+					<mapping target="name" operand="set" value="name"></mapping>
+					<mapping target="description" operand="set" value="description"></mapping>
+					<mapping target="grossLikelihood" operand="set" value="grossLikelihood"></mapping>
+					<mapping target="grossImpact" operand="set" value="grossImpact"></mapping>
+					<mapping target="apetiteLikelihood" operand="set" value="apetiteLikelihood"></mapping>
+					<mapping target="apetiteImpact" operand="set" value="apetiteImpact"></mapping>
+					<mapping target="reviewPeriodicity" operand="set" value="reviewPeriodicity"></mapping>
+					<mapping target="nextReviewDate" operand="set" value="nextReviewDate"></mapping>
+					<nested-mapping source="changeLog" target="changeLog" business-key="timestamp">
+						<mapping target="timestamp" operand="set" value="timestamp"></mapping>
+						<mapping target="description" operand="set" value="description"></mapping>
+						<mapping target="user" operand="set" value="user"></mapping>
+					</nested-mapping>
+					<nested-mapping source="controlLinks" target="controlLinks" business-key="arn">
+						<mapping target="arn" operand="set" value="arn"></mapping>
+						<mapping target="impactOnRisk" operand="set" value="impactOnRisk"></mapping>
+					</nested-mapping>
+					<nested-mapping source="treatmentPlan" target="treatmentPlan" business-key="type">
+						<mapping target="type" operand="set" value="type"></mapping>
+						<mapping target="description" operand="set" value="description"></mapping>
+						<mapping target="likelihoodDecrease" operand="set" value="likelihoodDecrease"></mapping>
+						<mapping target="impactDecrease" operand="set" value="impactDecrease"></mapping>
+					</nested-mapping>
+				</event-handler>
+				<nested-object name="treatmentPlan" business-key="type">
+					<field name="type" type="String"></field>
+					<field name="description" type="String"></field>
+					<field name="likelihoodDecrease" type="Int"></field>
+					<field name="impactDecrease" type="Int"></field>
+				</nested-object>
+				<nested-object name="controlLinks" business-key="newField">
+					<field name="arn" type="String"></field>
+					<field name="impactOnRisk" type="Int"></field>
+				</nested-object>
+				<nested-object name="actions" business-key="id">
+					<field name="id" type="String"></field>
+					<field name="name" type="String"></field>
+					<field name="description" type="String"></field>
+					<field name="assignee" type="String"></field>
+					<field name="dueDate" type="String"></field>
+				</nested-object>
+				<nested-object name="changeLog" business-key="timestamp">
+					<field name="timestamp" type="String"></field>
+					<field name="description" type="String"></field>
+					<field name="user" type="String"></field>
+				</nested-object>
+			</aggregate>
 			<aggregate name="Company" business-key="arn" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
 				<field name="arn" type="String"></field>
 				<field name="name" type="String"></field>
@@ -921,7 +1162,7 @@
 				<field name="deletedEmployeeArns" type="StringList"></field>
 				<field name="controlFrameworkLinks" type="StringList"></field>
 				<command name="Create" create-command="true">
-					<trigger source="CreateCompanyRequested" key-field="arn">
+					<trigger source="CreateCompanyRequested" key-field="arn" idempotency-key="arn" idempotency-ttl="2 * 24 * 60 * 60">
 						<mapping target="arn" value="arn"></mapping>
 						<mapping target="name" value="name"></mapping>
 						<mapping target="description" value="description"></mapping>
@@ -1191,7 +1432,7 @@
 					</test-case>
 				</command>
 				<command name="AddBusinessUnit">
-					<trigger source="AddCompanyBusinessUnitRequested" key-field="arn">
+					<trigger source="AddCompanyBusinessUnitRequested" key-field="arn" idempotency-key="">
 						<mapping target="arn" value="arn"></mapping>
 						<mapping target="name" value="name"></mapping>
 						<mapping target="description" value="description"></mapping>
@@ -1725,8 +1966,8 @@
 				<mapping target="assessorLink" operand="set" value="assessorLink"></mapping>
 				<delete condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
-			<query graphql-namespace="ControlAssessment" field-name="get" type="get" authorization="role" role="#global.extractRoleFromArn(key, 'viewer')"></query>
-			<query graphql-namespace="ControlAssessment" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.extractRoleFromArn(key_begins_with, 'viewer')"></query>
+			<query graphql-namespace="ControlAssessment" field-name="get" type="get" authorization="role" role="#global.isViewer(key)"></query>
+			<query graphql-namespace="ControlAssessment" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isViewer(key_begins_with)"></query>
 		</view>
 		<view name="Country" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String" pk="true"></field>
@@ -1770,6 +2011,12 @@ entity.searchIndex = index.lower()
 if snapshot.isDeleted != '' or snapshot.active == False:
     entity.mark_for_deletion = True</custom-handler>
 		</view>
+		<view name="ChangeLog" data-retention-days="-1" exclude-notification="false">
+			<field name="timestamp" type="String"></field>
+			<field name="description" type="String"></field>
+			<field name="user" type="String"></field>
+			<field name="userProfile" type="ManyToMany" ref="Profile" authorization="authenticated" foreign-key="user"></field>
+		</view>
 		<view name="Profile" data-retention-days="-1" exclude-notification="false">
 			<field name="username" type="String" pk="true"></field>
 			<field name="firstName" type="String"></field>
@@ -1799,9 +2046,9 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 		</view>
 		<view name="UserCompanyLink" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String"></field>
-			<field name="company" type="ManyToOne" ref="Company" authorization="role" foreign-key="arn" role="#global.extractRoleFromArn(arn, 'viewer')"></field>
+			<field name="company" type="ManyToOne" ref="Company" authorization="role" foreign-key="arn" role="#global.isViewer(arn)"></field>
 			<field name="employeeArn" type="String"></field>
-			<field name="employee" type="OneToOne" ref="Employee" authorization="role" foreign-key="employeeArn" role="#global.extractRoleFromArn(employeeArn, 'viewer')"></field>
+			<field name="employee" type="OneToOne" ref="Employee" authorization="role" foreign-key="employeeArn" role="#global.isViewer(employeeArn)"></field>
 		</view>
 		<view name="Task" data-retention-days="-1" exclude-notification="false">
 			<field name="dueDate" type="String"></field>
@@ -1826,8 +2073,13 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping target="assessedMaturityDescription" operand="set" value="assessedMaturityDescription"></mapping>
 				<delete condition="#'completeDate' in item and item.completeDate != ''"></delete>
 			</snapshot-handler>
-			<query graphql-namespace="Task" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.extractRoleFromArn(key_begins_with, 'viewer')"></query>
-			<query graphql-namespace="Task" field-name="get" type="get" authorization="role" role="#global.extractRoleFromArn(key, 'viewer')"></query>
+			<query graphql-namespace="Task" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isViewer(key_begins_with)"></query>
+			<query graphql-namespace="Task" field-name="get" type="get" authorization="role" role="#global.isViewer(key)"></query>
+		</view>
+		<view name="RiskControlLink" data-retention-days="-1" exclude-notification="false">
+			<field name="arn" type="String"></field>
+			<field name="impactOnRisk" type="Int"></field>
+			<field name="control" type="OneToMany" ref="Control" authorization="authenticated" foreign-key="arn"></field>
 		</view>
 		<view name="Tenant" data-retention-days="-1" exclude-notification="false">
 			<field name="name" type="String" pk="true"></field>
@@ -1839,6 +2091,39 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			</snapshot-handler>
 			<query graphql-namespace="Tenant" field-name="get" type="get" authorization="authenticated"></query>
 			<query graphql-namespace="Tenant" field-name="filter" type="filter" authorization="authenticated"></query>
+		</view>
+		<view name="Risk" data-retention-days="-1" exclude-notification="false">
+			<field name="arn" type="String" pk="true"></field>
+			<field name="name" type="String"></field>
+			<field name="description" type="String"></field>
+			<field name="grossLikelihood" type="Int"></field>
+			<field name="grossImpact" type="Int"></field>
+			<field name="apetiteLikelihood" type="Int"></field>
+			<field name="apetiteImpact" type="Int"></field>
+			<field name="reviewPeriodicity" type="String"></field>
+			<field name="lastReviewDate" type="String"></field>
+			<field name="nextReviewDate" type="String"></field>
+			<field name="changeLog" type="ObjectList" ref="ChangeLog" authorization="authenticated" foreign-key="arn"></field>
+			<field name="controlLinks" type="ObjectList" ref="RiskControlLink" authorization="authenticated" foreign-key="arn"></field>
+			<field name="treatmentPlan" type="ObjectList" ref="RiskTreatmentPlan" authorization="authenticated" foreign-key="arn"></field>
+			<snapshot-handler id="2mpXZ6" sub-domain="Customer" aggregate="Risk" key-mapping="arn" processor="item">
+				<mapping target="arn" operand="set" value="arn"></mapping>
+				<mapping target="name" operand="set" value="name"></mapping>
+				<mapping target="description" operand="set" value="description"></mapping>
+				<mapping target="grossLikelihood" operand="set" value="grossLikelihood"></mapping>
+				<mapping target="grossImpact" operand="set" value="grossImpact"></mapping>
+				<mapping target="apetiteLikelihood" operand="set" value="apetiteLikelihood"></mapping>
+				<mapping target="apetiteImpact" operand="set" value="apetiteImpact"></mapping>
+				<mapping target="reviewPeriodicity" operand="set" value="reviewPeriodicity"></mapping>
+				<mapping target="lastReviewDate" operand="set" value="lastReviewDate"></mapping>
+				<mapping target="nextReviewDate" operand="set" value="nextReviewDate"></mapping>
+				<mapping target="changeLog" operand="convert_items" value="changeLog" template='{"timestamp": value["timestamp"],"description": value["description"],"user": value["user"]}'></mapping>
+				<mapping target="controlLinks" operand="convert_items" value="controlLinks" template='{"arn": value["arn"],"impactOnRisk": value["impactOnRisk"]}'></mapping>
+				<mapping target="treatmentPlan" operand="convert_items" value="treatmentPlan" template='{"type": value["type"],"description": value["description"],"likelihoodDecrease": value["likelihoodDecrease"],"impactDecrease": value["impactDecrease"]}'></mapping>
+				<delete condition="#snapshot.isDeleted != ''"></delete>
+			</snapshot-handler>
+			<query graphql-namespace="Risk" field-name="get" type="get" authorization="role" role="#global.isViewer(key)"></query>
+			<query graphql-namespace="Risk" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isViewer(key_begins_with)"></query>
 		</view>
 		<view name="Control" data-retention-days="-1" exclude-notification="false">
 			<field name="name" type="String"></field>
@@ -1876,8 +2161,8 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping target="hasPendingSelfAssessment" operand="set" value="hasPendingSelfAssessment"></mapping>
 				<delete condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
-			<query graphql-namespace="Control" field-name="get" type="get" authorization="role" role="#global.extractRoleFromArn(key, 'viewer')"></query>
-			<query graphql-namespace="Control" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.extractRoleFromArn(key_begins_with, 'viewer')"></query>
+			<query graphql-namespace="Control" field-name="get" type="get" authorization="role" role="#global.isViewer(key)"></query>
+			<query graphql-namespace="Control" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isViewer(key_begins_with)"></query>
 		</view>
 		<view name="ControlFramework" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String" pk="true"></field>
@@ -1902,6 +2187,12 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			</snapshot-handler>
 			<query graphql-namespace="ControlFramework" field-name="get" type="get" authorization="authenticated"></query>
 			<query graphql-namespace="ControlFramework" field-name="filter" type="filter" authorization="authenticated"></query>
+		</view>
+		<view name="RiskTreatmentPlan" data-retention-days="-1" exclude-notification="false">
+			<field name="type" type="String"></field>
+			<field name="description" type="String"></field>
+			<field name="likelihoodDecrease" type="Int"></field>
+			<field name="impactDecrease" type="Int"></field>
 		</view>
 		<view name="Employee" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String" pk="true"></field>
@@ -1945,8 +2236,8 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping target="controlFrameworkLink" operand="set" value="controlFrameworkLinks"></mapping>
 				<delete condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
-			<query graphql-namespace="Company" field-name="get" type="get" authorization="role" role="#global.extractRoleFromArn(key, 'viewer')"></query>
-			<query graphql-namespace="Company" field-name="filter" type="filter" authorization="role" role="#global.extractRoleFromArn(key_begins_with, 'viewer')" use-canonical-search="true"></query>
+			<query graphql-namespace="Company" field-name="get" type="get" authorization="role" role="#global.isViewer(key)"></query>
+			<query graphql-namespace="Company" field-name="filter" type="filter" authorization="role" role="#global.isViewer(key_begins_with)" use-canonical-search="true"></query>
 		</view>
 	</views>
 	<projections>
@@ -2016,7 +2307,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<activity type="send-email" id="2wJ6Y9" condition="flow.eligible" sender="no-reply@draftsman.io" receiver="#flow.receiver" subject="#flow.subject" text="#flow.text" html="#flow.html"></activity>
 		</notifier>
 		<notifier name="PrepareCompanyTenant">
-			<trigger source="CompanyCreated">
+			<trigger source="CompanyCreated" idempotency-key="arn user">
 				<mapping target="arn" value="arn"></mapping>
 				<mapping target="user" value="user"></mapping>
 			</trigger>

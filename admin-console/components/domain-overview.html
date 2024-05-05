@@ -55,6 +55,12 @@
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'CreateCompanyRisk'"
+                                x-show="'createcompanyrisk'.includes(search.toLowerCase())">
+                            CreateCompanyRisk
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
                                 @click="Draftsman.empty_track_and_trace_log();component = 'StartCompanyControlAssessment'"
                                 x-show="'startcompanycontrolassessment'.includes(search.toLowerCase())">
                             StartCompanyControlAssessment
@@ -185,6 +191,14 @@
                     <div x-import="commands/UpdateCompanyControlAssessment">
                         <h6>UpdateCompanyControlAssessment</h6>
                         <ui-UpdateCompanyControlAssessment></ui-UpdateCompanyControlAssessment>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'CreateCompanyRisk'" x-cloak x-transition>
+                    <div x-import="commands/CreateCompanyRisk">
+                        <h6>CreateCompanyRisk</h6>
+                        <ui-CreateCompanyRisk></ui-CreateCompanyRisk>
                     </div>
                 </div>
 
@@ -431,6 +445,22 @@
                 </div>
 
                 
+                <div x-show="component == 'Risk/get'" x-cloak x-transition>
+                    <div x-import="views/Risk/get">
+                        <h6>Risk.get</h6>
+                        <ui-Risk-get></ui-Risk-get>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Risk/filter'" x-cloak x-transition>
+                    <div x-import="views/Risk/filter">
+                        <h6>Risk.filter</h6>
+                        <ui-Risk-filter></ui-Risk-filter>
+                    </div>
+                </div>
+
+                
                 <div x-show="component == 'Control/get'" x-cloak x-transition>
                     <div x-import="views/Control/get">
                         <h6>Control.get</h6>
@@ -578,6 +608,16 @@
                     <button type="button" class="btn btn-outline-primary"
                             x-show="'tenant.filter'.includes(search.toLowerCase())"
                             @click="component = 'Tenant/filter'">Tenant.filter
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'risk.get'.includes(search.toLowerCase())"
+                            @click="component = 'Risk/get'">Risk.get
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'risk.filter'.includes(search.toLowerCase())"
+                            @click="component = 'Risk/filter'">Risk.filter
                     </button>
                     
                     <button type="button" class="btn btn-outline-primary"

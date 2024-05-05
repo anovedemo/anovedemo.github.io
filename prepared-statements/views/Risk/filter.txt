@@ -1,0 +1,35 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query FilterRisk($key_begins_with: String = "") {
+  Risk {
+    filter(key_begins_with: $key_begins_with) {
+       resultset { 
+        key
+        arn
+        name
+        description
+        grossLikelihood
+        grossImpact
+        apetiteLikelihood
+        apetiteImpact
+        reviewPeriodicity
+        lastReviewDate
+        nextReviewDate
+        changeLog {
+          timestamp
+          description
+          user
+        } 
+        controlLinks {
+          arn
+          impactOnRisk
+        } 
+        treatmentPlan {
+          type
+          description
+          likelihoodDecrease
+          impactDecrease
+        } 
+      }
+    }
+  }
+}
