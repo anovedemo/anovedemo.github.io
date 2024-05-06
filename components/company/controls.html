@@ -244,7 +244,7 @@
                          min="0" :max="periodicity_templates.length - 1" step="1" id="periodicity" :value="periodicity_templates.indexOf(command.assessmentPeriodicity)">
 
                   <label for="date">First assessment date</label>
-                  <input type="date" class="form-range"
+                  <input type="date" class="form-control"
                          @change="command.nextAssessmentDate = $el.value"
                           id="date" >
                 </div>

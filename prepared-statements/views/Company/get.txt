@@ -60,7 +60,33 @@ query GetCompany($arn: ID = "") {
           summary
         }
       }
+      risks {
+        apetiteImpact
+        apetiteLikelihood
+        arn
+        changeLog {
+          description
+          timestamp
+          user
+        }
+        controlLinks {
+          arn
+          impactOnRisk
+        }
+        description
+        grossImpact
+        grossLikelihood
+        lastReviewDate
+        name
+        nextReviewDate
+        reviewPeriodicity
+        treatmentPlan {
+          description
+          impactDecrease
+          likelihoodDecrease
+          type
+        }
+      }
     }
   }
 }
-

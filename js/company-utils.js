@@ -20,6 +20,7 @@ query MyQuery {
 var data = [];
 
 async function load_framework_data(){
+    console.log(data);
     if (data.length == 0){
         data = await Draftsman.query(requirements_query.replace("#arn#",Draftsman.fetch_query_parameter("arn")),{},false,true);
         data = data["Company"]["get"]["controlframework"];
@@ -98,4 +99,60 @@ for (i = 1; i < 6; i++){
     let id = i + "Y";
     periodicity_templates.push(id);
     periodicity_names[id] = i + " Years"
+}
+
+function prepare_arn(parent,path,child){
+    return parent + ":" + path + ":" + child.toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+const impact_labels = {
+    1: "very low",
+    2: "low",
+    3: "medium",
+    4: "high",
+    5: "very high"
+}
+
+const likelihood_labels = {
+    1: "once every 10 years",
+    2: "once every 5 years",
+    3: "once every 2 years",
+    4: "once a year",
+    5: "multiple times a year"
+}
+
+const treatment_plan = [
+    {type: "avoid", impactDecrease: 0, likelihoodDecrease: 0, description: ""},
+    {type: "mitigate", impactDecrease: 0, likelihoodDecrease: 0, description: ""},
+    {type: "transfer", impactDecrease: 0, likelihoodDecrease: 0, description: ""},
+    {type: "accept", impactDecrease: 0, likelihoodDecrease: 0, description: ""},
+];
+
+function is_treatment_plan_sufficient(command){
+    let impact = command.grossImpact;
+    let likelihood = command.grossLikelihood;
+    command.treatmentPlan.forEach(record => {
+        impact -= record.impactDecrease;
+        likelihood -= record.likelihoodDecrease;
+    });
+    let report = {
+        impact: impact <= command.apetiteImpact,
+        likelihood: likelihood <= command.apetiteLikelihood,
+        impactDecrease: impact - command.apetiteImpact,
+        likelihoodDecrease: likelihood - command.apetiteLikelihood
+    };
+    console.log(report);
+    return report;
+}
+
+function get_control_name(company,arn){
+    return company.controls.filter(x => x.arn == arn).at(0).name;
+}
+
+function frame_impact_on_risk_percentage(command){
+    let max_impact = 100;
+    command.controlLinks.forEach(x => {
+        max_impact -= x.impactOnRisk;
+    });
+    return max_impact;
 }
