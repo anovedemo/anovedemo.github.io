@@ -11,9 +11,22 @@
                     setTimeout(Draftsman.force_reload_data,1000);
                     Draftsman.empty_track_and_trace_log();">
     </draftsman-trace>
-
     <div x-import="utils/loading-icon">
       <ui-update-logs command="CreateCompanyRisk"></ui-update-logs>
+    </div>
+
+    <draftsman-mutation command="UpdateCompanyRisk"
+                        x-include="/prepared-statements/commands/UpdateCompanyRisk.txt" authenticated>
+    </draftsman-mutation>
+    <draftsman-trace command="UpdateCompanyRisk"
+                     status="success"
+                     @trace="
+                    selected_risk = {};
+                    setTimeout(Draftsman.force_reload_data,1000);
+                    Draftsman.empty_track_and_trace_log();">
+    </draftsman-trace>
+    <div x-import="utils/loading-icon">
+      <ui-update-logs command="UpdateCompanyRisk"></ui-update-logs>
     </div>
 
     <table class="table table-hover">
@@ -380,7 +393,7 @@
                 <div class="tab-pane fade show active" id="edit-first" role="tabpanel" aria-labelledby="edit-first-tab">
                   <div class="form-floating">
                     <input type="text" id="editriskname" class="form-control"
-                           x-effect="selected_risk.arn = prepare_arn(company.arn,'risk',selected_risk.name)"
+                           disabled readonly
                            x-model="selected_risk.name"/>
                     <label for="editriskname">Risk name</label>
                   </div>
@@ -573,23 +586,23 @@
 
                 </div>
                 <div class="tab-pane fade" id="edit-seventh" role="tabpanel" aria-labelledby="edit-seventh-tab">
-                 <table class="table">
-                   <template x-for="log in selected_risk.changeLog" :key="log.timestamp">
-                     <tr>
-                       <th x-text="log.timestamp"></th>
-                       <td x-text="log.user"></td>
-                       <td>
-                         <pre x-text="log.description"></pre>
-                       </td>
-                     </tr>
-                   </template>
-                 </table>
+                  <ul class="list-group">
+                    <template x-for="log in sort_changelog(selected_risk.changeLog)" :key="log.timestamp">
+                    <li class="list-group-item">
+                      <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1" x-text="log.timestamp"></h5>
+                        <small x-text="log.user"></small>
+                      </div>
+                      <pre class="mb-1" x-text="log.description"></pre>
+                    </li>
+                    </template>
+                  </ul>
                 </div>
               </div>
               <br>
               <button class="float-end btn btn-sm btn-primary" type="button" data-bs-dismiss="modal"
                       x-show="selected_risk.edited" x-cloak x-transition
-                      @click="$store.mutation.send('',command);">Save</button>
+                      @click="$store.mutation.send('UpdateCompanyRisk',selected_risk);">Save</button>
             </form>
           </div>
         </div>

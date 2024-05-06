@@ -165,3 +165,18 @@ function sort_treatment_plan(plan){
     });
     return sorted;
 }
+
+function compare_changelog( a, b ) {
+  if ( a.timestamp > b.timestamp ){
+    return -1;
+  }
+  if ( a.timestamp < b.timestamp ){
+    return 1;
+  }
+  return 0;
+}
+
+function sort_changelog(log){
+    log.sort( compare_changelog );
+    return log;
+}
