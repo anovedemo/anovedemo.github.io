@@ -2015,7 +2015,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<field name="timestamp" type="String"></field>
 			<field name="description" type="String"></field>
 			<field name="user" type="String"></field>
-			<field name="userProfile" type="ManyToMany" ref="Profile" authorization="authenticated" foreign-key="user"></field>
+			<field name="userProfile" type="ManyToOne" ref="Profile" authorization="authenticated" foreign-key="user"></field>
 		</view>
 		<view name="Profile" data-retention-days="-1" exclude-notification="false">
 			<field name="username" type="String" pk="true"></field>
