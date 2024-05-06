@@ -1,0 +1,10 @@
+# This file is managed by Tracepaper
+mutation Update($arn: String = "", $description: String = "", $grossLikelihood: Int = 0, $grossImpact: Int = 0, $apetiteLikelihood: Int = 0, $apetiteImpact: Int = 0, $reviewPeriodicity: String = "", $nextReviewDate: String = "", $controlLinks: [UpdateCompanyRisk_Controllinks!] = [], $treatmentPlan: [UpdateCompanyRisk_Treatmentplan!] = []) {
+  Company{
+    Risk{
+      update(input: {arn: $arn,description: $description,grossLikelihood: $grossLikelihood,grossImpact: $grossImpact,apetiteLikelihood: $apetiteLikelihood,apetiteImpact: $apetiteImpact,reviewPeriodicity: $reviewPeriodicity,nextReviewDate: $nextReviewDate,controlLinks: $controlLinks,treatmentPlan: $treatmentPlan}) {
+         correlationId
+      }
+    }
+  }
+}

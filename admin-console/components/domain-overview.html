@@ -31,6 +31,12 @@
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateCompanyRisk'"
+                                x-show="'updatecompanyrisk'.includes(search.toLowerCase())">
+                            UpdateCompanyRisk
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
                                 @click="Draftsman.empty_track_and_trace_log();component = 'UpdateDemo'"
                                 x-show="'updatedemo'.includes(search.toLowerCase())">
                             UpdateDemo
@@ -159,6 +165,14 @@
                     <div x-import="commands/UnlinkControlFrameworkCompany">
                         <h6>UnlinkControlFrameworkCompany</h6>
                         <ui-UnlinkControlFrameworkCompany></ui-UnlinkControlFrameworkCompany>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'UpdateCompanyRisk'" x-cloak x-transition>
+                    <div x-import="commands/UpdateCompanyRisk">
+                        <h6>UpdateCompanyRisk</h6>
+                        <ui-UpdateCompanyRisk></ui-UpdateCompanyRisk>
                     </div>
                 </div>
 

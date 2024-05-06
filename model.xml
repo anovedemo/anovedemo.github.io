@@ -43,6 +43,26 @@
 			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
 			<field name="controlFrameworkArn" type="String" pattern="{{ControlFrameworkArn}}"></field>
 		</event>
+		<event graphql-namespace="Company.Risk" graphql-name="update" name="UpdateCompanyRiskRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
+			<field name="arn" type="String"></field>
+			<field name="description" type="String"></field>
+			<field name="grossLikelihood" type="Int"></field>
+			<field name="grossImpact" type="Int"></field>
+			<field name="apetiteLikelihood" type="Int"></field>
+			<field name="apetiteImpact" type="Int"></field>
+			<field name="reviewPeriodicity" type="String"></field>
+			<field name="nextReviewDate" type="String"></field>
+			<nested-object name="controlLinks">
+				<field name="arn" type="String"></field>
+				<field name="impactOnRisk" type="Int"></field>
+			</nested-object>
+			<nested-object name="treatmentPlan">
+				<field name="type" type="String"></field>
+				<field name="description" type="String"></field>
+				<field name="likelihoodDecrease" type="Int"></field>
+				<field name="impactDecrease" type="Int"></field>
+			</nested-object>
+		</event>
 		<event graphql-namespace="Demo" graphql-name="update" name="UpdateDemoRequested" authorization="anonymous" type="ActorEvent">
 			<field name="identifier" type="String"></field>
 			<field name="value" type="String"></field>
@@ -227,6 +247,30 @@
 			<field name="description" type="String"></field>
 			<field name="mandatory" type="Boolean"></field>
 			<field name="summary" type="String"></field>
+		</event>
+		<event name="RiskUpdated" source="Customer.Risk" type="DomainEvent">
+			<field name="description" type="String"></field>
+			<field name="grossLikelihood" type="Int"></field>
+			<field name="grossImpact" type="Int"></field>
+			<field name="apetiteLikelihood" type="Int"></field>
+			<field name="apetiteImpact" type="Int"></field>
+			<field name="reviewPeriodicity" type="String"></field>
+			<field name="nextReviewDate" type="String"></field>
+			<nested-object name="changeLog" business-key="timestamp">
+				<field name="timestamp" type="String"></field>
+				<field name="description" type="String"></field>
+				<field name="user" type="String"></field>
+			</nested-object>
+			<nested-object name="controlLinks" business-key="newField">
+				<field name="arn" type="String"></field>
+				<field name="impactOnRisk" type="Int"></field>
+			</nested-object>
+			<nested-object name="treatmentPlan" business-key="type">
+				<field name="type" type="String"></field>
+				<field name="description" type="String"></field>
+				<field name="likelihoodDecrease" type="Int"></field>
+				<field name="impactDecrease" type="Int"></field>
+			</nested-object>
 		</event>
 		<event name="RiskCreated" source="Customer.Risk" type="DomainEvent">
 			<field name="arn" type="String"></field>
@@ -969,7 +1013,7 @@
 				<field name="reviewPeriodicity" type="String"></field>
 				<field name="lastReviewDate" type="String"></field>
 				<field name="nextReviewDate" type="String"></field>
-				<command name="Create">
+				<command name="Create" create-command="true">
 					<trigger source="CreateCompanyRiskRequested" key-field="arn">
 						<mapping target="arn" value="arn"></mapping>
 						<mapping target="name" value="name"></mapping>
@@ -1102,6 +1146,94 @@
 						</expected>
 					</test-case>
 				</command>
+				<command name="Update" create-command="false">
+					<trigger source="UpdateCompanyRiskRequested" key-field="arn">
+						<mapping target="arn" value="arn"></mapping>
+						<mapping target="description" value="description"></mapping>
+						<mapping target="grossLikelihood" value="grossLikelihood"></mapping>
+						<mapping target="grossImpact" value="grossImpact"></mapping>
+						<mapping target="apetiteLikelihood" value="apetiteLikelihood"></mapping>
+						<mapping target="apetiteImpact" value="apetiteImpact"></mapping>
+						<mapping target="reviewPeriodicity" value="reviewPeriodicity"></mapping>
+						<mapping target="nextReviewDate" value="nextReviewDate"></mapping>
+						<mapping target="controlLinks" value="controlLinks"></mapping>
+						<mapping target="treatmentPlan" value="treatmentPlan"></mapping>
+					</trigger>
+					<processor type="validator" id="xwMnZZ" condition="flow.entity.version != 0" exception="May not be initial request"></processor>
+					<processor type="code" id="RpfV7a" file="lib/RiskUtils.py" handler="calculate_combined_impact_on_risk"></processor>
+					<processor type="validator" id="N65bEm" condition="flow.risk_impact == 100 or flow.risk_impact == 0" exception="When controls are linked, the combined impact on the gross risk score must be exactly 100%"></processor>
+					<processor type="code" id="ULzJMA" file="lib/RiskUtils.py" handler="generate_change_log"></processor>
+					<processor type="emit-event" id="bPPM9i" ref="RiskUpdated">
+						<mapping target="description" value="#flow.description"></mapping>
+						<mapping target="grossLikelihood" value="#flow.grossLikelihood"></mapping>
+						<mapping target="grossImpact" value="#flow.grossImpact"></mapping>
+						<mapping target="apetiteLikelihood" value="#flow.apetiteLikelihood"></mapping>
+						<mapping target="apetiteImpact" value="#flow.apetiteImpact"></mapping>
+						<mapping target="reviewPeriodicity" value="#flow.reviewPeriodicity"></mapping>
+						<mapping target="nextReviewDate" value="#flow.nextReviewDate"></mapping>
+						<mapping target="changeLog" value="#flow.changeLog"></mapping>
+						<mapping target="controlLinks" value="#flow.controlLinks"></mapping>
+						<mapping target="treatmentPlan" value="#flow.treatmentPlan"></mapping>
+					</processor>
+					<test-case name="Update" trigger-event="UpdateCompanyRiskRequested">
+						<input name="arn" value="anove:company:draftsman:risk:myrisk" type="String"></input>
+						<input name="description" value="Hello World!" type="String"></input>
+						<input name="grossLikelihood" value="3" type="Int"></input>
+						<input name="grossImpact" value="3" type="Int"></input>
+						<input name="apetiteLikelihood" value="2" type="Int"></input>
+						<input name="apetiteImpact" value="2" type="Int"></input>
+						<input name="reviewPeriodicity" value="1Y" type="String"></input>
+						<input name="nextReviewDate" value="01-08-2024" type="String"></input>
+						<input name="controlLinks" type="NestedObject">[
+  {
+    "arn": "anove:company:draftsman:control:mycontrol",
+    "impactOnRisk": 100
+  }
+]</input>
+						<input name="treatmentPlan" type="NestedObject">[
+  {
+    "type": "mitigate",
+    "description": "hello world!",
+    "likelihoodDecrease": 1,
+    "impactDecrease": 1
+  }
+]</input>
+						<expected domain-event="RiskUpdated">
+							<field value="Hello World!" name="description" type="String"></field>
+							<field value="3" name="grossLikelihood" type="Int"></field>
+							<field value="3" name="grossImpact" type="Int"></field>
+							<field value="2" name="apetiteLikelihood" type="Int"></field>
+							<field value="2" name="apetiteImpact" type="Int"></field>
+							<field value="1Y" name="reviewPeriodicity" type="String"></field>
+							<field value="01-08-2024" name="nextReviewDate" type="String"></field>
+						</expected>
+						<state>{"version": 1}</state>
+					</test-case>
+				</command>
+				<event-handler on="RiskUpdated">
+					<mapping target="description" operand="set" value="description"></mapping>
+					<mapping target="grossLikelihood" operand="set" value="grossLikelihood"></mapping>
+					<mapping target="grossImpact" operand="set" value="grossImpact"></mapping>
+					<mapping target="apetiteLikelihood" operand="set" value="apetiteLikelihood"></mapping>
+					<mapping target="apetiteImpact" operand="set" value="apetiteImpact"></mapping>
+					<mapping target="reviewPeriodicity" operand="set" value="reviewPeriodicity"></mapping>
+					<mapping target="nextReviewDate" operand="set" value="nextReviewDate"></mapping>
+					<nested-mapping source="changeLog" target="changeLog" business-key="timestamp">
+						<mapping target="timestamp" operand="set" value="timestamp"></mapping>
+						<mapping target="description" operand="set" value="description"></mapping>
+						<mapping target="user" operand="set" value="user"></mapping>
+					</nested-mapping>
+					<nested-mapping source="controlLinks" target="controlLinks" business-key="arn">
+						<mapping target="arn" operand="set" value="arn"></mapping>
+						<mapping target="impactOnRisk" operand="set" value="impactOnRisk"></mapping>
+					</nested-mapping>
+					<nested-mapping source="treatmentPlan" target="treatmentPlan" business-key="type">
+						<mapping target="type" operand="set" value="type"></mapping>
+						<mapping target="description" operand="set" value="description"></mapping>
+						<mapping target="likelihoodDecrease" operand="set" value="likelihoodDecrease"></mapping>
+						<mapping target="impactDecrease" operand="set" value="impactDecrease"></mapping>
+					</nested-mapping>
+				</event-handler>
 				<event-handler on="RiskCreated">
 					<mapping target="arn" operand="set" value="arn"></mapping>
 					<mapping target="name" operand="set" value="name"></mapping>
