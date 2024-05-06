@@ -156,3 +156,12 @@ function frame_impact_on_risk_percentage(command){
     });
     return max_impact;
 }
+
+function sort_treatment_plan(plan){
+    let sorted = ["avoid","mitigate","transfer","accept"];
+    plan.forEach(a => {
+        let index = sorted.indexOf(a.type);
+        sorted[index] = a;
+    });
+    return sorted;
+}

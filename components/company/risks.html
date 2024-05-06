@@ -1,5 +1,5 @@
 <template x-component="risks">
-  <div x-data="{command: $persist({}).as('createrisk' + location)}">
+  <div x-data="{command: $persist({}).as('createrisk' + location),selected_risk: {}}">
 
     <draftsman-mutation command="CreateCompanyRisk"
                         x-include="/prepared-statements/commands/CreateCompanyRisk.txt" authenticated>
@@ -22,14 +22,50 @@
         <th>Name</th>
         <th>Gross risk</th>
         <th>Risk apetite</th>
+        <th>Residual risk</th>
+        <th>Control links</th>
+        <th>Review date</th>
       </tr>
       </thead>
       <tbody>
       <template x-for="risk in company.risks" :key="risk.arn">
-        <tr>
+        <tr @click.debounce.stop="selected_risk = risk;" data-bs-toggle="modal" data-bs-target="#editRiskModal">
           <th x-text="risk.name"></th>
           <th x-text="risk.grossImpact*risk.grossLikelihood"></th>
           <th x-text="risk.apetiteImpact*risk.apetiteLikelihood"></th>
+          <th>
+            <span class="badge bg-secondary">no calculation yet</span>
+          </th>
+          <th>
+            <ul class="list-group list-group-flush">
+              <template x-for="control in risk.controlLinks" :key="control.arn">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <span x-text="get_control_name(company,control.arn)"></span>
+                  <span class="badge bg-primary rounded-pill">
+                    effect <span x-text="control.impactOnRisk"></span>%
+                  </span>
+                </li>
+              </template>
+            </ul>
+          </th>
+          <th>
+            <ul class="list-group list-group-flush">
+              <template x-if="risk.lastReviewDate">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <span x-text="risk.lastReviewDate"></span>
+                  <span class="badge bg-secondary rounded-pill">
+                    last
+                </span>
+                </li>
+              </template>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span x-text="risk.nextReviewDate"></span>
+                <span class="badge bg-success rounded-pill">
+                    next
+                </span>
+              </li>
+            </ul>
+          </th>
         </tr>
       </template>
       </tbody>
@@ -290,6 +326,274 @@
         </div>
       </div>
     </div>
-    
+
+    <!-- edit Risk Modal -->
+    <div class="modal fade" id="editRiskModal" tabindex="-1" aria-labelledby="editRiskModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editRiskModalLabel">Edit Risk</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form @change="selected_risk.edited = true">
+              <ul class="nav nav-tabs" id="editTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link active" id="edit-first-tab"
+                          data-bs-toggle="tab" data-bs-target="#edit-first"
+                          type="button" role="tab" aria-controls="edit-first" aria-selected="true">1: Describe Risk</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="edit-second-tab"
+                          data-bs-toggle="tab" data-bs-target="#edit-second"
+                          type="button" role="tab" aria-controls="edit-second" aria-selected="false">2: Risk Matrix</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="edit-third-tab"
+                          data-bs-toggle="tab" data-bs-target="#edit-third"
+                          type="button" role="tab" aria-controls="edit-third" aria-selected="false">3: Risk Apetite</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="edit-fourth-tab"
+                          data-bs-toggle="tab" data-bs-target="#edit-fourth"
+                          type="button" role="tab" aria-controls="edit-fourth" aria-selected="false">4: Risk treatment plan</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="edit-fifth-tab"
+                          data-bs-toggle="tab" data-bs-target="#edit-fifth"
+                          type="button" role="tab" aria-controls="edit-fifth" aria-selected="false">5: Linked controls</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="edit-sixth-tab"
+                          data-bs-toggle="tab" data-bs-target="#edit-sixth"
+                          type="button" role="tab" aria-controls="edit-sixth" aria-selected="false">6: Risk Assessment</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="edit-seventh-tab"
+                          data-bs-toggle="tab" data-bs-target="#edit-seventh"
+                          type="button" role="tab" aria-controls="edit-seventh" aria-selected="false">7: Changelog</button>
+                </li>
+
+              </ul>
+              <br>
+              <div class="tab-content" id="editTabsContent">
+                <div class="tab-pane fade show active" id="edit-first" role="tabpanel" aria-labelledby="edit-first-tab">
+                  <div class="form-floating">
+                    <input type="text" id="editriskname" class="form-control"
+                           x-effect="selected_risk.arn = prepare_arn(company.arn,'risk',selected_risk.name)"
+                           x-model="selected_risk.name"/>
+                    <label for="editriskname">Risk name</label>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-6">
+                      <div class="form-floating">
+                    <textarea type="text" id="editcontroldescription"
+                              style="height:300px"
+                              class="form-control" x-model="selected_risk.description" x-effect="if(!selected_risk.description){selected_risk.description = '# Title\n\nLorem ipsum...'}"></textarea>
+                        <label for="editcontroldescription">Description</label>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <div x-html="converter.makeHtml(selected_risk.description)"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="tab-pane fade" id="edit-second" role="tabpanel" aria-labelledby="edit-second-tab">
+                  <table class="table">
+                    <thead>
+                    <tr>
+                      <th colspan="3">
+                        Risk Matrix
+                      </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                      <th>Impact</th>
+                      <td>
+                        <input type="range" class="form-range"
+                               x-model="selected_risk.grossImpact"
+                               x-effect="if(!selected_risk.grossImpact){selected_risk.grossImpact = 0}"
+                               min="1" max="5" step="1">
+                      </td>
+                      <td x-text="impact_labels[selected_risk.grossImpact]"></td>
+                    </tr>
+                    <tr>
+                      <th>Likelihood</th>
+                      <td>
+                        <input type="range" class="form-range"
+                               x-model="selected_risk.grossLikelihood"
+                               x-effect="if(!selected_risk.grossLikelihood){selected_risk.grossLikelihood = 0}"
+                               min="1" max="5" step="1">
+                      </td>
+                      <td x-text="likelihood_labels[selected_risk.grossLikelihood]"></td>
+                    </tr>
+                    <tr>
+                      <th colspan="2">Gross Risk Score</th>
+                      <td x-text="selected_risk.grossImpact*selected_risk.grossLikelihood"></td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="tab-pane fade" id="edit-third" role="tabpanel" aria-labelledby="edit-third-tab">
+                  <table class="table">
+                    <thead>
+                    <tr>
+                      <th colspan="3">
+                        Risk Apetite (acceptable Risk Matrix)
+                      </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                      <th>Impact</th>
+                      <td>
+                        <input type="range" class="form-range"
+                               x-model="selected_risk.apetiteImpact"
+                               x-effect="if(!selected_risk.apetiteImpact){selected_risk.apetiteImpact = 0}"
+                               min="1" :max="selected_risk.grossImpact" step="1">
+                      </td>
+                      <td x-text="impact_labels[selected_risk.apetiteImpact]"></td>
+                    </tr>
+                    <tr>
+                      <th>Likelihood</th>
+                      <td>
+                        <input type="range" class="form-range"
+                               x-model="selected_risk.apetiteLikelihood"
+                               x-effect="if(!selected_risk.apetiteLikelihood){selected_risk.apetiteLikelihood = 0}"
+                               min="1" :max="selected_risk.grossLikelihood" step="1">
+                      </td>
+                      <td x-text="likelihood_labels[selected_risk.apetiteLikelihood]"></td>
+                    </tr>
+                    <tr>
+                      <th colspan="2">Risk Apetite</th>
+                      <td x-text="selected_risk.apetiteImpact*selected_risk.apetiteLikelihood"></td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="tab-pane fade" id="edit-fourth" role="tabpanel" aria-labelledby="edit-fourth-tab">
+                  <h4>Risk treatment plan</h4>
+                  <div class="alert alert-danger" role="alert"
+                       x-data="{report: {}}" x-effect="report = is_treatment_plan_sufficient(selected_risk)"
+                       x-show="!report.impact || !report.likelihood" x-cloak x-transition>
+                    The treatment plan is not sufficient to decrease the risk below or equal to the apetite.
+                    <span x-show="!report.impact">The impact should be decreased with <span x-text="report.impactDecrease"></span>.</span>
+                    <span x-show="!report.likelihood">The likelihood should be decreased with <span x-text="report.likelihoodDecrease"></span>.</span>
+                  </div>
+                  <table class="table">
+                    <thead>
+                    <tr>
+                      <th>Action</th>
+                      <th>Impact decrease</th>
+                      <th>Likelihood decrease</th>
+                      <th>Description</th>
+                    </tr>
+                    </thead>
+                    <tbody x-effect="selected_risk.treatmentPlan = sort_treatment_plan(selected_risk.treatmentPlan)">
+                    <template x-for="item in selected_risk.treatmentPlan" :key="item.type">
+                      <tr x-effect="if(selected_risk.apetiteImpact*selected_risk.apetiteLikelihood != 0 && item.type == 'accept' && item.description == ''){item.description = 'We accept the residual risk'}"
+                          :class="(item.impactDecrease != 0 || item.likelihoodDecrease != 0 || (selected_risk.apetiteImpact*selected_risk.apetiteLikelihood != 0 && item.type == 'accept')) ? 'table-info' : ''">
+                        <th x-text="item.type"></th>
+                        <td>
+                          <span x-show="item.type == 'accept'" x-cloak x-transition>-</span>
+                          <input type="number" class="form-control"
+                                 x-model="item.impactDecrease"
+                                 x-show="item.type != 'accept'" x-cloak x-transition
+                                 min="0" :max="selected_risk.grossImpact" step="1">
+                        </td>
+                        <td>
+                          <span x-show="item.type == 'accept'" x-cloak x-transition>-</span>
+                          <input type="number" class="form-control"
+                                 x-model="item.likelihoodDecrease"
+                                 x-show="item.type != 'accept'" x-cloak x-transition
+                                 min="0" :max="selected_risk.grossLikelihood" step="1">
+                        </td>
+                        <td>
+                           <textarea type="text"
+                                     class="form-control"
+                                     x-model="item.description"></textarea>
+                        </td>
+                      </tr>
+                    </template>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="tab-pane fade" id="edit-fifth" role="tabpanel"
+                     x-data="{maxImpact: 100}" x-effect="maxImpact = frame_impact_on_risk_percentage(selected_risk)" aria-labelledby="edit-fifth-tab">
+                  <div class="alert alert-danger" role="alert"
+                       x-show="maxImpact != 0" x-cloak x-transition>
+                    The combined effectiveness on risk treatment should be 100%<br>
+                    At the moment it is at <span x-text="100-maxImpact"></span>%<br>
+                    <small>If te controls are not in place yet, you can skip this step for now.</small>
+                  </div>
+                  <ul class="list-group list-group-flush">
+                    <template x-for="control in selected_risk.controlLinks" :key="control.arn">
+                      <li class="list-group-item">
+                        <b x-text="get_control_name(company,control.arn)"></b>:&nbsp;
+                        Effectiveness on risk treatment:&nbsp;
+                        <input type="number"
+                               x-model="control.impactOnRisk"
+                               min="0"
+                               :max="parseInt(control.impactOnRisk) + maxImpact"
+                               step="10">%
+                        <button type="button" class="btn-close float-end"
+                                @click="selected_risk.controlLinks = selected_risk.controlLinks.filter(x => x.arn != control.arn)" aria-label="Close"></button>
+                      </li>
+                    </template>
+                  </ul>
+
+                  <input class="form-control"
+                         @change="selected_risk.controlLinks.push({arn: $el.value, impactOnRisk: 0});$el.value = ''"
+                         x-effect="if(!selected_risk.controlLinks){selected_risk.controlLinks = []}"
+                         list="editcontrolOptions" placeholder="Link control...">
+                  <datalist id="editcontrolOptions">
+                    <template x-for="control in company.controls.filter(x => !selected_risk.controlLinks.map(y => y.arn).includes(x.arn))" :key="control.arn">
+                      <option x-text="control.name"
+                              :value="control.arn"></option>
+                    </template>
+                  </datalist>
+
+                </div>
+                <div class="tab-pane fade" id="edit-sixth" role="tabpanel" aria-labelledby="edit-sixth-tab">
+                  <label for="edit-review-periodicity">Assessment Periodicity:
+                    <span x-text="periodicity_names[selected_risk.reviewPeriodicity]"></span></label>
+                  <input type="range" class="form-range"
+                         @change="selected_risk.reviewPeriodicity = periodicity_templates[$el.value]"
+                         x-effect="if(!selected_risk.reviewPeriodicity){selected_risk.reviewPeriodicity = '1Y'}"
+                         min="0" :max="periodicity_templates.length - 1" step="1" id="edit-review-periodicity"
+                         :value="periodicity_templates.indexOf(selected_risk.reviewPeriodicity)">
+
+                  <label for="edit-review-date">Next review date</label>
+                  <input type="date" class="form-control"
+                         :value="selected_risk.nextReviewDate"
+                         @change="selected_risk.nextReviewDate = $el.value"
+                         id="edit-review-date" >
+
+                </div>
+                <div class="tab-pane fade" id="edit-seventh" role="tabpanel" aria-labelledby="edit-seventh-tab">
+                 <table class="table">
+                   <template x-for="log in selected_risk.changeLog" :key="log.timestamp">
+                     <tr>
+                       <th x-text="log.timestamp"></th>
+                       <td x-text="log.user"></td>
+                       <td>
+                         <pre x-text="log.description"></pre>
+                       </td>
+                     </tr>
+                   </template>
+                 </table>
+                </div>
+              </div>
+              <br>
+              <button class="float-end btn btn-sm btn-primary" type="button" data-bs-dismiss="modal"
+                      x-show="selected_risk.edited" x-cloak x-transition
+                      @click="$store.mutation.send('',command);">Save</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
