@@ -180,3 +180,15 @@ function sort_changelog(log){
     log.sort( compare_changelog );
     return log;
 }
+
+function get_default_impact_on_risk_mitigation(risk){
+    if (risk.controlLinks.length == 0){
+        return 50;
+    } else if (risk.controlLinks.length == 1){
+        return 30;
+    } else if (risk.controlLinks.length == 2){
+        return 20;
+    } else {
+        return 0;
+    }
+}

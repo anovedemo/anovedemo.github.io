@@ -1,0 +1,16 @@
+<template x-component="description">
+    <div x-data="{edit: false, value: ''}"
+         x-effect="if(!value){value = '- description'}"
+         x-init="if($prop('value')){value=$prop('value')}">
+        <div x-show="!edit" x-cloak x-transition
+             @click="edit=true"
+             x-html="converter.makeHtml(value)"></div>
+        <div  x-show="edit" x-cloak x-transition class="form-floating">
+                    <textarea type="text" id="controldescription"
+                              style="height:300px"
+                              @focusout.debounce="$dispatch('update',{value:value});edit=false"
+                              class="form-control" x-model="value"></textarea>
+            <label for="controldescription">Description</label>
+        </div>
+    </div>
+</template>

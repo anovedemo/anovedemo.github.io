@@ -8,7 +8,7 @@
                      status="success"
                      @trace="
                     command = {};
-                    setTimeout(Draftsman.force_reload_data,1000);
+                    setTimeout(Draftsman.force_reload_data,5000);
                     Draftsman.empty_track_and_trace_log();">
     </draftsman-trace>
     <div x-import="utils/loading-icon">
@@ -88,6 +88,12 @@
             type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#riskModal">
       Define risk
     </button>
+
+    <hr>
+
+    <div x-import="company/risk-wizard">
+      <ui-risk-wizard @save.stop="$store.mutation.send('CreateCompanyRisk',$event.detail.command);"></ui-risk-wizard>
+    </div>
 
     <!-- add Risk Modal -->
     <div class="modal fade" id="riskModal" tabindex="-1" aria-labelledby="riskModalLabel" aria-hidden="true">

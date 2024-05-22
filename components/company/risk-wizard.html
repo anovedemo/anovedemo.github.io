@@ -1,0 +1,178 @@
+<template x-component="risk-wizard">
+    <div x-data="{step: 0,risk: {}}">
+        <button @click="step = 1; risk = {treatmentPlan: [],controlLinks:[]}" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#riskWizard">
+            Risk Wizard
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="riskWizard" tabindex="-1" aria-labelledby="riskWizardLabel" aria-hidden="true">
+            <div class="modal-dialog" x-import="utils/description">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="riskWizardLabel">Add Risk</h5>
+                        <button type="button" @click.prevent="if(Object.keys(risk).length !== 0 && confirm('Save risk?')){$dispatch('save',{command:risk})}" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div x-show="step > 0" x-cloak x-transition x-effect="if(step == 1 && risk.name && risk.description){step = 2}">
+                            <div class="form-floating">
+                                <input type="text" id="riskname" class="form-control"
+                                       x-effect="risk.arn = prepare_arn(company.arn,'risk',risk.name)"
+                                       x-model="risk.name"/>
+                                <label for="riskname">Risk name</label>
+                            </div>
+                            <hr>
+                            <ui-description :value="risk.description" @update.stop="risk.description = $event.detail.value"></ui-description>
+                        </div>
+                        <div x-show="step > 1" x-cloak x-transition>
+                            <hr x-effect="if(risk.grossImpact && risk.grossLikelihood && step == 2){step = 3}">
+                            <h4>Gross risk <span class="badge rounded-pill bg-primary"
+                             x-text="if(risk.grossImpact && risk.grossLikelihood){return risk.grossImpact*risk.grossLikelihood}else{return '-'}"></span></h4>
+
+                            <label for="grossImpact" class="form-label">Impact</label>
+                            <select class="form-select"
+                                    id="grossImpact"
+                                    x-model="risk.grossImpact"
+                                    aria-label="Default select example">
+                                <option>-impact-</option>
+                                <option value="1" x-text="impact_labels[1]">
+                                <option value="2" x-text="impact_labels[2]">
+                                <option value="3" x-text="impact_labels[3]">
+                                <option value="4" x-text="impact_labels[4]">
+                                <option value="5" x-text="impact_labels[5]">
+                            </select>
+
+                            <label for="grossLikelihood" class="form-label">Likelihood</label>
+                            <select class="form-select"
+                                    id="grossLikelihood"
+                                    x-model="risk.grossLikelihood"
+                                    aria-label="Default select example">
+                                <option>-likelihood-</option>
+                                <option value="1" x-text="likelihood_labels[1]">
+                                <option value="2" x-text="likelihood_labels[2]">
+                                <option value="3" x-text="likelihood_labels[3]">
+                                <option value="4" x-text="likelihood_labels[4]">
+                                <option value="5" x-text="likelihood_labels[5]">
+                            </select>
+                        </div>
+                        <div x-show="step > 2" x-cloak x-transition>
+                            <hr x-effect="if(risk.apetiteImpact && risk.apetiteLikelihood && step == 3){step = 4}">
+                            <h4>Risk Apetite <span class="badge rounded-pill bg-primary"
+                                x-text="if(risk.apetiteImpact && risk.apetiteLikelihood){return risk.apetiteImpact*risk.apetiteLikelihood}else{return '-'}"></span></h4>
+
+                            <label for="apetiteImpact" class="form-label">Impact</label>
+                            <select class="form-select"
+                                    id="apetiteImpact"
+                                    x-model="risk.apetiteImpact"
+                                    aria-label="Default select example">
+                                <option>-impact-</option>
+                                <option value="1" x-text="impact_labels[1]">
+                                <option value="2" x-text="impact_labels[2]" :disabled="risk.grossImpact < 2">
+                                <option value="3" x-text="impact_labels[3]" :disabled="risk.grossImpact < 3">
+                                <option value="4" x-text="impact_labels[4]" :disabled="risk.grossImpact < 4">
+                                <option value="5" x-text="impact_labels[5]" :disabled="risk.grossImpact < 5">
+                            </select>
+
+                            <label for="apetiteLikelihood" class="form-label">Likelihood</label>
+                            <select class="form-select"
+                                    id="apetiteLikelihood"
+                                    x-model="risk.apetiteLikelihood"
+                                    aria-label="Default select example">
+                                <option>-likelihood-</option>
+                                <option value="1" x-text="likelihood_labels[1]">
+                                <option value="2" x-text="likelihood_labels[2]" :disabled="risk.grossLikelihood < 2">
+                                <option value="3" x-text="likelihood_labels[3]" :disabled="risk.grossLikelihood < 3">
+                                <option value="4" x-text="likelihood_labels[4]" :disabled="risk.grossLikelihood < 4">
+                                <option value="5" x-text="likelihood_labels[5]" :disabled="risk.grossLikelihood < 5">
+                            </select>
+                        </div>
+                        <div x-show="step > 3" x-cloak x-transition>
+                            <hr x-effect="if(risk.treatmentPlan.length != 0 && step == 4){step = 5}">
+                            <h4>Treatment plan</h4>
+                            <div x-show="risk.treatmentPlan.length == 0">
+                                <h6>How do you want to handle this risk?</h6>
+                                <div class="btn-group-vertical  d-flex">
+                                    <button type="button"
+                                            @click.debounce="risk.treatmentPlan.push({type: 'avoid', description: '', impactDecrease: 0, likelihoodDecrease: 0})"
+                                            class="btn btn-outline-primary">Avoid</button>
+                                    <button type="button"
+                                            @click.debounce="risk.treatmentPlan.push({type: 'mitigate', description: '', impactDecrease: 0, likelihoodDecrease: 0})"
+                                            class="btn btn-outline-primary">Mitigate</button>
+                                    <button type="button"
+                                            @click.debounce="risk.treatmentPlan.push({type: 'transfer', description: '', impactDecrease: 0, likelihoodDecrease: 0})"
+                                            class="btn btn-outline-primary">Transfer</button>
+                                    <button type="button"
+                                            @click.debounce="risk.treatmentPlan.push({type: 'accept', description: '', impactDecrease: 0, likelihoodDecrease: 0})"
+                                            class="btn btn-outline-primary">Accept</button>
+                                </div>
+                            </div>
+                            <div x-show="risk.treatmentPlan.length != 0">
+                                <template x-for="plan in risk.treatmentPlan">
+                                    <div>
+                                        <h6 x-text="plan.type"></h6>
+                                        <ui-description :value="plan.description" @update.stop="plan.description = $event.detail.value"></ui-description>
+                                        <div x-data="{maxImpact: 100}"
+                                             x-effect="maxImpact = frame_impact_on_risk_percentage(risk)"
+                                             x-show="plan.type == 'mitigate'" x-cloak x-transition>
+                                            <h6>Linked controls</h6>
+                                            <ul class="list-group list-group-flush">
+                                                <template x-for="control in risk.controlLinks" :key="control.arn">
+                                                    <li class="list-group-item">
+                                                        <b x-text="get_control_name(company,control.arn)"></b>:&nbsp;
+                                                        Effectiveness on risk treatment:&nbsp;
+                                                        <input type="number"
+                                                               x-model="control.impactOnRisk"
+                                                               min="0"
+                                                               :max="parseInt(control.impactOnRisk) + maxImpact"
+                                                               step="10">%
+                                                        <button type="button" class="btn-close float-end"
+                                                                @click="risk.controlLinks = risk.controlLinks.filter(x => x.arn != control.arn)" aria-label="Close"></button>
+                                                    </li>
+                                                </template>
+                                            </ul>
+
+                                            <input class="form-control"
+                                                   @change="risk.controlLinks.push({arn: $el.value, impactOnRisk: get_default_impact_on_risk_mitigation(risk)});$el.value = ''"
+                                                   list="controlOptions" placeholder="Link control...">
+                                            <datalist id="controlOptions">
+                                                <template x-for="control in company.controls.filter(x => !risk.controlLinks.map(y => y.arn).includes(x.arn))" :key="control.arn">
+                                                    <option x-text="control.name"
+                                                            :value="control.arn"></option>
+                                                </template>
+                                            </datalist>
+
+                                            <button type="button"
+                                                    x-show="!risk.treatmentPlan.map(x => x.type).includes('transfer')" x-cloak x-transition
+                                                    @click.debounce="risk.treatmentPlan.push({type: 'transfer', description: '', impactDecrease: 0, likelihoodDecrease: 0})"
+                                                    class="btn btn-outline-primary">Transfer risidual risk</button>
+                                        </div>
+                                        <hr>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                        <div x-show="step > 4" x-cloak x-transition>
+                            <hr>
+                            <h4>Risk assessment review</h4>
+                            <label for="review-periodicity">Review Periodicity:
+                                <span x-text="periodicity_names[risk.reviewPeriodicity]"></span></label>
+                            <input type="range" class="form-range"
+                                   @change="risk.reviewPeriodicity = periodicity_templates[$el.value]"
+                                   x-effect="if(!risk.reviewPeriodicity){risk.reviewPeriodicity = '1Y'}"
+                                   min="0" :max="periodicity_templates.length - 1" step="1" id="review-periodicity"
+                                   :value="periodicity_templates.indexOf(risk.reviewPeriodicity)">
+
+                            <label for="review-date">Next review date</label>
+                            <input type="date" class="form-control"
+                                   :value="risk.nextReviewDate"
+                                   @change="risk.nextReviewDate = $el.value"
+                                   id="review-date" >
+                            <br>
+                            <button class="float-end btn btn-sm btn-primary" type="button" data-bs-dismiss="modal"
+                                    @click="$dispatch('save',{command:risk})">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
