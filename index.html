@@ -53,8 +53,12 @@
                 </div>
             </div>
         </div>
+
+        <div></div>
+
     </div>
 </div>
+
 <!-- Get the users workspace -->
 <div class="data-element" @refresh="workspace = $store.WorkSpace.get"></div>
 <draftsman-query x-init="Draftsman.set_variable('key',localStorage['username'])" alias="WorkSpace"

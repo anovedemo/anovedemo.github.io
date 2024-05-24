@@ -1,0 +1,15 @@
+<template x-component="ezra" x-data="{ clicked: false }">
+    <h1>Greetings, <span x-text="workspace.firstName"></span> <span x-text="workspace.lastName"></h1>
+
+    <p>Current company: <span x-text="company.name"></span><p>
+
+    <p>This button does something interesting:<p>
+    <button type="button" class="btn btn-primary" @click="clicked = ! clicked">Click me!</button>
+    
+    <div x-show="clicked">
+        <video id='rick' width="320" height="240" controls autoplay>
+            <source src="https://shattereddisk.github.io/rickroll/rickroll.mp4" type="video/mp4">
+        </video>
+    </div>
+
+</template>

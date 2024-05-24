@@ -61,6 +61,17 @@
               Controls
             </a>
           </li>
+
+          <li class="nav-item">
+            <a @click="navigation = 'ezra'"
+               :class="navigation == 'ezra' ? 'active' : ''"
+               class="nav-link d-flex align-items-center gap-2" aria-current="page"
+               href="#">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              Ezra
+            </a>
+          </li>
+
         </ul>
 
         <hr class="my-3">

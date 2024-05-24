@@ -27,7 +27,7 @@
 
         </script>
     </head>
-<body x-data="{company: null, navigation: $persist('dashboard').as('company-navigation')}"
+<body x-data="{company: null, navigation: $persist('dashboard').as('company-navigation'), workspace: null}"
       x-import="utils/trace-modal;utils/trace-alert;company/header;">
 
     <ui-header></ui-header>
@@ -59,6 +59,10 @@
                 <div x-import="company/risks" x-show="navigation == 'risks'" x-transition x-cloak>
                     <ui-risks></ui-risks>
                 </div>
+                <div x-import="company/ezra" x-show="navigation == 'ezra'" x-transition x-cloak>
+                    <ui-ezra></ui-ezra>
+                </div>
+
             </main>
         </div>
     </div>
@@ -80,6 +84,13 @@
             type="Task"
             @notification="if($event.detail.identifier.startsWith(Draftsman.fetch_query_parameter('arn'))){Draftsman.force_reload_data()}">
     </draftsman-notification>
+
+
+<!-- Get the users workspace -->
+<div class="data-element" @refresh="workspace = $store.WorkSpace.get"></div>
+<draftsman-query x-init="Draftsman.set_variable('key',localStorage['username'])" alias="WorkSpace"
+                 x-include="/prepared-statements/views/User/get.txt" authenticated>
+</draftsman-query>
 
 </body>
 </html>
