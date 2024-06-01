@@ -1,0 +1,109 @@
+<template x-component="quickaccess" x-data="{ clicked: false }">
+    <div class="container-fluid">
+        <div class="row border border-dark-subtle rounded" style="padding: 1%;">
+            <h2>Greetings, <span x-text="workspace.firstName"></span> <span x-text="workspace.lastName"></h2>
+            <h5>Are you ready to get into orbit?</h5>
+        </div>
+
+        <div class="row border border-dark-subtle rounded" style="margin-top: 30px; margin-bottom: 30px; padding: 1%;">
+            <div class="col">
+                <div class="row">
+                    <h2 class="text-center">Quick Access</h2>
+                </div>
+                <div class="row justify-content-around">
+                    <div class="col-3" style="margin-bottom: 10px; margin-top: 10px;">
+                        <div class="row">
+                            <p class="text-center fs-5">Strategic</p>
+                        </div>
+                        <div class="row" style="margin-bottom: 10px;">
+                            <button class="btn btn-primary">Objectives</button>
+                        </div>
+                        <div class="row" style="margin-bottom: 10px;">
+                            <button class="btn btn-primary" @click="navigation = 'frameworks'"
+                            :class="navigation == 'frameworks' ? 'active' : ''">Compliance</button>
+                        </div>
+                    </div>
+                    <div class="col-3" style="margin-bottom: 10px; margin-top: 10px;">
+                        <div class="row">
+                            <p class="text-center fs-5">Tactical</p>
+                        </div>
+                        <div class="row" style="margin-bottom: 10px;">
+                            <button class="btn btn-primary" @click="navigation = 'controls'"
+                            :class="navigation == 'controls' ? 'active' : ''">Controls</button>
+                        </div>
+                        <div class="row" style="margin-bottom: 10px;">
+                            <button class="btn btn-primary" @click="navigation = 'risks'"
+                            :class="navigation == 'risks' ? 'active' : ''">Risks</button>
+                        </div>
+                    </div>
+                    <div class="col-3" style="margin-bottom: 10px; margin-top: 10px;">
+                        <div class="row">
+                            <p class="text-center fs-5">Operational</p>
+                        </div>
+                        <div class="row" style="margin-bottom: 10px;">
+                            <button class="btn btn-primary">Assets</button>
+                        </div>
+                        <div class="row" style="margin-bottom: 10px;">
+                            <button class="btn btn-primary">Tasks</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row border border-dark-subtle rounded" style="padding: 1%;">
+            <div class="col">
+                <div class="row">
+                    <h2 class="text-center">Services</h2>
+                </div>
+                <div class="row justify-content-around">
+                    <div class="col-3" style="margin-bottom: 10px; margin-top: 10px;">
+                        <div class="row">
+                            <p class="text-center fs-5">DPO</p>
+                        </div>
+                        <div class="row" style="margin-bottom: 10px;">
+                            <button class="btn btn-success">Get a DPO</button>
+                        </div>
+                    </div>
+                    <div class="col-3" style="margin-bottom: 10px; margin-top: 10px;">
+                        <div class="row">
+                            <p class="text-center fs-5">vCISO</p>
+                        </div>
+                        <div class="row" style="margin-bottom: 10px;">
+                            <button class="btn btn-success">Get a vCISO</button>
+                        </div>
+                    </div>
+                    <div class="col-3" style="margin-bottom: 10px; margin-top: 10px;">
+                        <div class="row">
+                            <p class="text-center fs-5">AnoveAI</p>
+                        </div>
+                        <div class="row" style="margin-bottom: 10px;">
+                            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#AIModal">Discover AnoveAI</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="modal fade" id="AIModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Discover AnoveAI!</h3>
+                        <button class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="d-flex flex-column gap-2">
+                            <img style="border-radius: 10px;" src="https://api.app.anove.io/media/static_files/projects/anove_eu/AnoveAI_mLEibpM.png">
+                            <p>Discover our AnoveAI assistant technology that we've extensively trained to help you in various roles such as CISO, ISO, DPO, Risk Manager, and more. Here's a glimpse of what AnoveAI can do: (1) AnoveAI can assist you in writing your security measures and control description in a more straightforward and readable manner. (2) AnoveAI facilitates policy drafting by leveraging existing controls and incorporating your specific requirements, ensuring a seamless integration of both. (3) AnoveAI empowers you by providing a thorough understanding of your risk landscape and offering effective measures for mitigation. (4) AnoveAI provides valuable assistance in meeting compliance requirements in a straightforward and easily understandable manner.
+                            <br> <br>
+                            Want to know more about AnoveAI? read our article:</p>
+                            <a href="https://www.anove.ai/post/unlocking-the-power-of-ai-anoveai">Unlocking the power of AI</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</template>

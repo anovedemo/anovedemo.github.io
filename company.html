@@ -41,9 +41,14 @@
 
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <ui-trace-alert></ui-trace-alert>
-                <div x-import="company/dashboard" x-show="navigation == 'dashboard'" x-transition x-cloak>
-                    <ui-dashboard></ui-dashboard>
+                <div x-import="company/quickaccess" x-show="navigation == 'newdashboard'" x-transition x-cloak>
+                    <ui-quickaccess></ui-quickaccess>
                 </div>
+
+                <div x-import="company/dashboard" x-show="navigation == 'olddashboard'" x-transition x-cloak>
+                    <ui-dashboard></uidashboard>
+                </div>
+
                 <div x-import="company/employees" x-show="navigation == 'employees'" x-transition x-cloak>
                     <ui-employees></ui-employees>
                 </div>
