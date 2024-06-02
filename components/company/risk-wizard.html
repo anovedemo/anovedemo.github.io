@@ -92,23 +92,30 @@
                                 <h6>How do you want to handle this risk?</h6>
                                 <div class="btn-group-vertical  d-flex">
                                     <button type="button"
-                                            @click.debounce="risk.treatmentPlan.push({type: 'avoid', description: '', impactDecrease: 0, likelihoodDecrease: 0})"
+                                            @click.debounce="risk.treatmentPlan.push({type: 'avoid', description: ''})"
                                             class="btn btn-outline-primary">Avoid</button>
                                     <button type="button"
-                                            @click.debounce="risk.treatmentPlan.push({type: 'mitigate', description: '', impactDecrease: 0, likelihoodDecrease: 0})"
+                                            @click.debounce="risk.treatmentPlan.push({type: 'mitigate', description: ''})"
                                             class="btn btn-outline-primary">Mitigate</button>
                                     <button type="button"
-                                            @click.debounce="risk.treatmentPlan.push({type: 'transfer', description: '', impactDecrease: 0, likelihoodDecrease: 0})"
+                                            @click.debounce="risk.treatmentPlan.push({type: 'transfer', description: ''})"
                                             class="btn btn-outline-primary">Transfer</button>
                                     <button type="button"
-                                            @click.debounce="risk.treatmentPlan.push({type: 'accept', description: '', impactDecrease: 0, likelihoodDecrease: 0})"
+                                            @click.debounce="risk.treatmentPlan.push({type: 'accept', description: ''})"
                                             class="btn btn-outline-primary">Accept</button>
                                 </div>
                             </div>
                             <div x-show="risk.treatmentPlan.length != 0">
-                                <template x-for="plan in risk.treatmentPlan">
+                                <template x-for="(plan,index) in risk.treatmentPlan">
                                     <div>
-                                        <h6 x-text="plan.type"></h6>
+                                        <h6>
+                                            <span x-text="plan.type"></span>&nbsp;
+                                            <span class="pull-right">
+                                                <button type="button"
+                                                        @click="risk.treatmentPlan.splice(index, 1)"
+                                                        class="btn-close" aria-label="Close"></button>
+                                            </span>
+                                        </h6>
                                         <ui-description :value="plan.description" @update.stop="plan.description = $event.detail.value"></ui-description>
                                         <div x-data="{maxImpact: 100}"
                                              x-effect="maxImpact = frame_impact_on_risk_percentage(risk)"
@@ -142,7 +149,7 @@
 
                                             <button type="button"
                                                     x-show="!risk.treatmentPlan.map(x => x.type).includes('transfer')" x-cloak x-transition
-                                                    @click.debounce="risk.treatmentPlan.push({type: 'transfer', description: '', impactDecrease: 0, likelihoodDecrease: 0})"
+                                                    @click.debounce="risk.treatmentPlan.push({type: 'transfer', description: ''})"
                                                     class="btn btn-outline-primary">Transfer risidual risk</button>
                                         </div>
                                         <hr>
