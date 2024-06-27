@@ -8,10 +8,16 @@ query FilterTask($arn: String = "anove:company:draftsman") {
         completeDate
         arn
         owner
-        evidence
-        category
-        assessedMaturityLevel
-        assessedMaturityDescription
+        controlAssesment {
+          assessedMaturityDescription
+          assessedMaturityLevel
+          category
+          linkToEvidence
+        }
+        riskAction {
+          description
+          name
+        }
         employee {
           username
           user {
