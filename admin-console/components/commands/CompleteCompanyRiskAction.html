@@ -1,0 +1,26 @@
+<!-- This file is managed by Tracepaper -->
+<template x-component="CompleteCompanyRiskAction">
+    <div x-import="basic-form;tables">
+
+        <!-- The command object -->
+        <draftsman-mutation command="CompleteCompanyRiskAction" x-include="/prepared-statements/commands/CompleteCompanyRiskAction.txt" authenticated>
+        </draftsman-mutation>
+
+        <!-- The form definition -->
+        <div  style="display:none;" id="CompleteCompanyRiskAction"
+              x-include="/form-definitions/CompleteCompanyRiskAction.json"></div>
+
+        <!-- The trace table -->
+        <ui-trace-table></ui-trace-table>
+
+        <!-- The form -->
+        <ui-basic-form alias="CompleteCompanyRiskAction"></ui-basic-form>
+
+        <draftsman-trace command="CompleteCompanyRiskAction"
+              status="success"
+              @trace="
+                setTimeout(Draftsman.empty_track_and_trace_log,5000);
+                $dispatch('setdata', { command: 'CompleteCompanyRiskAction', data: {} });">
+        </draftsman-trace>
+    </div>
+</template>

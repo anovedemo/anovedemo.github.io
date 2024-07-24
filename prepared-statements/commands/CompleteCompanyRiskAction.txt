@@ -1,0 +1,12 @@
+# This file is managed by Tracepaper
+mutation Complete($arn: String = "") {
+  Company{
+    Risk{
+      Action{
+        complete(input: {arn: $arn}) {
+           correlationId
+        }
+      }
+    }
+  }
+}

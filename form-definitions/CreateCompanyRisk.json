@@ -118,22 +118,6 @@
         "pattern": "",
         "placeholder": "",
         "default": ""
-      },
-      {
-        "name": "likelihoodDecrease",
-        "title": "Likelihooddecrease",
-        "type": "Int",
-        "pattern": "",
-        "placeholder": "",
-        "default": ""
-      },
-      {
-        "name": "impactDecrease",
-        "title": "Impactdecrease",
-        "type": "Int",
-        "pattern": "",
-        "placeholder": "",
-        "default": ""
       }
     ]
   }

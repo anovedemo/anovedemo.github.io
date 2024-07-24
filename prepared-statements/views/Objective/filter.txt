@@ -1,0 +1,18 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query FilterObjective($key_begins_with: String = "") {
+  Customer {
+    Objective {
+      filter(key_begins_with: $key_begins_with) {
+         resultset { 
+          key
+          arn
+          owner
+          startDate
+          dueDate
+          definitionOfDone
+          completionPercentage
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query GetObjective($key: ID = "") {
+  Customer {
+    Objective {
+      get(key: $key) {
+        key
+        arn
+        owner
+        startDate
+        dueDate
+        definitionOfDone
+        completionPercentage
+      }
+    }
+  }
+}

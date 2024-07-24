@@ -1,0 +1,10 @@
+# This file is managed by Tracepaper
+mutation StartAssessment($arn: String = "") {
+  Company{
+    Risk{
+      startAssessment(input: {arn: $arn}) {
+         correlationId
+      }
+    }
+  }
+}

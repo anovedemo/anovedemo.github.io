@@ -619,9 +619,15 @@ async function execute_load_data(alias,filter){
     }
     var data = await Draftsman.query(query,variable_mapping,!authorized);
     aliases.forEach(alias => {
-        Alpine.store(alias, data[alias]);
-        let key = "store_" + alias + "_" + location;
-        localStorage[key] = JSON.stringify(data[alias]);
+        if (!data[alias]){return}
+        try {
+            Alpine.store(alias, data[alias]);
+            let key = "store_" + alias + "_" + location;
+            localStorage[key] = JSON.stringify(data[alias]);
+        } catch(e){
+            console.log(e);
+            alert();
+        }
     });
     trigger_refresh_data_on_components();
 }

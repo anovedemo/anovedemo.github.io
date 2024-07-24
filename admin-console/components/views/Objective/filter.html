@@ -1,0 +1,19 @@
+<!-- This file is managed by Tracepaper -->
+<template x-component="Objective-filter">
+    <div x-import="tables;query-form">
+
+        <!-- The query object -->
+        <draftsman-query alias="Objectivefilter" x-include="/prepared-statements/views/Objective/filter.txt" authenticated>
+        </draftsman-query>
+
+        <!-- The form definition -->
+        <div  style="display:none;" id="Objectivefilter"
+              x-include="/form-definitions/Objective/filter.json"></div>
+
+        <!-- The query form -->
+        <ui-query-form alias="Objectivefilter"></ui-query-form>
+
+        <!-- The data view --><ui-collection-table alias="Objectivefilter" path="Objective.filter.resultset"></ui-collection-table>
+
+    </div>
+</template>

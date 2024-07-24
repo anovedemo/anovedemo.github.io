@@ -1,0 +1,46 @@
+[
+  {
+    "type": "meta",
+    "message": "This file is managed by Tracepaper"
+  },
+  {
+    "name": "arn",
+    "title": "Arn",
+    "type": "String",
+    "pattern": "^[a-z]+:company:[a-z]+:employee:[^\\s]+$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "owner",
+    "title": "Owner",
+    "type": "String",
+    "pattern": "^[a-z]+:company:[a-z]+:employee:[^\\s]+$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "startDate",
+    "title": "Startdate",
+    "type": "String",
+    "pattern": "^(?:20)\\d{2}-\\d{2}-\\d{2}$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "dueDate",
+    "title": "Duedate",
+    "type": "String",
+    "pattern": "^(?:20)\\d{2}-\\d{2}-\\d{2}$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "definitionOfDone",
+    "title": "Definitionofdone",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  }
+]

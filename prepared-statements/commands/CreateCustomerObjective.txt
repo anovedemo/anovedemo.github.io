@@ -1,0 +1,10 @@
+# This file is managed by Tracepaper
+mutation Create($arn: String = "", $owner: String = "", $startDate: String = "", $dueDate: String = "", $definitionOfDone: String = "") {
+  Customer{
+    Objective{
+      create(input: {arn: $arn,owner: $owner,startDate: $startDate,dueDate: $dueDate,definitionOfDone: $definitionOfDone}) {
+         correlationId
+      }
+    }
+  }
+}
