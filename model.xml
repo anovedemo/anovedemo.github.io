@@ -1074,31 +1074,21 @@
 						<mapping target="hasPendingSelfAssessment" value="#flow.hasPendingSelfAssessment"></mapping>
 						<mapping target="actions" value="#flow.actions"></mapping>
 					</processor>
-					<test-case name="CreateRiskAction" trigger-event="CreateCompanyRiskActionRequested">
+					<test-case name="CreateRiskAction" trigger-event="CreateCompanyRiskActionRequested" expected-processing-status="success">
 						<input name="arn" value="anove:company:draftsman:risk:myrisk" type="String"></input>
 						<input name="id" value="e8db3932-b7c7-46c1-b530-3de58339db6f" type="String"></input>
 						<input name="name" value="Do Something" type="String"></input>
 						<input name="description" value="Hello World!" type="String"></input>
 						<input name="assignee" value="arn:j.doe" type="String"></input>
 						<input name="dueDate" value="2024-08-01" type="String"></input>
-						<expected domain-event="RiskActionCreated">
+						<expected domain-event="RiskActionCreated" id="l547le">
 							<field value="anove:company:draftsman:risk:myrisk" name="arn" type="String"></field>
 						</expected>
 						<state>{
   "version": 1
 }</state>
 						<expected-state pk="anove:company:draftsman:risk:myrisk">{
-  "actions": {
-    "e8db3932-b7c7-46c1-b530-3de58339db6f": {
-      "id": "e8db3932-b7c7-46c1-b530-3de58339db6f",
-      "name": "Do Something",
-      "description": "Hello World!",
-      "assignee": "arn:j.doe",
-      "dueDate": "2024-08-01",
-      "arn" : "anove:company:draftsman:risk:myrisk:e8db3932-b7c7-46c1-b530-3de58339db6f",
-    "category":"other"
-    }
-  }
+  "arn": "anove:company:draftsman:risk:myrisk"
 }</expected-state>
 					</test-case>
 				</command>
@@ -2353,6 +2343,7 @@
 				<mapping target="dueDate" value="dueDate" operand="set"></mapping>
 				<mapping target="definitionOfDone" value="definitionOfDone" operand="set"></mapping>
 				<mapping target="completionPercentage" value="completionPercentage" operand="set"></mapping>
+				<delete id="ojcVVk" condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="Customer.Objective" field-name="get" type="get" authorization="role" use-canonical-search="false" role="#global.isViewer(key)"></query>
 			<query graphql-namespace="Customer.Objective" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isViewer(key_begins_with)"></query>
@@ -2816,7 +2807,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<input name="arn" type="String" value="#region#"></input>
 				<input name="code" type="String" value="#regionCode#"></input>
 				<input name="name" type="String" value="#regionName#"></input>
-				<input name="countries" type="Nested" value='[   {     "name": "Netherlands",     "code": "NL"   } ]'></input>
+				<input name="countries" type="Nested" value='[{"name":"Netherlands","code":"NL"}]'></input>
 				<expected-trace command="Admin.Region.CreateOrUpdate" status="success"></expected-trace>
 			</activity>
 			<activity type="query" id="d39qIK" description="Assert that region is created" path="Region.get" view="Region">
@@ -3024,7 +3015,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			</activity>
 			<activity type="mutation" id="btIaPX" description="Update assessment" path="Company.Control.Assessment.update">
 				<input name="arn" type="String" value="#controlArn#"></input>
-				<input name="assessment" type="Nested" value='[   {     "dueDate": "2024-08-01",     "notes": "Hello World!",     "arn": "#assessmentArn#",     "assessedMaturityLevel": "3",     "assessedMaturityDescription": "-",     "linkToEvidence": "abc",     "assessorLink": "#employeeArn#"   } ]'></input>
+				<input name="assessment" type="Nested" value='[{"dueDate":"2024-08-01","notes":"Hello World!","arn":"#assessmentArn#","assessedMaturityLevel":"3","assessedMaturityDescription":"-","linkToEvidence":"abc","assessorLink":"#employeeArn#"}]'></input>
 				<expected-trace command="Customer.Control.UpdateAssessment" status="success"></expected-trace>
 			</activity>
 			<activity type="query" id="BBtJXfa" description="Assert that the task is updated" path="Task.get" view="Task">
@@ -3039,19 +3030,9 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<input name="key" type="String" value="#controlArn#"></input>
 				<expect-value name="hasPendingSelfAssessment" type="Boolean" value="false"></expect-value>
 			</activity>
-			<activity type="mutation" id="BUhvG6" description="Remove business unit" path="Company.BusinessUnit.remove">
-				<input name="arn" type="String" value="#companyArn#"></input>
-				<input name="name" type="String" value="Engineering"></input>
-				<expected-trace command="Customer.Company.RemoveBusinessUnit" status="success"></expected-trace>
-			</activity>
-			<activity type="mutation" id="4ZqLEA" description="Unlink framework" path="Company.unlinkControlFramework">
-				<input name="arn" type="String" value="#companyArn#"></input>
-				<input name="controlFrameworkArn" type="String" value="#frameworkArn#"></input>
-				<expected-trace command="Customer.Company.UnlinkControlFramework" status="success"></expected-trace>
-			</activity>
 			<activity type="mutation" id="LrM74s" path="Company.Employee.updateBusinessRole" description="Add employee">
 				<input name="arn" type="String" value="anove:company:gate:employee:anove-invite-test@endtest-mail.io"></input>
-				<input name="businessRole" type="String" value="guest"></input>
+				<input name="businessRole" type="String" value="administrator"></input>
 				<expected-trace command="Customer.Company.UpdateBusinessRole" status="success"></expected-trace>
 				<expected-trace command="Admin.User.LinkCompanyToUser" status="success"></expected-trace>
 				<expected-trace command="UpdateAccessForEmployee-Notifier" status="success"></expected-trace>
@@ -3064,6 +3045,109 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<input name="email" type="String" value="anove-invite-test@endtest-mail.io"></input>
 				<expected-trace command="Admin.User.Activate" status="success"></expected-trace>
 				<expected-trace command="Customer.Company.UpdateEmployeeArn" status="success"></expected-trace>
+			</activity>
+			<activity path="-select-" type="refresh-token" id="m5kMxl" description="refresh token"></activity>
+			<activity path="-select-" type="set-variables" description="Prepare risk" id="Hqiihg">
+				<input name="riskArn" type="String" value="anove:company:gate:risk:myrisk"></input>
+			</activity>
+			<activity path="Company.Risk.create" type="mutation" description="Create risk" id="0mFEh7">
+				<input name="arn" type="String" value="#riskArn#"></input>
+				<input name="name" type="String" value="My Risk"></input>
+				<input name="description" type="String" value="-"></input>
+				<input name="grossLikelihood" type="Int" value="5"></input>
+				<input name="grossImpact" type="Int" value="5"></input>
+				<input name="apetiteLikelihood" type="Int" value="4"></input>
+				<input name="apetiteImpact" type="Int" value="4"></input>
+				<input name="reviewPeriodicity" type="String" value="1Y"></input>
+				<input name="nextReviewDate" type="String" value="2024-08-01"></input>
+				<input name="controlLinks" type="Nested" value='[{"arn":"#controlArn#","impactOnRisk":"50"}]'></input>
+				<input name="treatmentPlan" type="Nested" value='[{"type":"mitigate","description":"controls"},{"type":"transfer","description":"ensurence"}]'></input>
+				<expected-trace command="Customer.Risk.Create" status="success"></expected-trace>
+			</activity>
+			<activity path="Risk.get" description="assert that risk is created" type="query" view="Risk" id="YEirDR">
+				<input name="key" type="String" value="#riskArn#"></input>
+				<expect-value name="name" type="String" value="My Risk"></expect-value>
+				<expect-value name="description" type="String" value="-"></expect-value>
+				<expect-value name="grossLikelihood" type="Int" value="5"></expect-value>
+				<expect-value name="grossImpact" type="Int" value="5"></expect-value>
+				<expect-value name="apetiteLikelihood" type="Int" value="4"></expect-value>
+				<expect-value name="apetiteImpact" type="Int" value="4"></expect-value>
+				<expect-value name="reviewPeriodicity" type="String" value="1Y"></expect-value>
+				<expect-value name="nextReviewDate" type="String" value="2024-08-01"></expect-value>
+				<expect-value name="controlLinks.0.arn" type="String" value="#controlArn#"></expect-value>
+				<expect-value name="controlLinks.0.impactOnRisk" type="Int" value="50"></expect-value>
+				<expect-value name="treatmentPlan.0.type" type="String" value="mitigate"></expect-value>
+				<expect-value name="treatmentPlan.0.description" type="String" value="controls"></expect-value>
+				<expect-value name="treatmentPlan.1.type" type="String" value="transfer"></expect-value>
+				<expect-value name="treatmentPlan.1.description" type="String" value="ensurence"></expect-value>
+			</activity>
+			<activity path="Company.Risk.update" type="mutation" description="update risk" id="6xvd01">
+				<input name="arn" type="String" value="#riskArn#"></input>
+				<input name="description" type="String" value="Hello World"></input>
+				<input name="grossLikelihood" type="Int" value="4"></input>
+				<input name="grossImpact" type="Int" value="4"></input>
+				<input name="apetiteLikelihood" type="Int" value="3"></input>
+				<input name="apetiteImpact" type="Int" value="3"></input>
+				<input name="reviewPeriodicity" type="String" value="1Y"></input>
+				<input name="nextReviewDate" type="String" value="2025-08-01"></input>
+				<input name="controlLinks" type="Nested" value='[{"arn":"#controlArn#","impactOnRisk":"60"}]'></input>
+				<input name="treatmentPlan" type="Nested" value='[{"type":"mitigate","description":"user controls"},{"type":"transfer","description":"ensurence 2"}]'></input>
+				<expected-trace command="Customer.Risk.Update" status="success"></expected-trace>
+			</activity>
+			<activity path="Risk.get" description="assert that risk is updated" type="query" view="Risk" id="YEirDR2">
+				<input name="key" type="String" value="#riskArn#"></input>
+				<expect-value name="name" type="String" value="My Risk"></expect-value>
+				<expect-value name="description" type="String" value="Hello World"></expect-value>
+				<expect-value name="grossLikelihood" type="Int" value="4"></expect-value>
+				<expect-value name="grossImpact" type="Int" value="4"></expect-value>
+				<expect-value name="apetiteLikelihood" type="Int" value="3"></expect-value>
+				<expect-value name="apetiteImpact" type="Int" value="3"></expect-value>
+				<expect-value name="reviewPeriodicity" type="String" value="2Y"></expect-value>
+				<expect-value name="nextReviewDate" type="String" value="2025-08-01"></expect-value>
+				<expect-value name="controlLinks.0.arn" type="String" value="#controlArn#"></expect-value>
+				<expect-value name="controlLinks.0.impactOnRisk" type="Int" value="60"></expect-value>
+				<expect-value name="treatmentPlan.0.type" type="String" value="mitigate"></expect-value>
+				<expect-value name="treatmentPlan.0.description" type="String" value="user controls"></expect-value>
+				<expect-value name="treatmentPlan.1.type" type="String" value="transfer"></expect-value>
+				<expect-value name="treatmentPlan.1.description" type="String" value="ensurence 2"></expect-value>
+			</activity>
+			<activity path="Company.Risk.Action.create" type="mutation" description="Create risk action" id="SmnL0n">
+				<input name="arn" type="String" value="#riskArn#"></input>
+				<input name="name" type="String" value="Test"></input>
+				<input name="description" type="String" value="hello world"></input>
+				<input name="assignee" type="String" value="#employeeArn#"></input>
+				<input name="dueDate" type="String" value="2024-08-01"></input>
+				<expected-trace command="Customer.Risk.CreateAction" status="success"></expected-trace>
+			</activity>
+			<activity path="Risk.get" type="query" view="Risk" description="assert that action is created" id="VvtzPt">
+				<input name="key" type="String" value="#riskArn#"></input>
+				<extract-value put-key="riskAction" name="actions.0.id"></extract-value>
+				<expect-value name="actions.0.name" type="String" value="Test"></expect-value>
+			</activity>
+			<activity path="Company.Risk.Action.update" type="mutation" id="LQchyK">
+				<input name="arn" type="String" value="#riskArn#"></input>
+				<input name="actions" type="Nested" value='[{"name":"Test 2","description":"hello world!","assignee":"#employeeArn#","dueDate":"2024-08-01","notes":"Hello World!","id":"#riskAction#"}]'></input>
+				<expected-trace command="Customer.Risk.UpdateAction" status="success"></expected-trace>
+			</activity>
+			<activity path="Risk.get" type="query" view="Risk" description="assert that action is updated" id="VvtzPt2">
+				<input name="key" type="String" value="#riskArn#"></input>
+				<expect-value name="actions.0.name" type="String" value="Test 2"></expect-value>
+				<expect-value name="actions.0.notes" type="String" value="Hello World!"></expect-value>
+				<extract-value put-key="actionArn" name="actions.0.arn"></extract-value>
+			</activity>
+			<activity path="Company.Risk.Action.complete" type="mutation" id="mhpHRX" description="Complete risk action">
+				<input name="arn" type="String" value="#actionArn#"></input>
+				<expected-trace command="Customer.Risk.CompleteAction" status="success"></expected-trace>
+			</activity>
+			<activity type="mutation" id="BUhvG6" description="Remove business unit" path="Company.BusinessUnit.remove">
+				<input name="arn" type="String" value="#companyArn#"></input>
+				<input name="name" type="String" value="Engineering"></input>
+				<expected-trace command="Customer.Company.RemoveBusinessUnit" status="success"></expected-trace>
+			</activity>
+			<activity type="mutation" id="4ZqLEA" description="Unlink framework" path="Company.unlinkControlFramework">
+				<input name="arn" type="String" value="#companyArn#"></input>
+				<input name="controlFrameworkArn" type="String" value="#frameworkArn#"></input>
+				<expected-trace command="Customer.Company.UnlinkControlFramework" status="success"></expected-trace>
 			</activity>
 		</scenario>
 	</functional-scenarios>
