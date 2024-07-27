@@ -1084,10 +1084,19 @@
 						<expected domain-event="RiskActionCreated" id="l547le">
 							<field value="anove:company:draftsman:risk:myrisk" name="arn" type="String"></field>
 						</expected>
-						<state>{
-  "version": 1
-}</state>
+						<state>{"version":1,"arn":"anove:company:draftsman:risk:myrisk"}</state>
 						<expected-state pk="anove:company:draftsman:risk:myrisk">{
+  "actions": {
+    "e8db3932-b7c7-46c1-b530-3de58339db6f": {
+      "id": "e8db3932-b7c7-46c1-b530-3de58339db6f",
+      "name": "Do Something",
+      "description": "Hello World!",
+      "assignee": "arn:j.doe",
+      "dueDate": "2024-08-01",
+      "arn": "anove:company:draftsman:risk:myrisk:e8db3932-b7c7-46c1-b530-3de58339db6f",
+      "category": "other"
+    }
+  },
   "arn": "anove:company:draftsman:risk:myrisk"
 }</expected-state>
 					</test-case>
