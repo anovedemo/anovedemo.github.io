@@ -3058,6 +3058,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<activity path="-select-" type="refresh-token" id="m5kMxl" description="refresh token"></activity>
 			<activity path="-select-" type="set-variables" description="Prepare risk" id="Hqiihg">
 				<input name="riskArn" type="String" value="anove:company:gate:risk:myrisk"></input>
+				<input name="impactOnRisk" type="Numeric" value="50"></input>
 			</activity>
 			<activity path="Company.Risk.create" type="mutation" description="Create risk" id="0mFEh7">
 				<input name="arn" type="String" value="#riskArn#"></input>
@@ -3069,7 +3070,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<input name="apetiteImpact" type="Int" value="4"></input>
 				<input name="reviewPeriodicity" type="String" value="1Y"></input>
 				<input name="nextReviewDate" type="String" value="2024-08-01"></input>
-				<input name="controlLinks" type="Nested" value='[{"arn":"#controlArn#","impactOnRisk":"50"}]'></input>
+				<input name="controlLinks" type="Nested" value='[{"arn":"#controlArn#","impactOnRisk":"#impactOnRisk#"}]'></input>
 				<input name="treatmentPlan" type="Nested" value='[{"type":"mitigate","description":"controls"},{"type":"transfer","description":"ensurence"}]'></input>
 				<expected-trace command="Customer.Risk.Create" status="success"></expected-trace>
 			</activity>
@@ -3099,7 +3100,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<input name="apetiteImpact" type="Int" value="3"></input>
 				<input name="reviewPeriodicity" type="String" value="1Y"></input>
 				<input name="nextReviewDate" type="String" value="2025-08-01"></input>
-				<input name="controlLinks" type="Nested" value='[{"arn":"#controlArn#","impactOnRisk":"60"}]'></input>
+				<input name="controlLinks" type="Nested" value='[{"arn":"#controlArn#","impactOnRisk":"#impactOnRisk#"}]'></input>
 				<input name="treatmentPlan" type="Nested" value='[{"type":"mitigate","description":"user controls"},{"type":"transfer","description":"ensurence 2"}]'></input>
 				<expected-trace command="Customer.Risk.Update" status="success"></expected-trace>
 			</activity>
@@ -3114,7 +3115,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<expect-value name="reviewPeriodicity" type="String" value="2Y"></expect-value>
 				<expect-value name="nextReviewDate" type="String" value="2025-08-01"></expect-value>
 				<expect-value name="controlLinks.0.arn" type="String" value="#controlArn#"></expect-value>
-				<expect-value name="controlLinks.0.impactOnRisk" type="Int" value="60"></expect-value>
+				<expect-value name="controlLinks.0.impactOnRisk" type="Int" value="50"></expect-value>
 				<expect-value name="treatmentPlan.0.type" type="String" value="mitigate"></expect-value>
 				<expect-value name="treatmentPlan.0.description" type="String" value="user controls"></expect-value>
 				<expect-value name="treatmentPlan.1.type" type="String" value="transfer"></expect-value>
