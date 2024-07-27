@@ -2489,7 +2489,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<field name="changeLog" type="ObjectList" ref="ChangeLog" authorization="authenticated" foreign-key="arn"></field>
 			<field name="controlLinks" type="ObjectList" ref="RiskControlLink" authorization="authenticated" foreign-key="arn"></field>
 			<field name="treatmentPlan" type="ObjectList" ref="RiskTreatmentPlan" authorization="authenticated" foreign-key="arn"></field>
-			<field name="actions" type="ObjectList" ref="RiskAction" authorization="authenticated" foreign-key="arn"></field>
+			<field name="actions" type="OneToMany" ref="RiskAction" authorization="authenticated" foreign-key="#canonical"></field>
 			<field name="hasPendingSelfAssessment" type="Boolean"></field>
 			<snapshot-handler id="2mpXZ6" sub-domain="Customer" aggregate="Risk" key-mapping="arn" processor="item">
 				<mapping target="arn" operand="set" value="arn"></mapping>
@@ -2504,10 +2504,9 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping target="nextReviewDate" operand="set" value="nextReviewDate"></mapping>
 				<mapping target="changeLog" operand="convert_items" value="changeLog" template='{"timestamp": value["timestamp"],"description": value["description"],"user": value["user"]}'></mapping>
 				<mapping target="controlLinks" operand="convert_items" value="controlLinks" template='{"arn": value["arn"],"impactOnRisk": value["impactOnRisk"]}'></mapping>
-				<mapping target="actions" operand="convert_items" value="actions" template='{"id": value["id"],"name": value["name"],"description": value["description"],"assignee": value["assignee"],"dueDate": value["dueDate"],"completeDate": value["completeDate"]}'></mapping>
 				<mapping target="treatmentPlan" operand="convert_items" value="treatmentPlan" template='{"type": value["type"],"description": value["description"]}'></mapping>
 				<mapping target="hasPendingSelfAssessment" operand="set" value="hasPendingSelfAssessment"></mapping>
-				<delete condition="#snapshot.isDeleted != ''"></delete>
+				<delete condition="#snapshot.isDeleted != ''" id="YPdzVb"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="Risk" field-name="get" type="get" authorization="role" role="#global.isViewer(key)"></query>
 			<query graphql-namespace="Risk" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isViewer(key_begins_with)"></query>
@@ -2532,7 +2531,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping target="assignee" operand="set" value="assignee"></mapping>
 				<mapping target="dueDate" operand="set" value="dueDate"></mapping>
 				<mapping target="completeDate" operand="set" value="completeDate"></mapping>
-				<delete condition="#snapshot.isDeleted != ''"></delete>
+				<delete condition="#snapshot.isDeleted != ''" id="cVkGGO"></delete>
 			</snapshot-handler>
 		</view>
 		<view name="RiskControlLink" data-retention-days="-1" exclude-notification="false">
