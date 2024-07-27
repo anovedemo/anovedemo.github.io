@@ -2782,7 +2782,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<activity type="iam-create-systemuser" fail-silent="true" id="vMB9LZ"></activity>
 		</notifier>
 	</notifiers>
-	<functional-scenarios clean-db="true" clean-iam="true" minimum-event-coverage="80" minimum-view-coverage="80">
+	<functional-scenarios clean-db="true" clean-iam="true" minimum-event-coverage="100" minimum-view-coverage="100">
 		<scenario name="Demo">
 			<activity type="mutation" id="pfxjgi" description="Create item" path="Demo.update">
 				<input name="identifier" type="String" value="myKey"></input>
