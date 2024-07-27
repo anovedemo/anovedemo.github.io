@@ -3156,6 +3156,10 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<input name="controlFrameworkArn" type="String" value="#frameworkArn#"></input>
 				<expected-trace command="Customer.Company.UnlinkControlFramework" status="success"></expected-trace>
 			</activity>
+			<activity path="Company.Risk.startAssessment" type="mutation" description="Start Risk Assesment" id="cfnphy">
+				<input name="arn" type="String" value="#riskArn#"></input>
+				<expected-trace command="Customer.Risk.CreateAction" status="success"></expected-trace>
+			</activity>
 		</scenario>
 	</functional-scenarios>
 </draftsman>
