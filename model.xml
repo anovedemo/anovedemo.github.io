@@ -3096,7 +3096,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<input name="grossImpact" type="Int" value="4"></input>
 				<input name="apetiteLikelihood" type="Int" value="3"></input>
 				<input name="apetiteImpact" type="Int" value="3"></input>
-				<input name="reviewPeriodicity" type="String" value="1Y"></input>
+				<input name="reviewPeriodicity" type="String" value="2Y"></input>
 				<input name="nextReviewDate" type="String" value="2025-08-01"></input>
 				<input name="controlLinks" type="Nested" value='[{"arn":"#controlArn#","impactOnRisk":"#impactOnRisk#"}]'></input>
 				<input name="treatmentPlan" type="Nested" value='[{"type":"mitigate","description":"user controls"}]'></input>
