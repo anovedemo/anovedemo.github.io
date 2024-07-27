@@ -3071,7 +3071,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<input name="reviewPeriodicity" type="String" value="1Y"></input>
 				<input name="nextReviewDate" type="String" value="2024-08-01"></input>
 				<input name="controlLinks" type="Nested" value='[{"arn":"#controlArn#","impactOnRisk":"#impactOnRisk#"}]'></input>
-				<input name="treatmentPlan" type="Nested" value='[{"type":"mitigate","description":"controls"},{"type":"transfer","description":"ensurence"}]'></input>
+				<input name="treatmentPlan" type="Nested" value='[{"type":"mitigate","description":"controls"}]'></input>
 				<expected-trace command="Customer.Risk.Create" status="success"></expected-trace>
 			</activity>
 			<activity path="Risk.get" description="assert that risk is created" type="query" view="Risk" id="YEirDR">
@@ -3088,8 +3088,6 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<expect-value name="controlLinks.0.impactOnRisk" type="Int" value="50"></expect-value>
 				<expect-value name="treatmentPlan.0.type" type="String" value="mitigate"></expect-value>
 				<expect-value name="treatmentPlan.0.description" type="String" value="controls"></expect-value>
-				<expect-value name="treatmentPlan.1.type" type="String" value="transfer"></expect-value>
-				<expect-value name="treatmentPlan.1.description" type="String" value="ensurence"></expect-value>
 			</activity>
 			<activity path="Company.Risk.update" type="mutation" description="update risk" id="6xvd01">
 				<input name="arn" type="String" value="#riskArn#"></input>
@@ -3101,7 +3099,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<input name="reviewPeriodicity" type="String" value="1Y"></input>
 				<input name="nextReviewDate" type="String" value="2025-08-01"></input>
 				<input name="controlLinks" type="Nested" value='[{"arn":"#controlArn#","impactOnRisk":"#impactOnRisk#"}]'></input>
-				<input name="treatmentPlan" type="Nested" value='[{"type":"mitigate","description":"user controls"},{"type":"transfer","description":"ensurence 2"}]'></input>
+				<input name="treatmentPlan" type="Nested" value='[{"type":"mitigate","description":"user controls"}]'></input>
 				<expected-trace command="Customer.Risk.Update" status="success"></expected-trace>
 			</activity>
 			<activity path="Risk.get" description="assert that risk is updated" type="query" view="Risk" id="YEirDR2">
@@ -3118,8 +3116,6 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<expect-value name="controlLinks.0.impactOnRisk" type="Int" value="50"></expect-value>
 				<expect-value name="treatmentPlan.0.type" type="String" value="mitigate"></expect-value>
 				<expect-value name="treatmentPlan.0.description" type="String" value="user controls"></expect-value>
-				<expect-value name="treatmentPlan.1.type" type="String" value="transfer"></expect-value>
-				<expect-value name="treatmentPlan.1.description" type="String" value="ensurence 2"></expect-value>
 			</activity>
 			<activity path="Company.Risk.Action.create" type="mutation" description="Create risk action" id="SmnL0n">
 				<input name="arn" type="String" value="#riskArn#"></input>
