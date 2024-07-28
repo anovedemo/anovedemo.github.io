@@ -3,7 +3,6 @@
 	<global>
 		<pattern name="ControlFrameworkArn" regex="^controlframework:[a-z0-9]+$"></pattern>
 		<pattern name="RegionArn" regex="^region:[A-Z]+$"></pattern>
-		<pattern name="ObjectiveArn" regex="^{{CompanyArn}}:employee:[^\s]+$"></pattern>
 		<pattern name="CountryArn" regex="^{{RegionArn}}:country:[A-Z]+$"></pattern>
 		<pattern name="GeoCode" regex="^[A-Z]+$"></pattern>
 		<pattern name="MaturityLevel" regex="^(1|2|3|4|5)$"></pattern>
@@ -23,13 +22,6 @@
 		<expression name="isViewer" type="ActorEventRole" input="arn" expression="${arn.split(':')[0]}:${arn.split(':')[1]}:${arn.split(':')[2]}:viewer"></expression>
 	</global>
 	<events>
-		<event graphql-namespace="Customer.Objective" graphql-name="create" name="CreateCustomerObjectiveRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
-			<field name="arn" type="String" pattern="{{ObjectiveArn}}"></field>
-			<field name="owner" type="String" pattern="{{EmployeeArn}}"></field>
-			<field name="startDate" type="String" pattern="{{Date}}"></field>
-			<field name="dueDate" type="String" pattern="{{Date}}"></field>
-			<field name="definitionOfDone" type="String"></field>
-		</event>
 		<event graphql-namespace="Region" graphql-name="update" name="UpdateRegionRequested" authorization="role" type="ActorEvent" role="administrator">
 			<field name="arn" type="String" pattern="{{RegionArn}}"></field>
 			<field name="code" type="String" pattern="{{GeoCode}}"></field>
@@ -274,13 +266,6 @@
 			<field name="arn" type="String"></field>
 			<field name="nextAssessmentDate" type="String"></field>
 			<field name="controlOwner" type="String"></field>
-		</event>
-		<event name="ObjectiveCreated" source="Customer.Objective" type="DomainEvent">
-			<field name="arn" type="String"></field>
-			<field name="owner" type="String"></field>
-			<field name="startDate" type="String"></field>
-			<field name="dueDate" type="String"></field>
-			<field name="definitionOfDone" type="String"></field>
 		</event>
 		<event name="RiskUpdated" source="Customer.Risk" type="DomainEvent">
 			<field name="description" type="String"></field>
@@ -832,70 +817,6 @@
 					<field name="assessedMaturityDescription" type="String"></field>
 					<field name="linkToEvidence" type="String"></field>
 					<field name="assessorLink" type="String" default=""></field>
-				</nested-object>
-			</aggregate>
-			<aggregate name="Objective" business-key="arn" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
-				<field name="arn" type="String"></field>
-				<field name="owner" type="String"></field>
-				<field name="startDate" type="String"></field>
-				<field name="dueDate" type="String"></field>
-				<field name="definitionOfDone" type="String"></field>
-				<field name="completionPercentage" type="Int"></field>
-				<command name="Create" create-command="true">
-					<trigger source="CreateCustomerObjectiveRequested" key-field="arn">
-						<mapping target="arn" value="arn"></mapping>
-						<mapping target="owner" value="owner"></mapping>
-						<mapping target="startDate" value="startDate"></mapping>
-						<mapping target="dueDate" value="dueDate"></mapping>
-						<mapping target="definitionOfDone" value="definitionOfDone"></mapping>
-					</trigger>
-					<processor type="emit-event" ref="ObjectiveCreated" id="eDLcI8">
-						<mapping target="arn" value="#flow.arn"></mapping>
-						<mapping target="owner" value="#flow.owner"></mapping>
-						<mapping target="startDate" value="#flow.startDate"></mapping>
-						<mapping target="dueDate" value="#flow.dueDate"></mapping>
-						<mapping target="definitionOfDone" value="#flow.definitionOfDone"></mapping>
-					</processor>
-					<test-case name="CreateObjective" trigger-event="CreateCustomerObjectiveRequested" expected-processing-status="success">
-						<input name="arn" type="String" value="anove:tracepaper:objective:golive"></input>
-						<input name="owner" type="String" value="anove:tracepaper:employee:j.doe"></input>
-						<input name="startDate" type="String" value="2024-08-01"></input>
-						<input name="dueDate" type="String" value="2024-09-01"></input>
-						<input name="definitionOfDone" type="String" value="If everything is working"></input>
-						<expected domain-event="ObjectiveCreated" id="1tVXFY">
-							<field name="arn" type="String" value="anove:tracepaper:objective:golive"></field>
-							<field name="owner" type="String" value="anove:tracepaper:employee:j.doe"></field>
-							<field name="startDate" type="String" value="2024-08-01"></field>
-							<field name="dueDate" type="String" value="2024-09-01"></field>
-							<field name="definitionOfDone" type="String" value="If everything is working"></field>
-						</expected>
-						<expected-state pk="anove:tracepaper:objective:golive">{
-  "arn": "anove:tracepaper:objective:golive",
-  "version": 1,
-  "owner": "anove:tracepaper:employee:j.doe",
-  "startDate": "2024-08-01",
-  "dueDate": "2024-09-01",
-  "definitionOfDone": "If everything is working",
-  "completionPercentage": 0
-}</expected-state>
-					</test-case>
-				</command>
-				<event-handler on="ObjectiveCreated">
-					<mapping target="arn" value="arn" operand="set"></mapping>
-					<mapping target="owner" value="owner" operand="set"></mapping>
-					<mapping target="startDate" value="startDate" operand="set"></mapping>
-					<mapping target="dueDate" value="dueDate" operand="set"></mapping>
-					<mapping target="definitionOfDone" value="definitionOfDone" operand="set"></mapping>
-				</event-handler>
-				<nested-object name="task">
-					<field name="id" type="String"></field>
-					<field name="arn" type="String"></field>
-					<field name="name" type="String"></field>
-					<field name="description" type="String"></field>
-					<field name="assignee" type="String"></field>
-					<field name="dueDate" type="String"></field>
-					<field name="completeDate" type="String"></field>
-					<field name="notes" type="String"></field>
 				</nested-object>
 			</aggregate>
 			<aggregate name="Risk" business-key="arn" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
@@ -2338,25 +2259,6 @@
 			<query graphql-namespace="Control" field-name="get" type="get" authorization="role" role="#global.isViewer(key)"></query>
 			<query graphql-namespace="Control" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isViewer(key_begins_with)"></query>
 		</view>
-		<view name="Objective" data-retention-days="-1" exclude-notification="false">
-			<field name="arn" type="String" pk="true"></field>
-			<field name="owner" type="String"></field>
-			<field name="startDate" type="String"></field>
-			<field name="dueDate" type="String"></field>
-			<field name="definitionOfDone" type="String"></field>
-			<field name="completionPercentage" type="Int"></field>
-			<snapshot-handler id="9fkNSc" processor="item" sub-domain="Customer" aggregate="Objective" key-mapping="arn">
-				<mapping target="arn" value="arn" operand="set"></mapping>
-				<mapping target="owner" value="owner" operand="set"></mapping>
-				<mapping target="startDate" value="startDate" operand="set"></mapping>
-				<mapping target="dueDate" value="dueDate" operand="set"></mapping>
-				<mapping target="definitionOfDone" value="definitionOfDone" operand="set"></mapping>
-				<mapping target="completionPercentage" value="completionPercentage" operand="set"></mapping>
-				<delete id="ojcVVk" condition="#snapshot.isDeleted != ''"></delete>
-			</snapshot-handler>
-			<query graphql-namespace="Customer.Objective" field-name="get" type="get" authorization="role" use-canonical-search="false" role="#global.isViewer(key)"></query>
-			<query graphql-namespace="Customer.Objective" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isViewer(key_begins_with)"></query>
-		</view>
 		<view name="Profile" data-retention-days="-1" exclude-notification="false">
 			<field name="username" type="String" pk="true"></field>
 			<field name="firstName" type="String"></field>
@@ -2671,7 +2573,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping target="notes" operand="set" value="notes"></mapping>
 				<mapping target="completeDate" operand="set" value="completeDate"></mapping>
 				<mapping target="owner" operand="set" value="assessorLink"></mapping>
-				<delete condition="#'completeDate' in item and item.completeDate != ''"></delete>
+				<delete condition="#'completeDate' in item and item.completeDate != ''" id="XsPPOZ"></delete>
 			</snapshot-handler>
 			<snapshot-handler id="t85l8k" sub-domain="Customer" aggregate="Risk" key-mapping="arn" processor="dictionary" dictionary="actions">
 				<mapping target="arn" operand="set" value="arn"></mapping>
@@ -2679,7 +2581,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping target="notes" operand="set" value="notes"></mapping>
 				<mapping target="completeDate" operand="set" value="completeDate"></mapping>
 				<mapping target="owner" operand="set" value="assignee"></mapping>
-				<delete condition="#'completeDate' in item and item.completeDate != ''"></delete>
+				<delete condition="#'completeDate' in item and item.completeDate != ''" id="8GNMz6"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="Task" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isViewer(key_begins_with)"></query>
 			<query graphql-namespace="Task" field-name="get" type="get" authorization="role" role="#global.isViewer(key)"></query>
