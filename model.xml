@@ -3,6 +3,7 @@
 	<global>
 		<pattern name="ControlFrameworkArn" regex="^controlframework:[a-z0-9]+$"></pattern>
 		<pattern name="RegionArn" regex="^region:[A-Z]+$"></pattern>
+		<pattern name="ObjectiveArn" regex="^{{CompanyArn}}:objective:[^\s]+$"></pattern>
 		<pattern name="CountryArn" regex="^{{RegionArn}}:country:[A-Z]+$"></pattern>
 		<pattern name="GeoCode" regex="^[A-Z]+$"></pattern>
 		<pattern name="MaturityLevel" regex="^(1|2|3|4|5)$"></pattern>
@@ -22,6 +23,13 @@
 		<expression name="isViewer" type="ActorEventRole" input="arn" expression="${arn.split(':')[0]}:${arn.split(':')[1]}:${arn.split(':')[2]}:viewer"></expression>
 	</global>
 	<events>
+		<event graphql-namespace="Objective" graphql-name="create" name="CreateObjectiveRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+			<field name="arn" type="String" pattern="{{ObjectiveArn}}"></field>
+			<field name="owner" type="String" pattern="{{EmployeeArn}}"></field>
+			<field name="startDate" type="String" pattern="{{Date}}"></field>
+			<field name="dueDate" type="String" pattern="{{Date}}"></field>
+			<field name="definitionOfDone" type="String"></field>
+		</event>
 		<event graphql-namespace="Region" graphql-name="update" name="UpdateRegionRequested" authorization="role" type="ActorEvent" role="administrator">
 			<field name="arn" type="String" pattern="{{RegionArn}}"></field>
 			<field name="code" type="String" pattern="{{GeoCode}}"></field>
@@ -266,6 +274,13 @@
 			<field name="arn" type="String"></field>
 			<field name="nextAssessmentDate" type="String"></field>
 			<field name="controlOwner" type="String"></field>
+		</event>
+		<event name="ObjectiveCreated" source="Customer.Objective" type="DomainEvent">
+			<field name="arn" type="String"></field>
+			<field name="owner" type="String"></field>
+			<field name="startDate" type="String"></field>
+			<field name="dueDate" type="String"></field>
+			<field name="definitionOfDone" type="String"></field>
 		</event>
 		<event name="RiskUpdated" source="Customer.Risk" type="DomainEvent">
 			<field name="description" type="String"></field>
@@ -817,6 +832,70 @@
 					<field name="assessedMaturityDescription" type="String"></field>
 					<field name="linkToEvidence" type="String"></field>
 					<field name="assessorLink" type="String" default=""></field>
+				</nested-object>
+			</aggregate>
+			<aggregate name="Objective" business-key="arn" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
+				<field name="arn" type="String"></field>
+				<field name="owner" type="String"></field>
+				<field name="startDate" type="String"></field>
+				<field name="dueDate" type="String"></field>
+				<field name="definitionOfDone" type="String"></field>
+				<field name="completionPercentage" type="Int"></field>
+				<command name="Create" create-command="true">
+					<trigger source="CreateObjectiveRequested" key-field="arn">
+						<mapping target="arn" value="arn"></mapping>
+						<mapping target="owner" value="owner"></mapping>
+						<mapping target="startDate" value="startDate"></mapping>
+						<mapping target="dueDate" value="dueDate"></mapping>
+						<mapping target="definitionOfDone" value="definitionOfDone"></mapping>
+					</trigger>
+					<processor type="emit-event" ref="ObjectiveCreated" id="NOTKAp">
+						<mapping target="arn" value="#flow.arn"></mapping>
+						<mapping target="owner" value="#flow.owner"></mapping>
+						<mapping target="startDate" value="#flow.startDate"></mapping>
+						<mapping target="dueDate" value="#flow.dueDate"></mapping>
+						<mapping target="definitionOfDone" value="#flow.definitionOfDone"></mapping>
+					</processor>
+					<test-case name="CreateObjective" trigger-event="CreateObjectiveRequested" expected-processing-status="success">
+						<input name="arn" type="String" value="anove:company:tracepaper:objective:myobjective"></input>
+						<input name="owner" type="String" value="anove:company:tracepaper:employee:j.doe"></input>
+						<input name="startDate" type="String" value="2024-08-01"></input>
+						<input name="dueDate" type="String" value="2025-08-01"></input>
+						<input name="definitionOfDone" type="String" value="Hello World!"></input>
+						<expected domain-event="ObjectiveCreated" id="EE13AU">
+							<field name="arn" type="String" value="anove:company:tracepaper:objective:myobjective"></field>
+							<field name="owner" type="String" value="anove:company:tracepaper:employee:j.doe"></field>
+							<field name="startDate" type="String" value="2024-08-01"></field>
+							<field name="dueDate" type="String" value="2025-08-01"></field>
+							<field name="definitionOfDone" type="String" value="Hello World!"></field>
+						</expected>
+						<expected-state pk="anove:company:tracepaper:objective:myobjective">{
+  "arn": "anove:company:tracepaper:objective:myobjective",
+  "owner": "anove:company:tracepaper:employee:j.doe",
+  "startDate": "2024-08-01",
+  "dueDate": "2025-08-01",
+  "definitionOfDone": "Hello World!",
+  "completionPercentage": 0,
+  "version": 1
+}</expected-state>
+					</test-case>
+				</command>
+				<event-handler on="ObjectiveCreated">
+					<mapping target="arn" value="arn" operand="set"></mapping>
+					<mapping target="owner" value="owner" operand="set"></mapping>
+					<mapping target="startDate" value="startDate" operand="set"></mapping>
+					<mapping target="dueDate" value="dueDate" operand="set"></mapping>
+					<mapping target="definitionOfDone" value="definitionOfDone" operand="set"></mapping>
+				</event-handler>
+				<nested-object name="task" business-key="id">
+					<field name="id" type="String"></field>
+					<field name="name" type="String"></field>
+					<field name="description" type="String"></field>
+					<field name="assignee" type="String"></field>
+					<field name="dueDate" type="String"></field>
+					<field name="completeDate" type="String"></field>
+					<field name="notes" type="String"></field>
+					<field name="arn" type="String"></field>
 				</nested-object>
 			</aggregate>
 			<aggregate name="Risk" business-key="arn" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
@@ -2315,6 +2394,28 @@
         entity.mark_for_deletion = True</custom-handler>
 			<query graphql-namespace="Country" field-name="get" type="get" authorization="authenticated"></query>
 			<query graphql-namespace="Country" field-name="filter" type="filter" authorization="authenticated" use-canonical-search="true"></query>
+		</view>
+		<view name="Objective" data-retention-days="-1" exclude-notification="false">
+			<field name="arn" type="String" pk="true"></field>
+			<field name="owner" type="String"></field>
+			<field name="startDate" type="String"></field>
+			<field name="dueDate" type="String"></field>
+			<field name="definitionOfDone" type="String"></field>
+			<field name="completionPercentage" type="Int"></field>
+			<snapshot-handler id="UhHRig" processor="item" sub-domain="Customer" aggregate="Objective" key-mapping="arn">
+				<mapping target="arn" value="arn" operand="set"></mapping>
+				<mapping target="owner" value="owner" operand="set"></mapping>
+				<mapping target="startDate" value="startDate" operand="set"></mapping>
+				<mapping target="dueDate" value="dueDate" operand="set"></mapping>
+				<mapping target="definitionOfDone" value="definitionOfDone" operand="set"></mapping>
+				<mapping target="completionPercentage" value="completionPercentage" operand="set"></mapping>
+				<delete id="Hz8due" condition="#snapshot.isDeleted != ''"></delete>
+			</snapshot-handler>
+			<query graphql-namespace="Objective" field-name="get" type="get" authorization="role" use-canonical-search="false" role="#global.isViewer(key)"></query>
+			<query graphql-namespace="Objective" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isViewer(key_begins_with)">
+				<filter-clause operand="equals" field-name="owner" id="qFRLPQ"></filter-clause>
+				<filter-clause operand="equals" field-name="completionPercentage" id="chdfSO"></filter-clause>
+			</query>
 		</view>
 		<view name="Region" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String" pk="true"></field>

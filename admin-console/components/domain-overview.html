@@ -7,6 +7,12 @@
                     <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
                         
                         <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'CreateObjective'"
+                                x-show="'createobjective'.includes(search.toLowerCase())">
+                            CreateObjective
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
                                 @click="Draftsman.empty_track_and_trace_log();component = 'UpdateRegion'"
                                 x-show="'updateregion'.includes(search.toLowerCase())">
                             UpdateRegion
@@ -160,6 +166,14 @@
                 </center>
             </div>
             <div class="col-6">
+                
+                <div x-show="component == 'CreateObjective'" x-cloak x-transition>
+                    <div x-import="commands/CreateObjective">
+                        <h6>CreateObjective</h6>
+                        <ui-CreateObjective></ui-CreateObjective>
+                    </div>
+                </div>
+
                 
                 <div x-show="component == 'UpdateRegion'" x-cloak x-transition>
                     <div x-import="commands/UpdateRegion">
@@ -427,6 +441,22 @@
                 </div>
 
                 
+                <div x-show="component == 'Objective/get'" x-cloak x-transition>
+                    <div x-import="views/Objective/get">
+                        <h6>Objective.get</h6>
+                        <ui-Objective-get></ui-Objective-get>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Objective/filter'" x-cloak x-transition>
+                    <div x-import="views/Objective/filter">
+                        <h6>Objective.filter</h6>
+                        <ui-Objective-filter></ui-Objective-filter>
+                    </div>
+                </div>
+
+                
                 <div x-show="component == 'Region/get'" x-cloak x-transition>
                     <div x-import="views/Region/get">
                         <h6>Region.get</h6>
@@ -623,6 +653,16 @@
                     <button type="button" class="btn btn-outline-primary"
                             x-show="'country.filter'.includes(search.toLowerCase())"
                             @click="component = 'Country/filter'">Country.filter
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'objective.get'.includes(search.toLowerCase())"
+                            @click="component = 'Objective/get'">Objective.get
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'objective.filter'.includes(search.toLowerCase())"
+                            @click="component = 'Objective/filter'">Objective.filter
                     </button>
                     
                     <button type="button" class="btn btn-outline-primary"
