@@ -3163,6 +3163,25 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<input name="arn" type="String" value="#riskArn#"></input>
 				<expected-trace command="Customer.Risk.CreateAction" status="success"></expected-trace>
 			</activity>
+			<activity path="-select-" type="set-variables" description="Prepare objective" id="vIaN7s">
+				<input name="objectiveArn" type="String" value="anove:company:gate:objective:myobjective"></input>
+			</activity>
+			<activity path="Objective.create" description="Create an objective" type="mutation" id="nAE7MQ">
+				<input name="arn" type="String" value="#objectiveArn#"></input>
+				<input name="owner" type="String" value="#employeeArn#"></input>
+				<input name="startDate" type="String" value="2024-08-01"></input>
+				<input name="dueDate" type="String" value="2025-08-01"></input>
+				<input name="definitionOfDone" type="String" value="Hello World!"></input>
+				<expected-trace command="Customer.Objective.Create" status="success"></expected-trace>
+			</activity>
+			<activity path="Objective.get" type="query" view="Objective" description="Assert that the objective view is filled" id="7shrME">
+				<input name="key" type="String" value="#objectiveArn#"></input>
+				<expect-value name="owner" type="String" value="#employeeArn#"></expect-value>
+				<expect-value name="dueDate" type="String" value="2025-08-01"></expect-value>
+				<expect-value name="startDate" type="String" value="2024-08-01"></expect-value>
+				<expect-value name="definitionOfDone" type="String" value="Hello World!"></expect-value>
+				<expect-value name="completionPercentage" type="Int" value="0"></expect-value>
+			</activity>
 		</scenario>
 	</functional-scenarios>
 </draftsman>
