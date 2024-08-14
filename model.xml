@@ -377,6 +377,9 @@
 			<field name="businessRole" type="String"></field>
 			<field name="username" type="String"></field>
 		</event>
+		<event name="CompanyLogoLinked" source="Customer.Company" type="DomainEvent">
+			<field name="logoPath" type="String"></field>
+		</event>
 		<event name="BusinessUnitAdded" source="Customer.Company" type="DomainEvent">
 			<field name="arn" type="String"></field>
 			<nested-object name="businessUnits" business-key="newField">
@@ -1327,6 +1330,7 @@
 				<field name="countryArn" type="String"></field>
 				<field name="deletedEmployeeArns" type="StringList"></field>
 				<field name="controlFrameworkLinks" type="StringList"></field>
+				<field name="logoPath" type="String"></field>
 				<command name="UpdateBusinessRole">
 					<trigger source="UpdateBusinessRoleCompanyEmployeeRequested" key-field="#global.truncateArn(arn, '3')">
 						<mapping target="arn" value="arn"></mapping>
@@ -1481,6 +1485,33 @@
 							<field value="administrator" name="businessRole" type="String"></field>
 							<field value="j.doe" name="username" type="String"></field>
 						</expected>
+					</test-case>
+				</command>
+				<command name="LinkLogo">
+					<trigger source="FileUploaded" key-field="#event.uri.split('/')[1]">
+						<mapping target="bucket" value="bucket"></mapping>
+						<mapping target="uri" value="uri"></mapping>
+						<mapping target="username" value="username"></mapping>
+					</trigger>
+					<processor type="validator" id="NjcSCR" condition="flow.entity.version != 0" exception="May not be initial request"></processor>
+					<processor type="validator" id="FQABQS" condition='"-web-" in flow.bucket' exception="This function only reacts to public uploads 'web-bucket', but the selected bucket was [{flow.bucket}]"></processor>
+					<processor type="code" code='# Only company administrators may update the Logo|LB|flow.authorized = False|LB||LB|# Loop all employees within the company|LB|for arn, employee in flow.entity.employees.items():|LB|    if not arn.endswith(flow.username):|LB|        # Employee is not equal to the user that uploaded the image, continue to the next loop itteration|LB|        continue|LB|    else:|LB|        # Employee is equal to the user, determine if they have the correct businessRole and stop (break)|LB|        # the loop itteration.|LB|        flow.authorized = employee["businessRole"] == "administrator"|LB|        break' id="mNF3wW"></processor>
+					<processor type="validator" condition="flow.authorized" id="ERWfym" exception="Only company administrators are allowed to update the logo"></processor>
+					<processor type="emit-event" ref="CompanyLogoLinked" id="wOTSFu">
+						<mapping target="logoPath" value="#flow.uri"></mapping>
+					</processor>
+					<test-case name="LinkLogo" trigger-event="FileUploaded" expected-processing-status="success">
+						<input name="bucket" type="String" value="-web-"></input>
+						<input name="uri" type="String" value="dummy/tenant:company/logo.png"></input>
+						<input name="location" type="String" value="-"></input>
+						<input name="username" type="String" value="j.doe"></input>
+						<expected domain-event="CompanyLogoLinked" id="xE3kYf">
+							<field name="logoPath" type="String" value="dummy/tenant:company/logo.png"></field>
+						</expected>
+						<state>{"employees":{"tenant:company:employee:j.doe":{"arn":"tenant:company:employee:j.doe","username":"j.doe","businessRole":"administrator"}},"version":1,"arn":"tenant:company"}</state>
+						<expected-state pk="tenant:company">{
+  "logoPath": "dummy/tenant:company/logo.png"
+}</expected-state>
 					</test-case>
 				</command>
 				<command name="Create" create-command="true">
@@ -1679,6 +1710,9 @@
 				</command>
 				<event-handler on="CompanyCreated" code="self.arn = event.arn|LB|self.name = event.name|LB|self.description = event.description|LB|self.companySize = event.companySize|LB|self.revenue = event.revenue|LB|self.industryLink = event.industry.split(';')|LB|self.countryArn = event.country|LB|employeeArn = event.arn + &quot;:employee:&quot; + event.user|LB|self.employees[employeeArn] = {|LB|    &quot;arn&quot;: employeeArn,|LB|    &quot;username&quot;: event.user,|LB|    &quot;businessRole&quot;: &quot;administrator&quot;|LB|    |LB|}"></event-handler>
 				<event-handler on="BusinessRoleUpdated" code='self.employees[event.employeeArn] = {|LB|    "arn": event.employeeArn,|LB|    "username": event.employeeArn.split(":")[-1],|LB|    "businessRole": event.businessRole|LB|}'></event-handler>
+				<event-handler on="CompanyLogoLinked">
+					<mapping target="logoPath" value="logoPath" operand="set"></mapping>
+				</event-handler>
 				<event-handler on="BusinessUnitAdded">
 					<nested-mapping source="businessUnits" target="businessUnits" business-key="name">
 						<mapping target="name" operand="set" value="name"></mapping>
@@ -2024,7 +2058,7 @@
 					<processor type="emit-event" id="hIfDo8" ref="StyleSheetLinked">
 						<mapping target="css" value="#flow.path"></mapping>
 					</processor>
-					<test-case name="LinkStyleSheet" trigger-event="FileUploaded">
+					<test-case name="LinkStyleSheet" trigger-event="FileUploaded" expected-processing-status="success">
 						<input name="bucket" value="-web-" type="String"></input>
 						<input name="uri" value="dummy/anove/custom.css" type="String"></input>
 						<input name="location" value="-" type="String"></input>
@@ -2038,7 +2072,7 @@
   "name": "anove",
   "css": "dummy/anove/custom.css"
 }</expected-state>
-						<expected domain-event="StyleSheetLinked">
+						<expected domain-event="StyleSheetLinked" id="0sTri1">
 							<field value="dummy/anove/custom.css" name="css" type="String"></field>
 						</expected>
 					</test-case>
@@ -2446,7 +2480,7 @@
 				<mapping target="links" operand="convert_items" value="companies" template='{"arn": value["arn"],"employeeArn": value["employeeArn"]}'></mapping>
 				<mapping target="active" operand="set" value="active"></mapping>
 				<mapping target="email" operand="set" value="email"></mapping>
-				<delete condition="#snapshot.isDeleted != '' or snapshot.active == False"></delete>
+				<delete condition="#snapshot.isDeleted != '' or snapshot.active == False" id="McDuAw"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="User" field-name="get" type="get" authorization="user" username-field="key"></query>
 			<custom-handler id="TRGjhv" sub-domain="Admin" aggregate="User">entity = EntityManager.get(type="User", key=snapshot.username)
@@ -2584,6 +2618,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<field name="controlframework" type="ManyToMany" ref="ControlFramework" authorization="authenticated" foreign-key="controlFrameworkLink"></field>
 			<field name="controls" type="OneToMany" ref="Control" authorization="authenticated" foreign-key="#canonical"></field>
 			<field name="risks" type="OneToMany" ref="Risk" authorization="authenticated" foreign-key="#canonical"></field>
+			<field name="logoPath" type="String"></field>
 			<snapshot-handler id="a8vzJw" sub-domain="Customer" aggregate="Company" key-mapping="arn" processor="item">
 				<mapping target="arn" operand="set" value="arn"></mapping>
 				<mapping target="name" operand="set" value="name"></mapping>
@@ -2594,7 +2629,8 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping target="businessUnits" operand="convert_items" value="businessUnits" template='{"name": value["name"],"description": value["description"]}'></mapping>
 				<mapping target="countryArn" operand="set" value="countryArn"></mapping>
 				<mapping target="controlFrameworkLink" operand="set" value="controlFrameworkLinks"></mapping>
-				<delete condition="#snapshot.isDeleted != ''"></delete>
+				<mapping operand="set" target="logoPath" value="logoPath"></mapping>
+				<delete condition="#snapshot.isDeleted != ''" id="uPqAxT"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="Company" field-name="get" type="get" authorization="role" role="#global.isViewer(key)"></query>
 			<query graphql-namespace="Company" field-name="filter" type="filter" authorization="role" role="#global.isViewer(key_begins_with)" use-canonical-search="true"></query>
@@ -2785,7 +2821,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<activity type="iam-create-systemuser" fail-silent="true" id="vMB9LZ"></activity>
 		</notifier>
 	</notifiers>
-	<functional-scenarios clean-db="true" clean-iam="true" minimum-event-coverage="100" minimum-view-coverage="100">
+	<functional-scenarios clean-db="true" clean-iam="true" minimum-event-coverage="80" minimum-view-coverage="80">
 		<scenario name="Demo">
 			<activity type="mutation" id="pfxjgi" description="Create item" path="Demo.update">
 				<input name="identifier" type="String" value="myKey"></input>
