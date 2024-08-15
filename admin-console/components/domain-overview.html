@@ -7,6 +7,12 @@
                     <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
                         
                         <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateObjective'"
+                                x-show="'updateobjective'.includes(search.toLowerCase())">
+                            UpdateObjective
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
                                 @click="Draftsman.empty_track_and_trace_log();component = 'CreateObjective'"
                                 x-show="'createobjective'.includes(search.toLowerCase())">
                             CreateObjective
@@ -166,6 +172,14 @@
                 </center>
             </div>
             <div class="col-6">
+                
+                <div x-show="component == 'UpdateObjective'" x-cloak x-transition>
+                    <div x-import="commands/UpdateObjective">
+                        <h6>UpdateObjective</h6>
+                        <ui-UpdateObjective></ui-UpdateObjective>
+                    </div>
+                </div>
+
                 
                 <div x-show="component == 'CreateObjective'" x-cloak x-transition>
                     <div x-import="commands/CreateObjective">

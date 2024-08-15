@@ -119,14 +119,14 @@ The notifications are also stored in an array accessible from the AlpineJS conte
 ### The mutation tag
 
 The mutation tag is intended to make GraphQL mutations available within the AlpineJS context.
-<code class="html" x-include="/admin-console/components/commands/CreateObjective.html"></code>
+<code class="html" x-include="/admin-console/components/commands/UpdateObjective.html"></code>
 
 #### The basic concept
 ```html
-<draftsman-mutation command="CreateObjective" x-include="/prepared-statements/commands/CreateObjective.txt">
+<draftsman-mutation command="UpdateObjective" x-include="/prepared-statements/commands/UpdateObjective.txt">
 </draftsman-mutation>
 ```
-Registers a prepared statement (/prepared-statements/commands/CreateObjective.txt) as a command (CreateObjective) in the Draftsman framework. 
+Registers a prepared statement (/prepared-statements/commands/UpdateObjective.txt) as a command (UpdateObjective) in the Draftsman framework. 
 The body of the tag is imported by vimesh-ui.
 
 #### The form definition
@@ -136,7 +136,7 @@ showcased on the [Admin Console](/admin-console). We use [vimesh-ui's](https://g
 functionality to load it into the page, the element is hidden and accessible via the id. Note that this ID must be equal to
 the command.
 ```html
-<div style="display:none;" id="CreateObjective" x-include="/form-definitions/CreateObjective.json"></div>
+<div style="display:none;" id="UpdateObjective" x-include="/form-definitions/UpdateObjective.json"></div>
 ```
 
 #### The trace table
@@ -151,7 +151,7 @@ and id of the previous component identical, both should point to the command nam
 
 The submit button will execute the following statement:
 ```javascript
-$store.mutation.send('CreateObjective',{all-form-data});
+$store.mutation.send('UpdateObjective',{all-form-data});
 ```
 The will execute the registered command against the GraphQL API.
 We use bootstrap 5 for styling, but feel free to customize to your liking.
@@ -172,11 +172,11 @@ The trace tag is used to react to specific trace events after a mutation, for th
     2. Clear the form by dispatching a setdata event specific for our command and with an empty data object.
 
 ```html
-<draftsman-trace command="CreateObjective" 
+<draftsman-trace command="UpdateObjective" 
                  status="success" 
                  @trace="
                     Draftsman.empty_track_and_trace_log();
-                    $dispatch('setdata', { command: 'CreateObjective', data: {} });">
+                    $dispatch('setdata', { command: 'UpdateObjective', data: {} });">
 </draftsman-trace>
 ```
 
