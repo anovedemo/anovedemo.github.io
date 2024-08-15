@@ -1510,7 +1510,8 @@
 						</expected>
 						<state>{"employees":{"tenant:company:employee:j.doe":{"arn":"tenant:company:employee:j.doe","username":"j.doe","businessRole":"administrator"}},"version":1,"arn":"tenant:company"}</state>
 						<expected-state pk="tenant:company">{
-  "logoPath": "dummy/tenant:company/logo.png"
+  "logoPath": "dummy/tenant:company/logo.png",
+  "arn": "tenant:company"
 }</expected-state>
 					</test-case>
 				</command>
