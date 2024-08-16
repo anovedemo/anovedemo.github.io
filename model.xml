@@ -903,6 +903,7 @@
 						<mapping target="definitionOfDone" value="definitionOfDone"></mapping>
 						<mapping target="completionPercentage" value="completionPercentage"></mapping>
 					</trigger>
+					<processor type="validator" condition="flow.entity.version != 0" id="dZ7Tbj" exception="May not be the initial request"></processor>
 					<processor type="validator" condition="flow.entity.completionPercentage != 100" exception="Objective is completed, no update allowed" id="M6xxoD"></processor>
 					<processor condition="flow.completionPercentage &lt;= 100" type="validator" id="HMQDFP" exception="Completion percentage may not exceed 100%"></processor>
 					<processor condition="flow.completionPercentage &gt;= 0" type="validator" id="o0ua0x" exception="Completion may not be negative"></processor>
@@ -927,12 +928,43 @@
 						<state>{"arn":"anove:company:draftsman:objective:myobjective","owner":"anove:company:draftsman:employee:j.doe","startDate":"2024-08-01","dueDate":"2024-10-01","definitionOfDone":"Hello World!","completionPercentage":10,"version":1}</state>
 						<expected-state pk="anove:company:draftsman:objective:myobjective">{
   "arn": "anove:company:draftsman:objective:myobjective",
-  "owner" : "anove:company:draftsman:employee:j.doe",
+  "owner": "anove:company:draftsman:employee:j.doe",
   "startDate": "2024-08-01",
   "dueDate": "2024-11-01",
   "definitionOfDone": "Hello World!",
-  "completionPercentage" : 20
+  "completionPercentage": 20
 }</expected-state>
+					</test-case>
+					<test-case name="InitialRequest" trigger-event="UpdateObjectiveRequested" expected-processing-status="error">
+						<input name="arn" type="String" value="anove:company:draftsman:objective:myobjective"></input>
+						<input name="owner" type="String" value=""></input>
+						<input name="dueDate" type="String" value="2024-11-01"></input>
+						<input name="definitionOfDone" type="String" value=""></input>
+						<input name="completionPercentage" type="Int" value="20"></input>
+					</test-case>
+					<test-case name="AlreadyCompleted" trigger-event="UpdateObjectiveRequested" expected-processing-status="error">
+						<input name="arn" type="String" value="anove:company:draftsman:objective:myobjective"></input>
+						<input name="owner" type="String" value=""></input>
+						<input name="dueDate" type="String" value="2024-11-01"></input>
+						<input name="definitionOfDone" type="String" value=""></input>
+						<input name="completionPercentage" type="Int" value="20"></input>
+						<state>{"completionPercentage":100,"version":1}</state>
+					</test-case>
+					<test-case name="PercentageToHigh" trigger-event="UpdateObjectiveRequested" expected-processing-status="error">
+						<input name="arn" type="String" value="anove:company:draftsman:objective:myobjective"></input>
+						<input name="owner" type="String" value=""></input>
+						<input name="dueDate" type="String" value="2024-11-01"></input>
+						<input name="definitionOfDone" type="String" value=""></input>
+						<input name="completionPercentage" type="Int" value="101"></input>
+						<state>{"version":1}</state>
+					</test-case>
+					<test-case name="NegativePercentage" trigger-event="UpdateObjectiveRequested" expected-processing-status="error">
+						<input name="arn" type="String" value="anove:company:draftsman:objective:myobjective"></input>
+						<input name="owner" type="String" value=""></input>
+						<input name="dueDate" type="String" value="2024-11-01"></input>
+						<input name="definitionOfDone" type="String" value=""></input>
+						<input name="completionPercentage" type="Int" value="-1"></input>
+						<state>{"version":1}</state>
 					</test-case>
 				</command>
 				<event-handler on="ObjectiveUpdated" code="|LB|if event.owner:|LB|    self.owner = event.owner|LB|if event.dueDate:|LB|    self.dueDate = event.dueDate|LB|if event.definitionOfDone:|LB|    self.definitionOfDone = event.definitionOfDone|LB|if event.completionPercentage:|LB|    self.completionPercentage = event.completionPercentage|LB|"></event-handler>
@@ -3288,6 +3320,9 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			</activity>
 			<activity path="Objective.get" type="query" view="Objective" description="Check if the update was successfull" id="dJSWsm">
 				<input name="key" type="String" value="#objectiveArn#"></input>
+				<expect-value name="owner" type="String" value="#employeeArn#"></expect-value>
+				<expect-value name="startDate" type="String" value="2024-08-01"></expect-value>
+				<expect-value name="definitionOfDone" type="String" value="Hello World!"></expect-value>
 				<expect-value name="dueDate" type="String" value="2024-11-01"></expect-value>
 				<expect-value name="completionPercentage" type="Int" value="20"></expect-value>
 			</activity>
