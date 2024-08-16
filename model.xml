@@ -30,6 +30,9 @@
 			<field name="definitionOfDone" type="String" default=""></field>
 			<field name="completionPercentage" type="Int" default="0"></field>
 		</event>
+		<event graphql-namespace="Objective" graphql-name="reopen" name="ReopenObjectiveRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+			<field name="arn" type="String" pattern="{{ObjectiveArn}}"></field>
+		</event>
 		<event graphql-namespace="Objective" graphql-name="create" name="CreateObjectiveRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ObjectiveArn}}"></field>
 			<field name="owner" type="String" pattern="{{EmployeeArn}}"></field>
@@ -281,6 +284,9 @@
 			<field name="arn" type="String"></field>
 			<field name="nextAssessmentDate" type="String"></field>
 			<field name="controlOwner" type="String"></field>
+		</event>
+		<event name="ObjectiveReopened" source="Customer.Objective" type="DomainEvent">
+			<field name="arn" type="String"></field>
 		</event>
 		<event name="ObjectiveUpdated" source="Customer.Objective" type="DomainEvent">
 			<field name="owner" type="String"></field>
@@ -857,6 +863,30 @@
 				<field name="dueDate" type="String"></field>
 				<field name="definitionOfDone" type="String"></field>
 				<field name="completionPercentage" type="Int"></field>
+				<command name="Reopen">
+					<trigger source="ReopenObjectiveRequested" key-field="arn">
+						<mapping target="arn" value="arn"></mapping>
+					</trigger>
+					<processor type="validator" condition="flow.entity.completionPercentage == 100" id="c5fdma" exception="Objective is already open for updates"></processor>
+					<processor type="emit-event" id="agGboW" ref="ObjectiveReopened">
+						<mapping target="arn" value="#flow.arn"></mapping>
+					</processor>
+					<test-case name="ReopenObjective" trigger-event="ReopenObjectiveRequested" expected-processing-status="success">
+						<input name="arn" type="String" value="myobjective"></input>
+						<state>{"completionPercentage":100,"arn":"myobjective"}</state>
+						<expected domain-event="ObjectiveReopened" id="W5S5zD">
+							<field name="arn" type="String" value="myobjective"></field>
+						</expected>
+						<expected-state pk="myobjective">{
+  "arn": "myobjective",
+  "completionPercentage": 80
+}</expected-state>
+					</test-case>
+					<test-case name="InvalidRequest" trigger-event="ReopenObjectiveRequested" expected-processing-status="error">
+						<input name="arn" type="String" value="myobjective"></input>
+						<state>{"completionPercentage":20}</state>
+					</test-case>
+				</command>
 				<command name="Create" create-command="true">
 					<trigger source="CreateObjectiveRequested" key-field="arn">
 						<mapping target="arn" value="arn"></mapping>
@@ -967,6 +997,7 @@
 						<state>{"version":1}</state>
 					</test-case>
 				</command>
+				<event-handler on="ObjectiveReopened" code="self.completionPercentage = 80"></event-handler>
 				<event-handler on="ObjectiveUpdated" code="|LB|if event.owner:|LB|    self.owner = event.owner|LB|if event.dueDate:|LB|    self.dueDate = event.dueDate|LB|if event.definitionOfDone:|LB|    self.definitionOfDone = event.definitionOfDone|LB|if event.completionPercentage:|LB|    self.completionPercentage = event.completionPercentage|LB|"></event-handler>
 				<event-handler on="ObjectiveCreated">
 					<mapping target="arn" value="arn" operand="set"></mapping>
@@ -3325,6 +3356,42 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<expect-value name="definitionOfDone" type="String" value="Hello World!"></expect-value>
 				<expect-value name="dueDate" type="String" value="2024-11-01"></expect-value>
 				<expect-value name="completionPercentage" type="Int" value="20"></expect-value>
+			</activity>
+			<activity path="Objective.update" type="mutation" description="Complete the objective" id="gV4FHH">
+				<input name="arn" type="String" value="#objectiveArn#"></input>
+				<input name="owner" type="String" value=""></input>
+				<input name="dueDate" type="String" value=""></input>
+				<input name="definitionOfDone" type="String" value=""></input>
+				<input name="completionPercentage" type="Int" value="100"></input>
+				<expected-trace command="Customer.Objective.Update" status="success"></expected-trace>
+			</activity>
+			<activity path="Objective.update" type="mutation" description="Try to reopen the objective with an update command, this should fail." id="G5c2Ou">
+				<input name="arn" type="String" value="#objectiveArn#"></input>
+				<input name="owner" type="String" value=""></input>
+				<input name="dueDate" type="String" value=""></input>
+				<input name="definitionOfDone" type="String" value=""></input>
+				<input name="completionPercentage" type="Int" value="90"></input>
+				<expected-trace command="Customer.Objective.Update" status="error"></expected-trace>
+			</activity>
+			<activity path="Objective.reopen" type="mutation" description="Use the reopen command" id="Tu3B43">
+				<input name="arn" type="String" value="#objectiveArn#"></input>
+				<expected-trace command="Customer.Objective.Reopen" status="success"></expected-trace>
+			</activity>
+			<activity path="Objective.reopen" type="mutation" description="Use the reopen command again, this should fail" id="Wb2bZB">
+				<input name="arn" type="String" value="#objectiveArn#"></input>
+				<expected-trace command="Customer.Objective.Reopen" status="error"></expected-trace>
+			</activity>
+			<activity path="Objective.update" type="mutation" description="Set completion to 90%" id="9D03by">
+				<input name="arn" type="String" value="#objectiveArn#"></input>
+				<input name="owner" type="String" value=""></input>
+				<input name="dueDate" type="String" value=""></input>
+				<input name="definitionOfDone" type="String" value=""></input>
+				<input name="completionPercentage" type="Int" value="90"></input>
+				<expected-trace command="Customer.Objective.Update" status="success"></expected-trace>
+			</activity>
+			<activity path="Objective.get" type="query" view="Objective" description="Check if the objective is completed for 90%" id="dyZ9NW">
+				<input name="key" type="String" value="#objectiveArn#"></input>
+				<expect-value name="completionPercentage" type="Int" value="90"></expect-value>
 			</activity>
 		</scenario>
 	</functional-scenarios>
