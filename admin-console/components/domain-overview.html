@@ -25,6 +25,12 @@
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateObjectiveTask'"
+                                x-show="'updateobjectivetask'.includes(search.toLowerCase())">
+                            UpdateObjectiveTask
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
                                 @click="Draftsman.empty_track_and_trace_log();component = 'CreateObjectiveTask'"
                                 x-show="'createobjectivetask'.includes(search.toLowerCase())">
                             CreateObjectiveTask
@@ -205,6 +211,14 @@
                     <div x-import="commands/CreateObjective">
                         <h6>CreateObjective</h6>
                         <ui-CreateObjective></ui-CreateObjective>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'UpdateObjectiveTask'" x-cloak x-transition>
+                    <div x-import="commands/UpdateObjectiveTask">
+                        <h6>UpdateObjectiveTask</h6>
+                        <ui-UpdateObjectiveTask></ui-UpdateObjectiveTask>
                     </div>
                 </div>
 

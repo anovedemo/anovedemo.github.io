@@ -1,0 +1,26 @@
+<!-- This file is managed by Tracepaper -->
+<template x-component="UpdateObjectiveTask">
+    <div x-import="basic-form;tables">
+
+        <!-- The command object -->
+        <draftsman-mutation command="UpdateObjectiveTask" x-include="/prepared-statements/commands/UpdateObjectiveTask.txt" authenticated>
+        </draftsman-mutation>
+
+        <!-- The form definition -->
+        <div  style="display:none;" id="UpdateObjectiveTask"
+              x-include="/form-definitions/UpdateObjectiveTask.json"></div>
+
+        <!-- The trace table -->
+        <ui-trace-table></ui-trace-table>
+
+        <!-- The form -->
+        <ui-basic-form alias="UpdateObjectiveTask"></ui-basic-form>
+
+        <draftsman-trace command="UpdateObjectiveTask"
+              status="success"
+              @trace="
+                setTimeout(Draftsman.empty_track_and_trace_log,5000);
+                $dispatch('setdata', { command: 'UpdateObjectiveTask', data: {} });">
+        </draftsman-trace>
+    </div>
+</template>
