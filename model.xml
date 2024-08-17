@@ -41,6 +41,9 @@
 			<field name="dueDate" type="String" pattern="{{Date}}"></field>
 			<field name="definitionOfDone" type="String"></field>
 		</event>
+		<event graphql-namespace="Objective.Task" graphql-name="complete" name="CompleteObjectiveTaskRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+			<field name="arn" type="String" pattern="{{ObjectiveTaskArn}}"></field>
+		</event>
 		<event graphql-namespace="Objective.Task" graphql-name="update" name="UpdateObjectiveTaskRequested" type="ActorEvent" authorization="role" role="#global.isAdministrator(arn)">
 			<field name="arn" type="String" pattern="{{ObjectiveTaskArn}}"></field>
 			<field name="name" type="String" default=""></field>
@@ -325,6 +328,10 @@
 			<field name="startDate" type="String"></field>
 			<field name="dueDate" type="String"></field>
 			<field name="definitionOfDone" type="String"></field>
+		</event>
+		<event name="ObjectiveTaskCompleted" source="Customer.Objective" type="DomainEvent">
+			<field name="completeDate" type="String"></field>
+			<field name="arn" type="String"></field>
 		</event>
 		<event name="ObjectiveTaskUpdated" source="Customer.Objective" type="DomainEvent">
 			<field name="name" type="String"></field>
@@ -1005,6 +1012,62 @@
 						<state>{"completionPercentage":20}</state>
 					</test-case>
 				</command>
+				<command name="CompleteTask">
+					<trigger source="CompleteObjectiveTaskRequested" key-field="#global.truncateArn(arn,'5')">
+						<mapping target="arn" value="arn"></mapping>
+					</trigger>
+					<processor type="validator" id="krhc9a" condition="flow.arn in flow.entity.task" exception="Task with arn {flow.arn} not found in objective"></processor>
+					<processor condition='flow.entity.task[flow.arn]["completeDate"] == ""' type="validator" id="lT1jW2" exception="Task already completed"></processor>
+					<processor type="code" code='from datetime import date|LB|flow.completeDate = date.today().strftime("%Y-%m-%d")' id="vyIgIF"></processor>
+					<processor type="emit-event" id="7ylYYX" ref="ObjectiveTaskCompleted">
+						<mapping target="completeDate" value="#flow.completeDate"></mapping>
+						<mapping target="arn" value="#flow.arn"></mapping>
+					</processor>
+					<test-case name="CompleteTask" trigger-event="CompleteObjectiveTaskRequested" expected-processing-status="success">
+						<input name="arn" type="String" value="anove:company:gate:objective:myobjective:mytask"></input>
+						<expected domain-event="ObjectiveTaskCompleted" id="dY6AAd">
+							<field name="arn" type="String" value="anove:company:gate:objective:myobjective:mytask"></field>
+						</expected>
+						<state>{
+  "arn": "anove:company:gate:objective:myobjective",
+  "task": {
+    "anove:company:gate:objective:myobjective:mytask": {
+      "arn": "anove:company:gate:objective:myobjective:mytask",
+      "name": "text",
+      "description": "text",
+      "assignee": "text",
+      "dueDate": "text",
+      "completeDate": "",
+      "notes": "text"
+    }
+  }
+}</state>
+						<expected-state pk="businessKey">{
+  "arn": "businessKey"
+}</expected-state>
+					</test-case>
+					<test-case name="TaskNotFound" trigger-event="CompleteObjectiveTaskRequested" expected-processing-status="error">
+						<input name="arn" type="String" value="anove:company:gate:objective:myobjective:mytask"></input>
+						<state>{}</state>
+					</test-case>
+					<test-case name="TaskAlreadyCompleted" trigger-event="CompleteObjectiveTaskRequested" expected-processing-status="error">
+						<input name="arn" type="String" value="anove:company:gate:objective:myobjective:mytask"></input>
+						<state>{
+  "arn": "anove:company:gate:objective:myobjective",
+  "task": {
+    "anove:company:gate:objective:myobjective:mytask": {
+      "arn": "anove:company:gate:objective:myobjective:mytask",
+      "name": "text",
+      "description": "text",
+      "assignee": "text",
+      "dueDate": "text",
+      "completeDate": "2024-08-01",
+      "notes": "text"
+    }
+  }
+}</state>
+					</test-case>
+				</command>
 				<command name="UpdateTask">
 					<trigger source="UpdateObjectiveTaskRequested" key-field="#global.truncateArn(arn,'5')">
 						<mapping target="arn" value="arn"></mapping>
@@ -1053,7 +1116,29 @@
 							<field name="notes" type="String" value="Meanigfull notes"></field>
 							<field name="arn" type="String" value="anove:company:gate:objective:myobjective:mytask"></field>
 						</expected>
-						<expected-state pk="anove:company:gate:objective:myobjective">{"arn":"anove:company:gate:objective:myobjective"}</expected-state>
+						<expected-state pk="anove:company:gate:objective:myobjective">{
+  "arn": "anove:company:gate:objective:myobjective",
+  "task": {
+    "anove:company:gate:objective:myobjective:mytask": {
+      "arn": "anove:company:gate:objective:myobjective:mytask",
+      "name": "Test",
+      "description": "Hello World",
+      "assignee": "j.doe",
+      "dueDate": "2024-08-01",
+      "completeDate": "",
+      "notes": "Meanigfull notes"
+    }
+  }
+}</expected-state>
+					</test-case>
+					<test-case name="TaskDoesNotExist" trigger-event="UpdateObjectiveTaskRequested" expected-processing-status="error">
+						<input name="arn" type="String" value="anove:company:gate:objective:myobjective:mytask"></input>
+						<input name="name" type="String" value="text"></input>
+						<input name="description" type="String" value="text"></input>
+						<input name="assignee" type="String" value="text"></input>
+						<input name="dueDate" type="String" value="text"></input>
+						<input name="notes" type="String" value="text"></input>
+						<state>{}</state>
 					</test-case>
 				</command>
 				<command name="Create" create-command="true">
@@ -1176,6 +1261,7 @@
 					<mapping target="dueDate" value="dueDate" operand="set"></mapping>
 					<mapping target="definitionOfDone" value="definitionOfDone" operand="set"></mapping>
 				</event-handler>
+				<event-handler on="ObjectiveTaskCompleted" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|target["completeDate"] = event.completeDate|LB|self.task[event["arn"]] = target'></event-handler>
 				<event-handler on="ObjectiveTaskUpdated" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|if event.name:|LB|    target["name"] = event.name|LB|if event.description:|LB|    target["description"] = event.description|LB|if event.assignee:|LB|    target["assignee"] = event.assignee|LB|if event.dueDate:|LB|    target["dueDate"] = event.dueDate|LB|if event.notes:|LB|    target["notes"] = event.notes|LB|self.task[event["arn"]] = target'></event-handler>
 				<nested-object name="task" business-key="arn">
 					<field name="name" type="String"></field>
@@ -3603,6 +3689,23 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<activity path="Objective.get" type="query" view="Objective" description="Check if objective task is linked" id="PiXe7G">
 				<input name="key" type="String" value="#objectiveArn#"></input>
 				<expect-value name="tasks.0.name" type="String" value="My Task"></expect-value>
+			</activity>
+			<activity path="Objective.Task.update" type="mutation" description="Update task" id="wqaMKg">
+				<input name="arn" type="String" value="anove:company:gate:objective:myobjective:mytask"></input>
+				<input name="name" type="String" value="Test"></input>
+				<input name="description" type="String" value=""></input>
+				<input name="assignee" type="String" value=""></input>
+				<input name="dueDate" type="String" value=""></input>
+				<input name="notes" type="String" value=""></input>
+				<expected-trace command="Customer.Objective.UpdateTask" status="success"></expected-trace>
+			</activity>
+			<activity path="Objective.get" type="query" view="Objective" description="Check if task was updated" id="chUXOD">
+				<input name="key" type="String" value="#objectiveArn#"></input>
+				<expect-value name="tasks.0.name" type="String" value="Test"></expect-value>
+			</activity>
+			<activity path="Objective.Task.complete" type="mutation" description="Complete task" id="EZ3SkE">
+				<input name="arn" type="String" value="anove:company:gate:objective:myobjective:mytask"></input>
+				<expected-trace command="Customer.Objective.CompleteTask" status="success"></expected-trace>
 			</activity>
 		</scenario>
 	</functional-scenarios>
