@@ -1,0 +1,54 @@
+[
+  {
+    "type": "meta",
+    "message": "This file is managed by Tracepaper"
+  },
+  {
+    "name": "arn",
+    "title": "Arn",
+    "type": "String",
+    "pattern": "^[a-z]+:company:[a-z]+:objective:[^\\s]+:[^\\s]+$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "name",
+    "title": "Name",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "description",
+    "title": "Description",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "assignee",
+    "title": "Assignee",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "dueDate",
+    "title": "Duedate",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "notes",
+    "title": "Notes",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  }
+]

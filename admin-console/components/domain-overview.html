@@ -25,6 +25,12 @@
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'CreateObjectiveTask'"
+                                x-show="'createobjectivetask'.includes(search.toLowerCase())">
+                            CreateObjectiveTask
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
                                 @click="Draftsman.empty_track_and_trace_log();component = 'UpdateRegion'"
                                 x-show="'updateregion'.includes(search.toLowerCase())">
                             UpdateRegion
@@ -199,6 +205,14 @@
                     <div x-import="commands/CreateObjective">
                         <h6>CreateObjective</h6>
                         <ui-CreateObjective></ui-CreateObjective>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'CreateObjectiveTask'" x-cloak x-transition>
+                    <div x-import="commands/CreateObjectiveTask">
+                        <h6>CreateObjectiveTask</h6>
+                        <ui-CreateObjectiveTask></ui-CreateObjectiveTask>
                     </div>
                 </div>
 

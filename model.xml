@@ -3,6 +3,7 @@
 	<global>
 		<pattern name="ControlFrameworkArn" regex="^controlframework:[a-z0-9]+$"></pattern>
 		<pattern name="RegionArn" regex="^region:[A-Z]+$"></pattern>
+		<pattern name="ObjectiveTaskArn" regex="^{{ObjectiveArn}}:[^\s]+$"></pattern>
 		<pattern name="ObjectiveArn" regex="^{{CompanyArn}}:objective:[^\s]+$"></pattern>
 		<pattern name="CountryArn" regex="^{{RegionArn}}:country:[A-Z]+$"></pattern>
 		<pattern name="GeoCode" regex="^[A-Z]+$"></pattern>
@@ -39,6 +40,14 @@
 			<field name="startDate" type="String" pattern="{{Date}}"></field>
 			<field name="dueDate" type="String" pattern="{{Date}}"></field>
 			<field name="definitionOfDone" type="String"></field>
+		</event>
+		<event graphql-namespace="Objective.Task" graphql-name="create" name="CreateObjectiveTaskRequested" type="ActorEvent">
+			<field name="arn" type="String" pattern="{{ObjectiveTaskArn}}"></field>
+			<field name="name" type="String"></field>
+			<field name="description" type="String"></field>
+			<field name="assignee" type="String"></field>
+			<field name="dueDate" type="String"></field>
+			<field name="notes" type="String"></field>
 		</event>
 		<event graphql-namespace="Region" graphql-name="update" name="UpdateRegionRequested" authorization="role" type="ActorEvent" role="administrator">
 			<field name="arn" type="String" pattern="{{RegionArn}}"></field>
@@ -286,6 +295,14 @@
 			<field name="controlOwner" type="String"></field>
 		</event>
 		<event name="ObjectiveReopened" source="Customer.Objective" type="DomainEvent">
+			<field name="arn" type="String"></field>
+		</event>
+		<event name="ObjectiveTaskCreated" source="Customer.Objective" type="DomainEvent">
+			<field name="name" type="String"></field>
+			<field name="description" type="String"></field>
+			<field name="assignee" type="String"></field>
+			<field name="dueDate" type="String"></field>
+			<field name="notes" type="String"></field>
 			<field name="arn" type="String"></field>
 		</event>
 		<event name="ObjectiveUpdated" source="Customer.Objective" type="DomainEvent">
@@ -863,6 +880,91 @@
 				<field name="dueDate" type="String"></field>
 				<field name="definitionOfDone" type="String"></field>
 				<field name="completionPercentage" type="Int"></field>
+				<command name="CreateTask">
+					<trigger source="CreateObjectiveTaskRequested" key-field="#global.truncateArn(arn, '5')">
+						<mapping target="arn" value="arn"></mapping>
+						<mapping target="name" value="name"></mapping>
+						<mapping target="description" value="description"></mapping>
+						<mapping target="assignee" value="assignee"></mapping>
+						<mapping target="dueDate" value="dueDate"></mapping>
+						<mapping target="notes" value="notes"></mapping>
+					</trigger>
+					<processor type="validator" condition="flow.entity.version != 0" exception="Parent objective must exist" id="msajyO"></processor>
+					<processor type="validator" condition="not flow.arn in flow.entity.task" exception="Task with arn {flow.arn} already exists" id="86rQbQ"></processor>
+					<processor type="emit-event" ref="ObjectiveTaskCreated" id="DCiHuh">
+						<mapping target="name" value="#flow.name"></mapping>
+						<mapping target="description" value="#flow.description"></mapping>
+						<mapping target="assignee" value="#flow.assignee"></mapping>
+						<mapping target="dueDate" value="#flow.dueDate"></mapping>
+						<mapping target="notes" value="#flow.notes"></mapping>
+						<mapping target="arn" value="#flow.arn"></mapping>
+					</processor>
+					<test-case name="CreateTask" trigger-event="CreateObjectiveTaskRequested" expected-processing-status="success">
+						<input name="arn" type="String" value="anove:company:gate:objective:myobjective:mytask"></input>
+						<input name="name" type="String" value="My Task"></input>
+						<input name="description" type="String" value="Hello World!"></input>
+						<input name="assignee" type="String" value="anove:company:gate:employee:j.doe"></input>
+						<input name="dueDate" type="String" value="2025-01-01"></input>
+						<input name="notes" type="String" value="Some longer text"></input>
+						<state>{
+  "version": 1,
+  "arn": "anove:company:gate:objective:myobjective"
+}</state>
+						<expected domain-event="ObjectiveTaskCreated" id="3NKC1D">
+							<field name="name" type="String" value="My Task"></field>
+							<field name="description" type="String" value="Hello World!"></field>
+							<field name="assignee" type="String" value="anove:company:gate:employee:j.doe"></field>
+							<field name="dueDate" type="String" value="2025-01-01"></field>
+							<field name="notes" type="String" value="Some longer text"></field>
+							<field name="arn" type="String" value="anove:company:gate:objective:myobjective:mytask"></field>
+						</expected>
+						<expected-state pk="anove:company:gate:objective:myobjective">{
+  "arn": "anove:company:gate:objective:myobjective",
+  "task": {
+    "anove:company:gate:objective:myobjective:mytask": {
+      "arn": "anove:company:gate:objective:myobjective:mytask",
+      "name": "My Task",
+      "description": "Hello World!",
+      "assignee": "anove:company:gate:employee:j.doe",
+      "dueDate": "2025-01-01",
+      "completeDate": "",
+      "notes": "Some longer text"
+    }
+  }
+}</expected-state>
+					</test-case>
+					<test-case name="ParentDoesNotExist" trigger-event="CreateObjectiveTaskRequested" expected-processing-status="error">
+						<input name="arn" type="String" value="anove:company:gate:objective:myobjective:mytask"></input>
+						<input name="name" type="String" value="My Task"></input>
+						<input name="description" type="String" value="Hello World!"></input>
+						<input name="assignee" type="String" value="anove:company:gate:employee:j.doe"></input>
+						<input name="dueDate" type="String" value="2025-01-01"></input>
+						<input name="notes" type="String" value="Some longer text"></input>
+						<state>{}</state>
+					</test-case>
+					<test-case name="TaskWithArnAlreadyExist" trigger-event="CreateObjectiveTaskRequested" expected-processing-status="error">
+						<input name="arn" type="String" value="anove:company:gate:objective:myobjective:mytask"></input>
+						<input name="name" type="String" value="My Task"></input>
+						<input name="description" type="String" value="text"></input>
+						<input name="assignee" type="String" value="text"></input>
+						<input name="dueDate" type="String" value="text"></input>
+						<input name="notes" type="String" value="text"></input>
+						<state>{
+  "version": 1,
+  "task": {
+    "anove:company:gate:objective:myobjective:mytask": {
+      "arn": "anove:company:gate:objective:myobjective:mytask",
+      "name": "text",
+      "description": "text",
+      "assignee": "text",
+      "dueDate": "text",
+      "completeDate": "text",
+      "notes": "text"
+    }
+  }
+}</state>
+					</test-case>
+				</command>
 				<command name="Reopen">
 					<trigger source="ReopenObjectiveRequested" key-field="arn">
 						<mapping target="arn" value="arn"></mapping>
@@ -998,6 +1100,7 @@
 					</test-case>
 				</command>
 				<event-handler on="ObjectiveReopened" code="self.completionPercentage = 80"></event-handler>
+				<event-handler on="ObjectiveTaskCreated" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|target["name"] = event.name|LB|target["description"] = event.description|LB|target["assignee"] = event.assignee|LB|target["dueDate"] = event.dueDate|LB|target["completeDate"] = ""|LB|target["notes"] = event.notes|LB|target["arn"] = event.arn|LB|self.task[event["arn"]] = target'></event-handler>
 				<event-handler on="ObjectiveUpdated" code="|LB|if event.owner:|LB|    self.owner = event.owner|LB|if event.dueDate:|LB|    self.dueDate = event.dueDate|LB|if event.definitionOfDone:|LB|    self.definitionOfDone = event.definitionOfDone|LB|if event.completionPercentage:|LB|    self.completionPercentage = event.completionPercentage|LB|"></event-handler>
 				<event-handler on="ObjectiveCreated">
 					<mapping target="arn" value="arn" operand="set"></mapping>
@@ -1006,8 +1109,7 @@
 					<mapping target="dueDate" value="dueDate" operand="set"></mapping>
 					<mapping target="definitionOfDone" value="definitionOfDone" operand="set"></mapping>
 				</event-handler>
-				<nested-object name="task" business-key="id">
-					<field name="id" type="String"></field>
+				<nested-object name="task" business-key="arn">
 					<field name="name" type="String"></field>
 					<field name="description" type="String"></field>
 					<field name="assignee" type="String"></field>
@@ -2546,6 +2648,24 @@
 			<query graphql-namespace="Country" field-name="get" type="get" authorization="authenticated"></query>
 			<query graphql-namespace="Country" field-name="filter" type="filter" authorization="authenticated" use-canonical-search="true"></query>
 		</view>
+		<view name="ObjectiveTask" data-retention-days="-1" exclude-notification="false">
+			<field name="name" type="String"></field>
+			<field name="description" type="String"></field>
+			<field name="assignee" type="String"></field>
+			<field name="dueDate" type="String"></field>
+			<field name="completeDate" type="String"></field>
+			<field name="notes" type="String"></field>
+			<field name="arn" type="String" pk="true"></field>
+			<snapshot-handler id="RmM6HV" processor="dictionary" sub-domain="Customer" aggregate="Objective" dictionary="task" key-mapping="arn">
+				<mapping target="arn" value="arn" operand="set"></mapping>
+				<mapping target="dueDate" value="dueDate" operand="set"></mapping>
+				<mapping operand="set" target="name" value="name"></mapping>
+				<mapping operand="set" target="description" value="description"></mapping>
+				<mapping operand="set" target="assignee" value="assignee"></mapping>
+				<mapping operand="set" target="completeDate" value="completeDate"></mapping>
+				<mapping operand="set" target="notes" value="notes"></mapping>
+			</snapshot-handler>
+		</view>
 		<view name="Objective" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String" pk="true"></field>
 			<field name="owner" type="String"></field>
@@ -2553,6 +2673,7 @@
 			<field name="dueDate" type="String"></field>
 			<field name="definitionOfDone" type="String"></field>
 			<field name="completionPercentage" type="Int"></field>
+			<field name="tasks" type="OneToMany" ref="ObjectiveTask" authorization="authenticated" foreign-key="#canonical"></field>
 			<snapshot-handler id="UhHRig" processor="item" sub-domain="Customer" aggregate="Objective" key-mapping="arn">
 				<mapping target="arn" value="arn" operand="set"></mapping>
 				<mapping target="owner" value="owner" operand="set"></mapping>
@@ -2821,6 +2942,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<field name="employee" type="ManyToOne" ref="Employee" authorization="authenticated" foreign-key="owner"></field>
 			<field name="controlAssesment" type="OneToOne" ref="ControlAssessment" authorization="authenticated" foreign-key="arn"></field>
 			<field name="riskAction" type="OneToOne" ref="RiskAction" authorization="authenticated" foreign-key="arn"></field>
+			<field name="objectiveTask" type="OneToOne" ref="ObjectiveTask" authorization="authenticated" foreign-key="arn"></field>
 			<snapshot-handler id="EW0V9R" sub-domain="Customer" aggregate="Control" key-mapping="arn" processor="dictionary" dictionary="assessment">
 				<mapping target="arn" operand="set" value="arn"></mapping>
 				<mapping target="dueDate" operand="set" value="dueDate"></mapping>
@@ -2836,6 +2958,14 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping target="completeDate" operand="set" value="completeDate"></mapping>
 				<mapping target="owner" operand="set" value="assignee"></mapping>
 				<delete condition="#'completeDate' in item and item.completeDate != ''" id="8GNMz6"></delete>
+			</snapshot-handler>
+			<snapshot-handler id="0MrAiD" processor="dictionary" sub-domain="Customer" aggregate="Objective" dictionary="task" key-mapping="arn">
+				<mapping target="arn" value="arn" operand="set"></mapping>
+				<mapping target="owner" value="assignee" operand="set"></mapping>
+				<mapping target="dueDate" value="dueDate" operand="set"></mapping>
+				<mapping operand="set" target="completeDate" value="completeDate"></mapping>
+				<mapping operand="set" target="notes" value="notes"></mapping>
+				<delete id="58FLKq" condition="#'completeDate' in item and item.completeDate != ''"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="Task" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isViewer(key_begins_with)"></query>
 			<query graphql-namespace="Task" field-name="get" type="get" authorization="role" role="#global.isViewer(key)"></query>
