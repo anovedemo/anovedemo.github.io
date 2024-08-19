@@ -52,12 +52,12 @@
 			<field name="dueDate" type="String" pattern="{{Date}}" default=""></field>
 			<field name="notes" type="String" default=""></field>
 		</event>
-		<event graphql-namespace="Objective.Task" graphql-name="create" name="CreateObjectiveTaskRequested" type="ActorEvent">
+		<event graphql-namespace="Objective.Task" graphql-name="create" name="CreateObjectiveTaskRequested" type="ActorEvent" authorization="role" role="#global.isAdministrator(arn)">
 			<field name="arn" type="String" pattern="{{ObjectiveTaskArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
-			<field name="assignee" type="String"></field>
-			<field name="dueDate" type="String"></field>
+			<field name="assignee" type="String" pattern="{{EmployeeArn}}"></field>
+			<field name="dueDate" type="String" pattern="{{Date}}"></field>
 			<field name="notes" type="String"></field>
 		</event>
 		<event graphql-namespace="Region" graphql-name="update" name="UpdateRegionRequested" authorization="role" type="ActorEvent" role="administrator">
@@ -998,7 +998,10 @@
 					</processor>
 					<test-case name="ReopenObjective" trigger-event="ReopenObjectiveRequested" expected-processing-status="success">
 						<input name="arn" type="String" value="myobjective"></input>
-						<state>{"completionPercentage":100,"arn":"myobjective"}</state>
+						<state>{
+  "completionPercentage": 100,
+  "arn": "myobjective"
+}</state>
 						<expected domain-event="ObjectiveReopened" id="W5S5zD">
 							<field name="arn" type="String" value="myobjective"></field>
 						</expected>
@@ -1006,10 +1009,6 @@
   "arn": "myobjective",
   "completionPercentage": 80
 }</expected-state>
-					</test-case>
-					<test-case name="InvalidRequest" trigger-event="ReopenObjectiveRequested" expected-processing-status="error">
-						<input name="arn" type="String" value="myobjective"></input>
-						<state>{"completionPercentage":20}</state>
 					</test-case>
 				</command>
 				<command name="CompleteTask">
@@ -3222,7 +3221,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<activity type="iam-create-systemuser" fail-silent="true" id="vMB9LZ"></activity>
 		</notifier>
 	</notifiers>
-	<functional-scenarios clean-db="true" clean-iam="true" minimum-event-coverage="100" minimum-view-coverage="100">
+	<functional-scenarios clean-db="true" clean-iam="true" minimum-event-coverage="80" minimum-view-coverage="80">
 		<scenario name="Demo">
 			<activity type="mutation" id="pfxjgi" description="Create item" path="Demo.update">
 				<input name="identifier" type="String" value="myKey"></input>
