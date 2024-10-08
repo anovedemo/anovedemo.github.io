@@ -1,0 +1,38 @@
+[
+  {
+    "type": "meta",
+    "message": "This file is managed by Tracepaper"
+  },
+  {
+    "name": "arn",
+    "title": "Arn",
+    "type": "String",
+    "pattern": "^[a-z]+:company:[a-z]+:integration:[^\\s]+$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "requirements",
+    "title": "Requirements",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "reference",
+    "title": "Reference",
+    "type": "String",
+    "pattern": "^integration:[a-z0-9]+$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "owner",
+    "title": "Owner",
+    "type": "String",
+    "pattern": "^[a-z]+:company:[a-z]+:employee:[^\\s]+$",
+    "placeholder": "",
+    "default": ""
+  }
+]

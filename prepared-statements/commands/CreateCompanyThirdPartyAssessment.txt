@@ -1,0 +1,12 @@
+# This file is managed by Tracepaper
+mutation Create($arn: String = "", $name: String = "", $formBricksId: String = "") {
+  Company{
+    ThirdParty{
+      Assessment{
+        create(input: {arn: $arn,name: $name,formBricksId: $formBricksId}) {
+           correlationId
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,8 @@
+# This file is managed by Tracepaper
+mutation Update($arn: String = "", $description: String = "", $companySize: Int = 0, $revenue: String = "", $industryLink: String = "", $countryArn: String = "") {
+  Company{
+    update(input: {arn: $arn,description: $description,companySize: $companySize,revenue: $revenue,industryLink: $industryLink,countryArn: $countryArn}) {
+       correlationId
+    }
+  }
+}

@@ -1,0 +1,14 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query FilterIntegration {
+  Integration {
+    filter {
+       resultset { 
+        key
+        arn
+        name
+        logoPath
+        description
+      }
+    }
+  }
+}

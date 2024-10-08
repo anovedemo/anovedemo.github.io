@@ -1,0 +1,8 @@
+# This file is managed by Tracepaper
+mutation Delete($arn: String = "") {
+  RiskTemplate{
+    delete(input: {arn: $arn}) {
+       correlationId
+    }
+  }
+}

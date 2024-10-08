@@ -1,0 +1,8 @@
+# This file is managed by Tracepaper
+mutation Create($name: String = "", $description: String = "", $assessmentPeriodicity: String = "", $requirementLinks: String = "", $arn: String = "") {
+  ControlTemplate{
+    create(input: {name: $name,description: $description,assessmentPeriodicity: $assessmentPeriodicity,requirementLinks: $requirementLinks,arn: $arn}) {
+       correlationId
+    }
+  }
+}

@@ -1,0 +1,21 @@
+<!-- This file is managed by Tracepaper -->
+<template x-component="ControlTemplate-get">
+    <div x-import="tables;query-form">
+
+        <!-- The query object -->
+        <draftsman-query alias="ControlTemplateget" x-include="/prepared-statements/views/ControlTemplate/get.txt" authenticated>
+        </draftsman-query>
+
+        <!-- The form definition -->
+        <div  style="display:none;" id="ControlTemplateget"
+              x-include="/form-definitions/ControlTemplate/get.json"></div>
+
+        <!-- The query form -->
+        <ui-query-form alias="ControlTemplateget"></ui-query-form>
+
+        <!-- The data view -->
+        <ui-item-table alias="ControlTemplateget" path="get"></ui-item-table>
+        
+
+    </div>
+</template>

@@ -1,0 +1,19 @@
+<!-- This file is managed by Tracepaper -->
+<template x-component="ProcessingActivity-filter">
+    <div x-import="tables;query-form">
+
+        <!-- The query object -->
+        <draftsman-query alias="ProcessingActivityfilter" x-include="/prepared-statements/views/ProcessingActivity/filter.txt" authenticated>
+        </draftsman-query>
+
+        <!-- The form definition -->
+        <div  style="display:none;" id="ProcessingActivityfilter"
+              x-include="/form-definitions/ProcessingActivity/filter.json"></div>
+
+        <!-- The query form -->
+        <ui-query-form alias="ProcessingActivityfilter"></ui-query-form>
+
+        <!-- The data view --><ui-collection-table alias="ProcessingActivityfilter" path="filter.resultset"></ui-collection-table>
+
+    </div>
+</template>

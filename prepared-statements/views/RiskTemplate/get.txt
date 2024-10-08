@@ -1,0 +1,17 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query GetRiskTemplate($key: ID = "") {
+  RiskTemplate {
+    get(key: $key) {
+      key
+      arn
+      name
+      description
+      grossLikelihood
+      grossImpact
+      reviewPeriodicity
+      templateVersion
+      reference
+      previousVersion
+    }
+  }
+}

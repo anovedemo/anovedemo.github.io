@@ -1,0 +1,16 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query GetAsset($key: ID = "") {
+  Asset {
+    get(key: $key) {
+      key
+      arn
+      name
+      description
+      owner
+      confidentiality
+      integrity
+      availability
+      privacy
+    }
+  }
+}

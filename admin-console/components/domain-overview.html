@@ -7,45 +7,33 @@
                     <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
                         
                         <button type="button" class="btn btn-outline-primary"
-                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateObjective'"
-                                x-show="'updateobjective'.includes(search.toLowerCase())">
-                            UpdateObjective
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateControlTemplate'"
+                                x-show="'updatecontroltemplate'.includes(search.toLowerCase())">
+                            UpdateControlTemplate
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
-                                @click="Draftsman.empty_track_and_trace_log();component = 'ReopenObjective'"
-                                x-show="'reopenobjective'.includes(search.toLowerCase())">
-                            ReopenObjective
+                                @click="Draftsman.empty_track_and_trace_log();component = 'ReleaseControlTemplate'"
+                                x-show="'releasecontroltemplate'.includes(search.toLowerCase())">
+                            ReleaseControlTemplate
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
-                                @click="Draftsman.empty_track_and_trace_log();component = 'CreateObjective'"
-                                x-show="'createobjective'.includes(search.toLowerCase())">
-                            CreateObjective
+                                @click="Draftsman.empty_track_and_trace_log();component = 'CreateControlTemplate'"
+                                x-show="'createcontroltemplate'.includes(search.toLowerCase())">
+                            CreateControlTemplate
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
-                                @click="Draftsman.empty_track_and_trace_log();component = 'CompleteObjectiveTask'"
-                                x-show="'completeobjectivetask'.includes(search.toLowerCase())">
-                            CompleteObjectiveTask
+                                @click="Draftsman.empty_track_and_trace_log();component = 'DeleteControlTemplate'"
+                                x-show="'deletecontroltemplate'.includes(search.toLowerCase())">
+                            DeleteControlTemplate
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
-                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateObjectiveTask'"
-                                x-show="'updateobjectivetask'.includes(search.toLowerCase())">
-                            UpdateObjectiveTask
-                        </button>
-                        
-                        <button type="button" class="btn btn-outline-primary"
-                                @click="Draftsman.empty_track_and_trace_log();component = 'CreateObjectiveTask'"
-                                x-show="'createobjectivetask'.includes(search.toLowerCase())">
-                            CreateObjectiveTask
-                        </button>
-                        
-                        <button type="button" class="btn btn-outline-primary"
-                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateRegion'"
-                                x-show="'updateregion'.includes(search.toLowerCase())">
-                            UpdateRegion
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateUser'"
+                                x-show="'updateuser'.includes(search.toLowerCase())">
+                            UpdateUser
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
@@ -55,9 +43,45 @@
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
-                                @click="Draftsman.empty_track_and_trace_log();component = 'CreateTenant'"
-                                x-show="'createtenant'.includes(search.toLowerCase())">
-                            CreateTenant
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateRiskTemplate'"
+                                x-show="'updaterisktemplate'.includes(search.toLowerCase())">
+                            UpdateRiskTemplate
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'DeleteRiskTemplate'"
+                                x-show="'deleterisktemplate'.includes(search.toLowerCase())">
+                            DeleteRiskTemplate
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'CreateRiskTemplate'"
+                                x-show="'createrisktemplate'.includes(search.toLowerCase())">
+                            CreateRiskTemplate
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'ReleaseRiskTemplate'"
+                                x-show="'releaserisktemplate'.includes(search.toLowerCase())">
+                            ReleaseRiskTemplate
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'CreateThirdPartyTemplate'"
+                                x-show="'createthirdpartytemplate'.includes(search.toLowerCase())">
+                            CreateThirdPartyTemplate
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateThirdPartyTemplate'"
+                                x-show="'updatethirdpartytemplate'.includes(search.toLowerCase())">
+                            UpdateThirdPartyTemplate
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'DeleteThirdPartyTemplate'"
+                                x-show="'deletethirdpartytemplate'.includes(search.toLowerCase())">
+                            DeleteThirdPartyTemplate
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
@@ -67,9 +91,111 @@
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'DeleteControlFramework'"
+                                x-show="'deletecontrolframework'.includes(search.toLowerCase())">
+                            DeleteControlFramework
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateControlFramework'"
+                                x-show="'updatecontrolframework'.includes(search.toLowerCase())">
+                            UpdateControlFramework
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'LinkStyleSheetTenant'"
+                                x-show="'linkstylesheettenant'.includes(search.toLowerCase())">
+                            LinkStyleSheetTenant
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateTenant'"
+                                x-show="'updatetenant'.includes(search.toLowerCase())">
+                            UpdateTenant
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'LinkLogoTenant'"
+                                x-show="'linklogotenant'.includes(search.toLowerCase())">
+                            LinkLogoTenant
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'DeleteTenant'"
+                                x-show="'deletetenant'.includes(search.toLowerCase())">
+                            DeleteTenant
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'CreateTenant'"
+                                x-show="'createtenant'.includes(search.toLowerCase())">
+                            CreateTenant
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'LinkLogoIntegrations'"
+                                x-show="'linklogointegrations'.includes(search.toLowerCase())">
+                            LinkLogoIntegrations
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'CreateIntegrations'"
+                                x-show="'createintegrations'.includes(search.toLowerCase())">
+                            CreateIntegrations
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateIntegrations'"
+                                x-show="'updateintegrations'.includes(search.toLowerCase())">
+                            UpdateIntegrations
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'DeleteIntegrations'"
+                                x-show="'deleteintegrations'.includes(search.toLowerCase())">
+                            DeleteIntegrations
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'DeleteRequirement'"
+                                x-show="'deleterequirement'.includes(search.toLowerCase())">
+                            DeleteRequirement
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'AddRequirement'"
+                                x-show="'addrequirement'.includes(search.toLowerCase())">
+                            AddRequirement
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateRequirement'"
+                                x-show="'updaterequirement'.includes(search.toLowerCase())">
+                            UpdateRequirement
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'LinkLogoCompany'"
+                                x-show="'linklogocompany'.includes(search.toLowerCase())">
+                            LinkLogoCompany
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
                                 @click="Draftsman.empty_track_and_trace_log();component = 'UnlinkControlFrameworkCompany'"
                                 x-show="'unlinkcontrolframeworkcompany'.includes(search.toLowerCase())">
                             UnlinkControlFrameworkCompany
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateCompany'"
+                                x-show="'updatecompany'.includes(search.toLowerCase())">
+                            UpdateCompany
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'CreateCompany'"
+                                x-show="'createcompany'.includes(search.toLowerCase())">
+                            CreateCompany
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
@@ -79,9 +205,9 @@
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
-                                @click="Draftsman.empty_track_and_trace_log();component = 'CreateCompany'"
-                                x-show="'createcompany'.includes(search.toLowerCase())">
-                            CreateCompany
+                                @click="Draftsman.empty_track_and_trace_log();component = 'DeleteCompany'"
+                                x-show="'deletecompany'.includes(search.toLowerCase())">
+                            DeleteCompany
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
@@ -97,9 +223,15 @@
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
-                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateCompanyControlAssessment'"
-                                x-show="'updatecompanycontrolassessment'.includes(search.toLowerCase())">
-                            UpdateCompanyControlAssessment
+                                @click="Draftsman.empty_track_and_trace_log();component = 'CreateFromTemplateCompanyControl'"
+                                x-show="'createfromtemplatecompanycontrol'.includes(search.toLowerCase())">
+                            CreateFromTemplateCompanyControl
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'DeleteCompanyControl'"
+                                x-show="'deletecompanycontrol'.includes(search.toLowerCase())">
+                            DeleteCompanyControl
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
@@ -115,15 +247,81 @@
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
-                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateBusinessRoleCompanyEmployee'"
-                                x-show="'updatebusinessrolecompanyemployee'.includes(search.toLowerCase())">
-                            UpdateBusinessRoleCompanyEmployee
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateCompanyControlAssessment'"
+                                x-show="'updatecompanycontrolassessment'.includes(search.toLowerCase())">
+                            UpdateCompanyControlAssessment
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
-                                @click="Draftsman.empty_track_and_trace_log();component = 'AddCompanyBusinessUnit'"
-                                x-show="'addcompanybusinessunit'.includes(search.toLowerCase())">
-                            AddCompanyBusinessUnit
+                                @click="Draftsman.empty_track_and_trace_log();component = 'DeleteCompanyThirdParty'"
+                                x-show="'deletecompanythirdparty'.includes(search.toLowerCase())">
+                            DeleteCompanyThirdParty
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'LinkSubprocessorCompanyThirdParty'"
+                                x-show="'linksubprocessorcompanythirdparty'.includes(search.toLowerCase())">
+                            LinkSubprocessorCompanyThirdParty
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateCompanyThirdParty'"
+                                x-show="'updatecompanythirdparty'.includes(search.toLowerCase())">
+                            UpdateCompanyThirdParty
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'CreateCompanyThirdParty'"
+                                x-show="'createcompanythirdparty'.includes(search.toLowerCase())">
+                            CreateCompanyThirdParty
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UnlinkSubprocessorCompanyThirdParty'"
+                                x-show="'unlinksubprocessorcompanythirdparty'.includes(search.toLowerCase())">
+                            UnlinkSubprocessorCompanyThirdParty
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'CreateCompanyThirdPartyAssessment'"
+                                x-show="'createcompanythirdpartyassessment'.includes(search.toLowerCase())">
+                            CreateCompanyThirdPartyAssessment
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'DeleteCompanyThirdPartyAssessment'"
+                                x-show="'deletecompanythirdpartyassessment'.includes(search.toLowerCase())">
+                            DeleteCompanyThirdPartyAssessment
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateCompanyThirdPartyAssessment'"
+                                x-show="'updatecompanythirdpartyassessment'.includes(search.toLowerCase())">
+                            UpdateCompanyThirdPartyAssessment
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateCompanyThirdPartyTask'"
+                                x-show="'updatecompanythirdpartytask'.includes(search.toLowerCase())">
+                            UpdateCompanyThirdPartyTask
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'CreateCompanyThirdPartyTask'"
+                                x-show="'createcompanythirdpartytask'.includes(search.toLowerCase())">
+                            CreateCompanyThirdPartyTask
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'CompleteCompanyThirdPartyTask'"
+                                x-show="'completecompanythirdpartytask'.includes(search.toLowerCase())">
+                            CompleteCompanyThirdPartyTask
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateBusinessRoleCompanyEmployee'"
+                                x-show="'updatebusinessrolecompanyemployee'.includes(search.toLowerCase())">
+                            UpdateBusinessRoleCompanyEmployee
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
@@ -133,15 +331,171 @@
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'AddCompanyBusinessUnit'"
+                                x-show="'addcompanybusinessunit'.includes(search.toLowerCase())">
+                            AddCompanyBusinessUnit
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
                                 @click="Draftsman.empty_track_and_trace_log();component = 'UpdateCompanyBusinessUnit'"
                                 x-show="'updatecompanybusinessunit'.includes(search.toLowerCase())">
                             UpdateCompanyBusinessUnit
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
-                                @click="Draftsman.empty_track_and_trace_log();component = 'CreateCompanyRisk'"
-                                x-show="'createcompanyrisk'.includes(search.toLowerCase())">
-                            CreateCompanyRisk
+                                @click="Draftsman.empty_track_and_trace_log();component = 'AddNoteCompanyIntegrationImplementation'"
+                                x-show="'addnotecompanyintegrationimplementation'.includes(search.toLowerCase())">
+                            AddNoteCompanyIntegrationImplementation
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'ChangeStatusCompanyIntegrationImplementation'"
+                                x-show="'changestatuscompanyintegrationimplementation'.includes(search.toLowerCase())">
+                            ChangeStatusCompanyIntegrationImplementation
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'RequestCompanyIntegrationImplementation'"
+                                x-show="'requestcompanyintegrationimplementation'.includes(search.toLowerCase())">
+                            RequestCompanyIntegrationImplementation
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'DeleteCompanyIntegrationImplementation'"
+                                x-show="'deletecompanyintegrationimplementation'.includes(search.toLowerCase())">
+                            DeleteCompanyIntegrationImplementation
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'CreateCompanyObjective'"
+                                x-show="'createcompanyobjective'.includes(search.toLowerCase())">
+                            CreateCompanyObjective
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateCompanyObjective'"
+                                x-show="'updatecompanyobjective'.includes(search.toLowerCase())">
+                            UpdateCompanyObjective
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'ReopenCompanyObjective'"
+                                x-show="'reopencompanyobjective'.includes(search.toLowerCase())">
+                            ReopenCompanyObjective
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'DeleteCompanyObjective'"
+                                x-show="'deletecompanyobjective'.includes(search.toLowerCase())">
+                            DeleteCompanyObjective
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateCompanyObjectiveTask'"
+                                x-show="'updatecompanyobjectivetask'.includes(search.toLowerCase())">
+                            UpdateCompanyObjectiveTask
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'CompleteCompanyObjectiveTask'"
+                                x-show="'completecompanyobjectivetask'.includes(search.toLowerCase())">
+                            CompleteCompanyObjectiveTask
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'CreateCompanyObjectiveTask'"
+                                x-show="'createcompanyobjectivetask'.includes(search.toLowerCase())">
+                            CreateCompanyObjectiveTask
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'CreateCompanyAsset'"
+                                x-show="'createcompanyasset'.includes(search.toLowerCase())">
+                            CreateCompanyAsset
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'DeleteCompanyAsset'"
+                                x-show="'deletecompanyasset'.includes(search.toLowerCase())">
+                            DeleteCompanyAsset
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateCompanyAsset'"
+                                x-show="'updatecompanyasset'.includes(search.toLowerCase())">
+                            UpdateCompanyAsset
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'CompleteCompanyAssetTask'"
+                                x-show="'completecompanyassettask'.includes(search.toLowerCase())">
+                            CompleteCompanyAssetTask
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateCompanyAssetTask'"
+                                x-show="'updatecompanyassettask'.includes(search.toLowerCase())">
+                            UpdateCompanyAssetTask
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'CreateCompanyAssetTask'"
+                                x-show="'createcompanyassettask'.includes(search.toLowerCase())">
+                            CreateCompanyAssetTask
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'CreateCompanyProcessingActivity'"
+                                x-show="'createcompanyprocessingactivity'.includes(search.toLowerCase())">
+                            CreateCompanyProcessingActivity
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateCompanyProcessingActivity'"
+                                x-show="'updatecompanyprocessingactivity'.includes(search.toLowerCase())">
+                            UpdateCompanyProcessingActivity
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'DeleteCompanyProcessingActivity'"
+                                x-show="'deletecompanyprocessingactivity'.includes(search.toLowerCase())">
+                            DeleteCompanyProcessingActivity
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateCompanyProcessingActivityTask'"
+                                x-show="'updatecompanyprocessingactivitytask'.includes(search.toLowerCase())">
+                            UpdateCompanyProcessingActivityTask
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'CreateCompanyProcessingActivityTask'"
+                                x-show="'createcompanyprocessingactivitytask'.includes(search.toLowerCase())">
+                            CreateCompanyProcessingActivityTask
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'CompleteCompanyProcessingActivityTask'"
+                                x-show="'completecompanyprocessingactivitytask'.includes(search.toLowerCase())">
+                            CompleteCompanyProcessingActivityTask
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'StartAssessmentCompanyRisk'"
+                                x-show="'startassessmentcompanyrisk'.includes(search.toLowerCase())">
+                            StartAssessmentCompanyRisk
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'CreateFromTemplateCompanyRisk'"
+                                x-show="'createfromtemplatecompanyrisk'.includes(search.toLowerCase())">
+                            CreateFromTemplateCompanyRisk
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'DeleteCompanyRisk'"
+                                x-show="'deletecompanyrisk'.includes(search.toLowerCase())">
+                            DeleteCompanyRisk
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
@@ -151,9 +505,15 @@
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
-                                @click="Draftsman.empty_track_and_trace_log();component = 'StartAssessmentCompanyRisk'"
-                                x-show="'startassessmentcompanyrisk'.includes(search.toLowerCase())">
-                            StartAssessmentCompanyRisk
+                                @click="Draftsman.empty_track_and_trace_log();component = 'CreateCompanyRisk'"
+                                x-show="'createcompanyrisk'.includes(search.toLowerCase())">
+                            CreateCompanyRisk
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateCompanyRiskAction'"
+                                x-show="'updatecompanyriskaction'.includes(search.toLowerCase())">
+                            UpdateCompanyRiskAction
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
@@ -169,27 +529,33 @@
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
-                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateCompanyRiskAction'"
-                                x-show="'updatecompanyriskaction'.includes(search.toLowerCase())">
-                            UpdateCompanyRiskAction
-                        </button>
-                        
-                        <button type="button" class="btn btn-outline-primary"
-                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateDemo'"
-                                x-show="'updatedemo'.includes(search.toLowerCase())">
-                            UpdateDemo
-                        </button>
-                        
-                        <button type="button" class="btn btn-outline-primary"
                                 @click="Draftsman.empty_track_and_trace_log();component = 'AddIndustry'"
                                 x-show="'addindustry'.includes(search.toLowerCase())">
                             AddIndustry
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
-                                @click="Draftsman.empty_track_and_trace_log();component = 'AddRequirement'"
-                                x-show="'addrequirement'.includes(search.toLowerCase())">
-                            AddRequirement
+                                @click="Draftsman.empty_track_and_trace_log();component = 'DeleteIndustry'"
+                                x-show="'deleteindustry'.includes(search.toLowerCase())">
+                            DeleteIndustry
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateIndustry'"
+                                x-show="'updateindustry'.includes(search.toLowerCase())">
+                            UpdateIndustry
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'DeleteRegion'"
+                                x-show="'deleteregion'.includes(search.toLowerCase())">
+                            DeleteRegion
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateRegion'"
+                                x-show="'updateregion'.includes(search.toLowerCase())">
+                            UpdateRegion
                         </button>
                         
                     </div>
@@ -197,58 +563,42 @@
             </div>
             <div class="col-6">
                 
-                <div x-show="component == 'UpdateObjective'" x-cloak x-transition>
-                    <div x-import="commands/UpdateObjective">
-                        <h6>UpdateObjective</h6>
-                        <ui-UpdateObjective></ui-UpdateObjective>
+                <div x-show="component == 'UpdateControlTemplate'" x-cloak x-transition>
+                    <div x-import="commands/UpdateControlTemplate">
+                        <h6>UpdateControlTemplate</h6>
+                        <ui-UpdateControlTemplate></ui-UpdateControlTemplate>
                     </div>
                 </div>
 
                 
-                <div x-show="component == 'ReopenObjective'" x-cloak x-transition>
-                    <div x-import="commands/ReopenObjective">
-                        <h6>ReopenObjective</h6>
-                        <ui-ReopenObjective></ui-ReopenObjective>
+                <div x-show="component == 'ReleaseControlTemplate'" x-cloak x-transition>
+                    <div x-import="commands/ReleaseControlTemplate">
+                        <h6>ReleaseControlTemplate</h6>
+                        <ui-ReleaseControlTemplate></ui-ReleaseControlTemplate>
                     </div>
                 </div>
 
                 
-                <div x-show="component == 'CreateObjective'" x-cloak x-transition>
-                    <div x-import="commands/CreateObjective">
-                        <h6>CreateObjective</h6>
-                        <ui-CreateObjective></ui-CreateObjective>
+                <div x-show="component == 'CreateControlTemplate'" x-cloak x-transition>
+                    <div x-import="commands/CreateControlTemplate">
+                        <h6>CreateControlTemplate</h6>
+                        <ui-CreateControlTemplate></ui-CreateControlTemplate>
                     </div>
                 </div>
 
                 
-                <div x-show="component == 'CompleteObjectiveTask'" x-cloak x-transition>
-                    <div x-import="commands/CompleteObjectiveTask">
-                        <h6>CompleteObjectiveTask</h6>
-                        <ui-CompleteObjectiveTask></ui-CompleteObjectiveTask>
+                <div x-show="component == 'DeleteControlTemplate'" x-cloak x-transition>
+                    <div x-import="commands/DeleteControlTemplate">
+                        <h6>DeleteControlTemplate</h6>
+                        <ui-DeleteControlTemplate></ui-DeleteControlTemplate>
                     </div>
                 </div>
 
                 
-                <div x-show="component == 'UpdateObjectiveTask'" x-cloak x-transition>
-                    <div x-import="commands/UpdateObjectiveTask">
-                        <h6>UpdateObjectiveTask</h6>
-                        <ui-UpdateObjectiveTask></ui-UpdateObjectiveTask>
-                    </div>
-                </div>
-
-                
-                <div x-show="component == 'CreateObjectiveTask'" x-cloak x-transition>
-                    <div x-import="commands/CreateObjectiveTask">
-                        <h6>CreateObjectiveTask</h6>
-                        <ui-CreateObjectiveTask></ui-CreateObjectiveTask>
-                    </div>
-                </div>
-
-                
-                <div x-show="component == 'UpdateRegion'" x-cloak x-transition>
-                    <div x-import="commands/UpdateRegion">
-                        <h6>UpdateRegion</h6>
-                        <ui-UpdateRegion></ui-UpdateRegion>
+                <div x-show="component == 'UpdateUser'" x-cloak x-transition>
+                    <div x-import="commands/UpdateUser">
+                        <h6>UpdateUser</h6>
+                        <ui-UpdateUser></ui-UpdateUser>
                     </div>
                 </div>
 
@@ -261,10 +611,58 @@
                 </div>
 
                 
-                <div x-show="component == 'CreateTenant'" x-cloak x-transition>
-                    <div x-import="commands/CreateTenant">
-                        <h6>CreateTenant</h6>
-                        <ui-CreateTenant></ui-CreateTenant>
+                <div x-show="component == 'UpdateRiskTemplate'" x-cloak x-transition>
+                    <div x-import="commands/UpdateRiskTemplate">
+                        <h6>UpdateRiskTemplate</h6>
+                        <ui-UpdateRiskTemplate></ui-UpdateRiskTemplate>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'DeleteRiskTemplate'" x-cloak x-transition>
+                    <div x-import="commands/DeleteRiskTemplate">
+                        <h6>DeleteRiskTemplate</h6>
+                        <ui-DeleteRiskTemplate></ui-DeleteRiskTemplate>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'CreateRiskTemplate'" x-cloak x-transition>
+                    <div x-import="commands/CreateRiskTemplate">
+                        <h6>CreateRiskTemplate</h6>
+                        <ui-CreateRiskTemplate></ui-CreateRiskTemplate>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'ReleaseRiskTemplate'" x-cloak x-transition>
+                    <div x-import="commands/ReleaseRiskTemplate">
+                        <h6>ReleaseRiskTemplate</h6>
+                        <ui-ReleaseRiskTemplate></ui-ReleaseRiskTemplate>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'CreateThirdPartyTemplate'" x-cloak x-transition>
+                    <div x-import="commands/CreateThirdPartyTemplate">
+                        <h6>CreateThirdPartyTemplate</h6>
+                        <ui-CreateThirdPartyTemplate></ui-CreateThirdPartyTemplate>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'UpdateThirdPartyTemplate'" x-cloak x-transition>
+                    <div x-import="commands/UpdateThirdPartyTemplate">
+                        <h6>UpdateThirdPartyTemplate</h6>
+                        <ui-UpdateThirdPartyTemplate></ui-UpdateThirdPartyTemplate>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'DeleteThirdPartyTemplate'" x-cloak x-transition>
+                    <div x-import="commands/DeleteThirdPartyTemplate">
+                        <h6>DeleteThirdPartyTemplate</h6>
+                        <ui-DeleteThirdPartyTemplate></ui-DeleteThirdPartyTemplate>
                     </div>
                 </div>
 
@@ -277,10 +675,146 @@
                 </div>
 
                 
+                <div x-show="component == 'DeleteControlFramework'" x-cloak x-transition>
+                    <div x-import="commands/DeleteControlFramework">
+                        <h6>DeleteControlFramework</h6>
+                        <ui-DeleteControlFramework></ui-DeleteControlFramework>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'UpdateControlFramework'" x-cloak x-transition>
+                    <div x-import="commands/UpdateControlFramework">
+                        <h6>UpdateControlFramework</h6>
+                        <ui-UpdateControlFramework></ui-UpdateControlFramework>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'LinkStyleSheetTenant'" x-cloak x-transition>
+                    <div x-import="commands/LinkStyleSheetTenant">
+                        <h6>LinkStyleSheetTenant</h6>
+                        <ui-LinkStyleSheetTenant></ui-LinkStyleSheetTenant>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'UpdateTenant'" x-cloak x-transition>
+                    <div x-import="commands/UpdateTenant">
+                        <h6>UpdateTenant</h6>
+                        <ui-UpdateTenant></ui-UpdateTenant>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'LinkLogoTenant'" x-cloak x-transition>
+                    <div x-import="commands/LinkLogoTenant">
+                        <h6>LinkLogoTenant</h6>
+                        <ui-LinkLogoTenant></ui-LinkLogoTenant>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'DeleteTenant'" x-cloak x-transition>
+                    <div x-import="commands/DeleteTenant">
+                        <h6>DeleteTenant</h6>
+                        <ui-DeleteTenant></ui-DeleteTenant>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'CreateTenant'" x-cloak x-transition>
+                    <div x-import="commands/CreateTenant">
+                        <h6>CreateTenant</h6>
+                        <ui-CreateTenant></ui-CreateTenant>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'LinkLogoIntegrations'" x-cloak x-transition>
+                    <div x-import="commands/LinkLogoIntegrations">
+                        <h6>LinkLogoIntegrations</h6>
+                        <ui-LinkLogoIntegrations></ui-LinkLogoIntegrations>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'CreateIntegrations'" x-cloak x-transition>
+                    <div x-import="commands/CreateIntegrations">
+                        <h6>CreateIntegrations</h6>
+                        <ui-CreateIntegrations></ui-CreateIntegrations>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'UpdateIntegrations'" x-cloak x-transition>
+                    <div x-import="commands/UpdateIntegrations">
+                        <h6>UpdateIntegrations</h6>
+                        <ui-UpdateIntegrations></ui-UpdateIntegrations>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'DeleteIntegrations'" x-cloak x-transition>
+                    <div x-import="commands/DeleteIntegrations">
+                        <h6>DeleteIntegrations</h6>
+                        <ui-DeleteIntegrations></ui-DeleteIntegrations>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'DeleteRequirement'" x-cloak x-transition>
+                    <div x-import="commands/DeleteRequirement">
+                        <h6>DeleteRequirement</h6>
+                        <ui-DeleteRequirement></ui-DeleteRequirement>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'AddRequirement'" x-cloak x-transition>
+                    <div x-import="commands/AddRequirement">
+                        <h6>AddRequirement</h6>
+                        <ui-AddRequirement></ui-AddRequirement>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'UpdateRequirement'" x-cloak x-transition>
+                    <div x-import="commands/UpdateRequirement">
+                        <h6>UpdateRequirement</h6>
+                        <ui-UpdateRequirement></ui-UpdateRequirement>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'LinkLogoCompany'" x-cloak x-transition>
+                    <div x-import="commands/LinkLogoCompany">
+                        <h6>LinkLogoCompany</h6>
+                        <ui-LinkLogoCompany></ui-LinkLogoCompany>
+                    </div>
+                </div>
+
+                
                 <div x-show="component == 'UnlinkControlFrameworkCompany'" x-cloak x-transition>
                     <div x-import="commands/UnlinkControlFrameworkCompany">
                         <h6>UnlinkControlFrameworkCompany</h6>
                         <ui-UnlinkControlFrameworkCompany></ui-UnlinkControlFrameworkCompany>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'UpdateCompany'" x-cloak x-transition>
+                    <div x-import="commands/UpdateCompany">
+                        <h6>UpdateCompany</h6>
+                        <ui-UpdateCompany></ui-UpdateCompany>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'CreateCompany'" x-cloak x-transition>
+                    <div x-import="commands/CreateCompany">
+                        <h6>CreateCompany</h6>
+                        <ui-CreateCompany></ui-CreateCompany>
                     </div>
                 </div>
 
@@ -293,10 +827,10 @@
                 </div>
 
                 
-                <div x-show="component == 'CreateCompany'" x-cloak x-transition>
-                    <div x-import="commands/CreateCompany">
-                        <h6>CreateCompany</h6>
-                        <ui-CreateCompany></ui-CreateCompany>
+                <div x-show="component == 'DeleteCompany'" x-cloak x-transition>
+                    <div x-import="commands/DeleteCompany">
+                        <h6>DeleteCompany</h6>
+                        <ui-DeleteCompany></ui-DeleteCompany>
                     </div>
                 </div>
 
@@ -317,10 +851,18 @@
                 </div>
 
                 
-                <div x-show="component == 'UpdateCompanyControlAssessment'" x-cloak x-transition>
-                    <div x-import="commands/UpdateCompanyControlAssessment">
-                        <h6>UpdateCompanyControlAssessment</h6>
-                        <ui-UpdateCompanyControlAssessment></ui-UpdateCompanyControlAssessment>
+                <div x-show="component == 'CreateFromTemplateCompanyControl'" x-cloak x-transition>
+                    <div x-import="commands/CreateFromTemplateCompanyControl">
+                        <h6>CreateFromTemplateCompanyControl</h6>
+                        <ui-CreateFromTemplateCompanyControl></ui-CreateFromTemplateCompanyControl>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'DeleteCompanyControl'" x-cloak x-transition>
+                    <div x-import="commands/DeleteCompanyControl">
+                        <h6>DeleteCompanyControl</h6>
+                        <ui-DeleteCompanyControl></ui-DeleteCompanyControl>
                     </div>
                 </div>
 
@@ -341,18 +883,106 @@
                 </div>
 
                 
-                <div x-show="component == 'UpdateBusinessRoleCompanyEmployee'" x-cloak x-transition>
-                    <div x-import="commands/UpdateBusinessRoleCompanyEmployee">
-                        <h6>UpdateBusinessRoleCompanyEmployee</h6>
-                        <ui-UpdateBusinessRoleCompanyEmployee></ui-UpdateBusinessRoleCompanyEmployee>
+                <div x-show="component == 'UpdateCompanyControlAssessment'" x-cloak x-transition>
+                    <div x-import="commands/UpdateCompanyControlAssessment">
+                        <h6>UpdateCompanyControlAssessment</h6>
+                        <ui-UpdateCompanyControlAssessment></ui-UpdateCompanyControlAssessment>
                     </div>
                 </div>
 
                 
-                <div x-show="component == 'AddCompanyBusinessUnit'" x-cloak x-transition>
-                    <div x-import="commands/AddCompanyBusinessUnit">
-                        <h6>AddCompanyBusinessUnit</h6>
-                        <ui-AddCompanyBusinessUnit></ui-AddCompanyBusinessUnit>
+                <div x-show="component == 'DeleteCompanyThirdParty'" x-cloak x-transition>
+                    <div x-import="commands/DeleteCompanyThirdParty">
+                        <h6>DeleteCompanyThirdParty</h6>
+                        <ui-DeleteCompanyThirdParty></ui-DeleteCompanyThirdParty>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'LinkSubprocessorCompanyThirdParty'" x-cloak x-transition>
+                    <div x-import="commands/LinkSubprocessorCompanyThirdParty">
+                        <h6>LinkSubprocessorCompanyThirdParty</h6>
+                        <ui-LinkSubprocessorCompanyThirdParty></ui-LinkSubprocessorCompanyThirdParty>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'UpdateCompanyThirdParty'" x-cloak x-transition>
+                    <div x-import="commands/UpdateCompanyThirdParty">
+                        <h6>UpdateCompanyThirdParty</h6>
+                        <ui-UpdateCompanyThirdParty></ui-UpdateCompanyThirdParty>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'CreateCompanyThirdParty'" x-cloak x-transition>
+                    <div x-import="commands/CreateCompanyThirdParty">
+                        <h6>CreateCompanyThirdParty</h6>
+                        <ui-CreateCompanyThirdParty></ui-CreateCompanyThirdParty>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'UnlinkSubprocessorCompanyThirdParty'" x-cloak x-transition>
+                    <div x-import="commands/UnlinkSubprocessorCompanyThirdParty">
+                        <h6>UnlinkSubprocessorCompanyThirdParty</h6>
+                        <ui-UnlinkSubprocessorCompanyThirdParty></ui-UnlinkSubprocessorCompanyThirdParty>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'CreateCompanyThirdPartyAssessment'" x-cloak x-transition>
+                    <div x-import="commands/CreateCompanyThirdPartyAssessment">
+                        <h6>CreateCompanyThirdPartyAssessment</h6>
+                        <ui-CreateCompanyThirdPartyAssessment></ui-CreateCompanyThirdPartyAssessment>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'DeleteCompanyThirdPartyAssessment'" x-cloak x-transition>
+                    <div x-import="commands/DeleteCompanyThirdPartyAssessment">
+                        <h6>DeleteCompanyThirdPartyAssessment</h6>
+                        <ui-DeleteCompanyThirdPartyAssessment></ui-DeleteCompanyThirdPartyAssessment>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'UpdateCompanyThirdPartyAssessment'" x-cloak x-transition>
+                    <div x-import="commands/UpdateCompanyThirdPartyAssessment">
+                        <h6>UpdateCompanyThirdPartyAssessment</h6>
+                        <ui-UpdateCompanyThirdPartyAssessment></ui-UpdateCompanyThirdPartyAssessment>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'UpdateCompanyThirdPartyTask'" x-cloak x-transition>
+                    <div x-import="commands/UpdateCompanyThirdPartyTask">
+                        <h6>UpdateCompanyThirdPartyTask</h6>
+                        <ui-UpdateCompanyThirdPartyTask></ui-UpdateCompanyThirdPartyTask>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'CreateCompanyThirdPartyTask'" x-cloak x-transition>
+                    <div x-import="commands/CreateCompanyThirdPartyTask">
+                        <h6>CreateCompanyThirdPartyTask</h6>
+                        <ui-CreateCompanyThirdPartyTask></ui-CreateCompanyThirdPartyTask>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'CompleteCompanyThirdPartyTask'" x-cloak x-transition>
+                    <div x-import="commands/CompleteCompanyThirdPartyTask">
+                        <h6>CompleteCompanyThirdPartyTask</h6>
+                        <ui-CompleteCompanyThirdPartyTask></ui-CompleteCompanyThirdPartyTask>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'UpdateBusinessRoleCompanyEmployee'" x-cloak x-transition>
+                    <div x-import="commands/UpdateBusinessRoleCompanyEmployee">
+                        <h6>UpdateBusinessRoleCompanyEmployee</h6>
+                        <ui-UpdateBusinessRoleCompanyEmployee></ui-UpdateBusinessRoleCompanyEmployee>
                     </div>
                 </div>
 
@@ -365,6 +995,14 @@
                 </div>
 
                 
+                <div x-show="component == 'AddCompanyBusinessUnit'" x-cloak x-transition>
+                    <div x-import="commands/AddCompanyBusinessUnit">
+                        <h6>AddCompanyBusinessUnit</h6>
+                        <ui-AddCompanyBusinessUnit></ui-AddCompanyBusinessUnit>
+                    </div>
+                </div>
+
+                
                 <div x-show="component == 'UpdateCompanyBusinessUnit'" x-cloak x-transition>
                     <div x-import="commands/UpdateCompanyBusinessUnit">
                         <h6>UpdateCompanyBusinessUnit</h6>
@@ -373,10 +1011,210 @@
                 </div>
 
                 
-                <div x-show="component == 'CreateCompanyRisk'" x-cloak x-transition>
-                    <div x-import="commands/CreateCompanyRisk">
-                        <h6>CreateCompanyRisk</h6>
-                        <ui-CreateCompanyRisk></ui-CreateCompanyRisk>
+                <div x-show="component == 'AddNoteCompanyIntegrationImplementation'" x-cloak x-transition>
+                    <div x-import="commands/AddNoteCompanyIntegrationImplementation">
+                        <h6>AddNoteCompanyIntegrationImplementation</h6>
+                        <ui-AddNoteCompanyIntegrationImplementation></ui-AddNoteCompanyIntegrationImplementation>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'ChangeStatusCompanyIntegrationImplementation'" x-cloak x-transition>
+                    <div x-import="commands/ChangeStatusCompanyIntegrationImplementation">
+                        <h6>ChangeStatusCompanyIntegrationImplementation</h6>
+                        <ui-ChangeStatusCompanyIntegrationImplementation></ui-ChangeStatusCompanyIntegrationImplementation>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'RequestCompanyIntegrationImplementation'" x-cloak x-transition>
+                    <div x-import="commands/RequestCompanyIntegrationImplementation">
+                        <h6>RequestCompanyIntegrationImplementation</h6>
+                        <ui-RequestCompanyIntegrationImplementation></ui-RequestCompanyIntegrationImplementation>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'DeleteCompanyIntegrationImplementation'" x-cloak x-transition>
+                    <div x-import="commands/DeleteCompanyIntegrationImplementation">
+                        <h6>DeleteCompanyIntegrationImplementation</h6>
+                        <ui-DeleteCompanyIntegrationImplementation></ui-DeleteCompanyIntegrationImplementation>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'CreateCompanyObjective'" x-cloak x-transition>
+                    <div x-import="commands/CreateCompanyObjective">
+                        <h6>CreateCompanyObjective</h6>
+                        <ui-CreateCompanyObjective></ui-CreateCompanyObjective>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'UpdateCompanyObjective'" x-cloak x-transition>
+                    <div x-import="commands/UpdateCompanyObjective">
+                        <h6>UpdateCompanyObjective</h6>
+                        <ui-UpdateCompanyObjective></ui-UpdateCompanyObjective>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'ReopenCompanyObjective'" x-cloak x-transition>
+                    <div x-import="commands/ReopenCompanyObjective">
+                        <h6>ReopenCompanyObjective</h6>
+                        <ui-ReopenCompanyObjective></ui-ReopenCompanyObjective>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'DeleteCompanyObjective'" x-cloak x-transition>
+                    <div x-import="commands/DeleteCompanyObjective">
+                        <h6>DeleteCompanyObjective</h6>
+                        <ui-DeleteCompanyObjective></ui-DeleteCompanyObjective>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'UpdateCompanyObjectiveTask'" x-cloak x-transition>
+                    <div x-import="commands/UpdateCompanyObjectiveTask">
+                        <h6>UpdateCompanyObjectiveTask</h6>
+                        <ui-UpdateCompanyObjectiveTask></ui-UpdateCompanyObjectiveTask>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'CompleteCompanyObjectiveTask'" x-cloak x-transition>
+                    <div x-import="commands/CompleteCompanyObjectiveTask">
+                        <h6>CompleteCompanyObjectiveTask</h6>
+                        <ui-CompleteCompanyObjectiveTask></ui-CompleteCompanyObjectiveTask>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'CreateCompanyObjectiveTask'" x-cloak x-transition>
+                    <div x-import="commands/CreateCompanyObjectiveTask">
+                        <h6>CreateCompanyObjectiveTask</h6>
+                        <ui-CreateCompanyObjectiveTask></ui-CreateCompanyObjectiveTask>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'CreateCompanyAsset'" x-cloak x-transition>
+                    <div x-import="commands/CreateCompanyAsset">
+                        <h6>CreateCompanyAsset</h6>
+                        <ui-CreateCompanyAsset></ui-CreateCompanyAsset>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'DeleteCompanyAsset'" x-cloak x-transition>
+                    <div x-import="commands/DeleteCompanyAsset">
+                        <h6>DeleteCompanyAsset</h6>
+                        <ui-DeleteCompanyAsset></ui-DeleteCompanyAsset>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'UpdateCompanyAsset'" x-cloak x-transition>
+                    <div x-import="commands/UpdateCompanyAsset">
+                        <h6>UpdateCompanyAsset</h6>
+                        <ui-UpdateCompanyAsset></ui-UpdateCompanyAsset>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'CompleteCompanyAssetTask'" x-cloak x-transition>
+                    <div x-import="commands/CompleteCompanyAssetTask">
+                        <h6>CompleteCompanyAssetTask</h6>
+                        <ui-CompleteCompanyAssetTask></ui-CompleteCompanyAssetTask>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'UpdateCompanyAssetTask'" x-cloak x-transition>
+                    <div x-import="commands/UpdateCompanyAssetTask">
+                        <h6>UpdateCompanyAssetTask</h6>
+                        <ui-UpdateCompanyAssetTask></ui-UpdateCompanyAssetTask>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'CreateCompanyAssetTask'" x-cloak x-transition>
+                    <div x-import="commands/CreateCompanyAssetTask">
+                        <h6>CreateCompanyAssetTask</h6>
+                        <ui-CreateCompanyAssetTask></ui-CreateCompanyAssetTask>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'CreateCompanyProcessingActivity'" x-cloak x-transition>
+                    <div x-import="commands/CreateCompanyProcessingActivity">
+                        <h6>CreateCompanyProcessingActivity</h6>
+                        <ui-CreateCompanyProcessingActivity></ui-CreateCompanyProcessingActivity>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'UpdateCompanyProcessingActivity'" x-cloak x-transition>
+                    <div x-import="commands/UpdateCompanyProcessingActivity">
+                        <h6>UpdateCompanyProcessingActivity</h6>
+                        <ui-UpdateCompanyProcessingActivity></ui-UpdateCompanyProcessingActivity>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'DeleteCompanyProcessingActivity'" x-cloak x-transition>
+                    <div x-import="commands/DeleteCompanyProcessingActivity">
+                        <h6>DeleteCompanyProcessingActivity</h6>
+                        <ui-DeleteCompanyProcessingActivity></ui-DeleteCompanyProcessingActivity>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'UpdateCompanyProcessingActivityTask'" x-cloak x-transition>
+                    <div x-import="commands/UpdateCompanyProcessingActivityTask">
+                        <h6>UpdateCompanyProcessingActivityTask</h6>
+                        <ui-UpdateCompanyProcessingActivityTask></ui-UpdateCompanyProcessingActivityTask>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'CreateCompanyProcessingActivityTask'" x-cloak x-transition>
+                    <div x-import="commands/CreateCompanyProcessingActivityTask">
+                        <h6>CreateCompanyProcessingActivityTask</h6>
+                        <ui-CreateCompanyProcessingActivityTask></ui-CreateCompanyProcessingActivityTask>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'CompleteCompanyProcessingActivityTask'" x-cloak x-transition>
+                    <div x-import="commands/CompleteCompanyProcessingActivityTask">
+                        <h6>CompleteCompanyProcessingActivityTask</h6>
+                        <ui-CompleteCompanyProcessingActivityTask></ui-CompleteCompanyProcessingActivityTask>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'StartAssessmentCompanyRisk'" x-cloak x-transition>
+                    <div x-import="commands/StartAssessmentCompanyRisk">
+                        <h6>StartAssessmentCompanyRisk</h6>
+                        <ui-StartAssessmentCompanyRisk></ui-StartAssessmentCompanyRisk>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'CreateFromTemplateCompanyRisk'" x-cloak x-transition>
+                    <div x-import="commands/CreateFromTemplateCompanyRisk">
+                        <h6>CreateFromTemplateCompanyRisk</h6>
+                        <ui-CreateFromTemplateCompanyRisk></ui-CreateFromTemplateCompanyRisk>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'DeleteCompanyRisk'" x-cloak x-transition>
+                    <div x-import="commands/DeleteCompanyRisk">
+                        <h6>DeleteCompanyRisk</h6>
+                        <ui-DeleteCompanyRisk></ui-DeleteCompanyRisk>
                     </div>
                 </div>
 
@@ -389,10 +1227,18 @@
                 </div>
 
                 
-                <div x-show="component == 'StartAssessmentCompanyRisk'" x-cloak x-transition>
-                    <div x-import="commands/StartAssessmentCompanyRisk">
-                        <h6>StartAssessmentCompanyRisk</h6>
-                        <ui-StartAssessmentCompanyRisk></ui-StartAssessmentCompanyRisk>
+                <div x-show="component == 'CreateCompanyRisk'" x-cloak x-transition>
+                    <div x-import="commands/CreateCompanyRisk">
+                        <h6>CreateCompanyRisk</h6>
+                        <ui-CreateCompanyRisk></ui-CreateCompanyRisk>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'UpdateCompanyRiskAction'" x-cloak x-transition>
+                    <div x-import="commands/UpdateCompanyRiskAction">
+                        <h6>UpdateCompanyRiskAction</h6>
+                        <ui-UpdateCompanyRiskAction></ui-UpdateCompanyRiskAction>
                     </div>
                 </div>
 
@@ -413,22 +1259,6 @@
                 </div>
 
                 
-                <div x-show="component == 'UpdateCompanyRiskAction'" x-cloak x-transition>
-                    <div x-import="commands/UpdateCompanyRiskAction">
-                        <h6>UpdateCompanyRiskAction</h6>
-                        <ui-UpdateCompanyRiskAction></ui-UpdateCompanyRiskAction>
-                    </div>
-                </div>
-
-                
-                <div x-show="component == 'UpdateDemo'" x-cloak x-transition>
-                    <div x-import="commands/UpdateDemo">
-                        <h6>UpdateDemo</h6>
-                        <ui-UpdateDemo></ui-UpdateDemo>
-                    </div>
-                </div>
-
-                
                 <div x-show="component == 'AddIndustry'" x-cloak x-transition>
                     <div x-import="commands/AddIndustry">
                         <h6>AddIndustry</h6>
@@ -437,14 +1267,54 @@
                 </div>
 
                 
-                <div x-show="component == 'AddRequirement'" x-cloak x-transition>
-                    <div x-import="commands/AddRequirement">
-                        <h6>AddRequirement</h6>
-                        <ui-AddRequirement></ui-AddRequirement>
+                <div x-show="component == 'DeleteIndustry'" x-cloak x-transition>
+                    <div x-import="commands/DeleteIndustry">
+                        <h6>DeleteIndustry</h6>
+                        <ui-DeleteIndustry></ui-DeleteIndustry>
                     </div>
                 </div>
 
                 
+                <div x-show="component == 'UpdateIndustry'" x-cloak x-transition>
+                    <div x-import="commands/UpdateIndustry">
+                        <h6>UpdateIndustry</h6>
+                        <ui-UpdateIndustry></ui-UpdateIndustry>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'DeleteRegion'" x-cloak x-transition>
+                    <div x-import="commands/DeleteRegion">
+                        <h6>DeleteRegion</h6>
+                        <ui-DeleteRegion></ui-DeleteRegion>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'UpdateRegion'" x-cloak x-transition>
+                    <div x-import="commands/UpdateRegion">
+                        <h6>UpdateRegion</h6>
+                        <ui-UpdateRegion></ui-UpdateRegion>
+                    </div>
+                </div>
+
+                
+
+                
+                <div x-show="component == 'ControlTemplate/get'" x-cloak x-transition>
+                    <div x-import="views/ControlTemplate/get">
+                        <h6>ControlTemplate.get</h6>
+                        <ui-ControlTemplate-get></ui-ControlTemplate-get>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'ControlTemplate/filter'" x-cloak x-transition>
+                    <div x-import="views/ControlTemplate/filter">
+                        <h6>ControlTemplate.filter</h6>
+                        <ui-ControlTemplate-filter></ui-ControlTemplate-filter>
+                    </div>
+                </div>
 
                 
                 <div x-show="component == 'Control/get'" x-cloak x-transition>
@@ -463,34 +1333,26 @@
                 </div>
 
                 
-                <div x-show="component == 'Profile/get'" x-cloak x-transition>
-                    <div x-import="views/Profile/get">
-                        <h6>Profile.get</h6>
-                        <ui-Profile-get></ui-Profile-get>
+                <div x-show="component == 'ThirdParty/get'" x-cloak x-transition>
+                    <div x-import="views/ThirdParty/get">
+                        <h6>ThirdParty.get</h6>
+                        <ui-ThirdParty-get></ui-ThirdParty-get>
                     </div>
                 </div>
 
                 
-                <div x-show="component == 'Profile/filter'" x-cloak x-transition>
-                    <div x-import="views/Profile/filter">
-                        <h6>Profile.filter</h6>
-                        <ui-Profile-filter></ui-Profile-filter>
+                <div x-show="component == 'ThirdParty/filter'" x-cloak x-transition>
+                    <div x-import="views/ThirdParty/filter">
+                        <h6>ThirdParty.filter</h6>
+                        <ui-ThirdParty-filter></ui-ThirdParty-filter>
                     </div>
                 </div>
 
                 
-                <div x-show="component == 'ControlAssessment/get'" x-cloak x-transition>
-                    <div x-import="views/ControlAssessment/get">
-                        <h6>ControlAssessment.get</h6>
-                        <ui-ControlAssessment-get></ui-ControlAssessment-get>
-                    </div>
-                </div>
-
-                
-                <div x-show="component == 'ControlAssessment/filter'" x-cloak x-transition>
-                    <div x-import="views/ControlAssessment/filter">
-                        <h6>ControlAssessment.filter</h6>
-                        <ui-ControlAssessment-filter></ui-ControlAssessment-filter>
+                <div x-show="component == 'ThirdPartyTask/getTasks'" x-cloak x-transition>
+                    <div x-import="views/ThirdPartyTask/getTasks">
+                        <h6>ThirdPartyTask.getTasks</h6>
+                        <ui-ThirdPartyTask-getTasks></ui-ThirdPartyTask-getTasks>
                     </div>
                 </div>
 
@@ -511,38 +1373,6 @@
                 </div>
 
                 
-                <div x-show="component == 'Objective/get'" x-cloak x-transition>
-                    <div x-import="views/Objective/get">
-                        <h6>Objective.get</h6>
-                        <ui-Objective-get></ui-Objective-get>
-                    </div>
-                </div>
-
-                
-                <div x-show="component == 'Objective/filter'" x-cloak x-transition>
-                    <div x-import="views/Objective/filter">
-                        <h6>Objective.filter</h6>
-                        <ui-Objective-filter></ui-Objective-filter>
-                    </div>
-                </div>
-
-                
-                <div x-show="component == 'Region/get'" x-cloak x-transition>
-                    <div x-import="views/Region/get">
-                        <h6>Region.get</h6>
-                        <ui-Region-get></ui-Region-get>
-                    </div>
-                </div>
-
-                
-                <div x-show="component == 'Region/filter'" x-cloak x-transition>
-                    <div x-import="views/Region/filter">
-                        <h6>Region.filter</h6>
-                        <ui-Region-filter></ui-Region-filter>
-                    </div>
-                </div>
-
-                
                 <div x-show="component == 'User/get'" x-cloak x-transition>
                     <div x-import="views/User/get">
                         <h6>User.get</h6>
@@ -551,34 +1381,66 @@
                 </div>
 
                 
-                <div x-show="component == 'Tenant/get'" x-cloak x-transition>
-                    <div x-import="views/Tenant/get">
-                        <h6>Tenant.get</h6>
-                        <ui-Tenant-get></ui-Tenant-get>
+                <div x-show="component == 'Profile/get'" x-cloak x-transition>
+                    <div x-import="views/Profile/get">
+                        <h6>Profile.get</h6>
+                        <ui-Profile-get></ui-Profile-get>
                     </div>
                 </div>
 
                 
-                <div x-show="component == 'Tenant/filter'" x-cloak x-transition>
-                    <div x-import="views/Tenant/filter">
-                        <h6>Tenant.filter</h6>
-                        <ui-Tenant-filter></ui-Tenant-filter>
+                <div x-show="component == 'Profile/filter'" x-cloak x-transition>
+                    <div x-import="views/Profile/filter">
+                        <h6>Profile.filter</h6>
+                        <ui-Profile-filter></ui-Profile-filter>
                     </div>
                 </div>
 
                 
-                <div x-show="component == 'Risk/get'" x-cloak x-transition>
-                    <div x-import="views/Risk/get">
-                        <h6>Risk.get</h6>
-                        <ui-Risk-get></ui-Risk-get>
+                <div x-show="component == 'RiskTemplate/get'" x-cloak x-transition>
+                    <div x-import="views/RiskTemplate/get">
+                        <h6>RiskTemplate.get</h6>
+                        <ui-RiskTemplate-get></ui-RiskTemplate-get>
                     </div>
                 </div>
 
                 
-                <div x-show="component == 'Risk/filter'" x-cloak x-transition>
-                    <div x-import="views/Risk/filter">
-                        <h6>Risk.filter</h6>
-                        <ui-Risk-filter></ui-Risk-filter>
+                <div x-show="component == 'RiskTemplate/filter'" x-cloak x-transition>
+                    <div x-import="views/RiskTemplate/filter">
+                        <h6>RiskTemplate.filter</h6>
+                        <ui-RiskTemplate-filter></ui-RiskTemplate-filter>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'ThirdPartyTemplate/get'" x-cloak x-transition>
+                    <div x-import="views/ThirdPartyTemplate/get">
+                        <h6>ThirdPartyTemplate.get</h6>
+                        <ui-ThirdPartyTemplate-get></ui-ThirdPartyTemplate-get>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'ThirdPartyTemplate/filter'" x-cloak x-transition>
+                    <div x-import="views/ThirdPartyTemplate/filter">
+                        <h6>ThirdPartyTemplate.filter</h6>
+                        <ui-ThirdPartyTemplate-filter></ui-ThirdPartyTemplate-filter>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Integration/get'" x-cloak x-transition>
+                    <div x-import="views/Integration/get">
+                        <h6>Integration.get</h6>
+                        <ui-Integration-get></ui-Integration-get>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Integration/filter'" x-cloak x-transition>
+                    <div x-import="views/Integration/filter">
+                        <h6>Integration.filter</h6>
+                        <ui-Integration-filter></ui-Integration-filter>
                     </div>
                 </div>
 
@@ -599,50 +1461,122 @@
                 </div>
 
                 
-                <div x-show="component == 'Company/get'" x-cloak x-transition>
-                    <div x-import="views/Company/get">
-                        <h6>Company.get</h6>
-                        <ui-Company-get></ui-Company-get>
+                <div x-show="component == 'ControlAssessment/get'" x-cloak x-transition>
+                    <div x-import="views/ControlAssessment/get">
+                        <h6>ControlAssessment.get</h6>
+                        <ui-ControlAssessment-get></ui-ControlAssessment-get>
                     </div>
                 </div>
 
                 
-                <div x-show="component == 'Company/filter'" x-cloak x-transition>
-                    <div x-import="views/Company/filter">
-                        <h6>Company.filter</h6>
-                        <ui-Company-filter></ui-Company-filter>
+                <div x-show="component == 'ControlAssessment/filter'" x-cloak x-transition>
+                    <div x-import="views/ControlAssessment/filter">
+                        <h6>ControlAssessment.filter</h6>
+                        <ui-ControlAssessment-filter></ui-ControlAssessment-filter>
                     </div>
                 </div>
 
                 
-                <div x-show="component == 'Demo/get'" x-cloak x-transition>
-                    <div x-import="views/Demo/get">
-                        <h6>Demo.get</h6>
-                        <ui-Demo-get></ui-Demo-get>
+                <div x-show="component == 'Objective/get'" x-cloak x-transition>
+                    <div x-import="views/Objective/get">
+                        <h6>Objective.get</h6>
+                        <ui-Objective-get></ui-Objective-get>
                     </div>
                 </div>
 
                 
-                <div x-show="component == 'Demo/filter'" x-cloak x-transition>
-                    <div x-import="views/Demo/filter">
-                        <h6>Demo.filter</h6>
-                        <ui-Demo-filter></ui-Demo-filter>
+                <div x-show="component == 'Objective/filter'" x-cloak x-transition>
+                    <div x-import="views/Objective/filter">
+                        <h6>Objective.filter</h6>
+                        <ui-Objective-filter></ui-Objective-filter>
                     </div>
                 </div>
 
                 
-                <div x-show="component == 'Industry/get'" x-cloak x-transition>
-                    <div x-import="views/Industry/get">
-                        <h6>Industry.get</h6>
-                        <ui-Industry-get></ui-Industry-get>
+                <div x-show="component == 'ObjectiveTask/getTasks'" x-cloak x-transition>
+                    <div x-import="views/ObjectiveTask/getTasks">
+                        <h6>ObjectiveTask.getTasks</h6>
+                        <ui-ObjectiveTask-getTasks></ui-ObjectiveTask-getTasks>
                     </div>
                 </div>
 
                 
-                <div x-show="component == 'Industry/filter'" x-cloak x-transition>
-                    <div x-import="views/Industry/filter">
-                        <h6>Industry.filter</h6>
-                        <ui-Industry-filter></ui-Industry-filter>
+                <div x-show="component == 'AssetTask/getTasks'" x-cloak x-transition>
+                    <div x-import="views/AssetTask/getTasks">
+                        <h6>AssetTask.getTasks</h6>
+                        <ui-AssetTask-getTasks></ui-AssetTask-getTasks>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Asset/get'" x-cloak x-transition>
+                    <div x-import="views/Asset/get">
+                        <h6>Asset.get</h6>
+                        <ui-Asset-get></ui-Asset-get>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Asset/filter'" x-cloak x-transition>
+                    <div x-import="views/Asset/filter">
+                        <h6>Asset.filter</h6>
+                        <ui-Asset-filter></ui-Asset-filter>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Tenant/get'" x-cloak x-transition>
+                    <div x-import="views/Tenant/get">
+                        <h6>Tenant.get</h6>
+                        <ui-Tenant-get></ui-Tenant-get>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Tenant/filter'" x-cloak x-transition>
+                    <div x-import="views/Tenant/filter">
+                        <h6>Tenant.filter</h6>
+                        <ui-Tenant-filter></ui-Tenant-filter>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Questionaire/get'" x-cloak x-transition>
+                    <div x-import="views/Questionaire/get">
+                        <h6>Questionaire.get</h6>
+                        <ui-Questionaire-get></ui-Questionaire-get>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Questionaire/filter'" x-cloak x-transition>
+                    <div x-import="views/Questionaire/filter">
+                        <h6>Questionaire.filter</h6>
+                        <ui-Questionaire-filter></ui-Questionaire-filter>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'ProcessingActivity/get'" x-cloak x-transition>
+                    <div x-import="views/ProcessingActivity/get">
+                        <h6>ProcessingActivity.get</h6>
+                        <ui-ProcessingActivity-get></ui-ProcessingActivity-get>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'ProcessingActivity/filter'" x-cloak x-transition>
+                    <div x-import="views/ProcessingActivity/filter">
+                        <h6>ProcessingActivity.filter</h6>
+                        <ui-ProcessingActivity-filter></ui-ProcessingActivity-filter>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'ProcessingActivityTask/getTasks'" x-cloak x-transition>
+                    <div x-import="views/ProcessingActivityTask/getTasks">
+                        <h6>ProcessingActivityTask.getTasks</h6>
+                        <ui-ProcessingActivityTask-getTasks></ui-ProcessingActivityTask-getTasks>
                     </div>
                 </div>
 
@@ -663,6 +1597,70 @@
                 </div>
 
                 
+                <div x-show="component == 'Company/get'" x-cloak x-transition>
+                    <div x-import="views/Company/get">
+                        <h6>Company.get</h6>
+                        <ui-Company-get></ui-Company-get>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Company/filter'" x-cloak x-transition>
+                    <div x-import="views/Company/filter">
+                        <h6>Company.filter</h6>
+                        <ui-Company-filter></ui-Company-filter>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'IntegrationImplementation/get'" x-cloak x-transition>
+                    <div x-import="views/IntegrationImplementation/get">
+                        <h6>IntegrationImplementation.get</h6>
+                        <ui-IntegrationImplementation-get></ui-IntegrationImplementation-get>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'IntegrationImplementation/filter'" x-cloak x-transition>
+                    <div x-import="views/IntegrationImplementation/filter">
+                        <h6>IntegrationImplementation.filter</h6>
+                        <ui-IntegrationImplementation-filter></ui-IntegrationImplementation-filter>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Industry/get'" x-cloak x-transition>
+                    <div x-import="views/Industry/get">
+                        <h6>Industry.get</h6>
+                        <ui-Industry-get></ui-Industry-get>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Industry/filter'" x-cloak x-transition>
+                    <div x-import="views/Industry/filter">
+                        <h6>Industry.filter</h6>
+                        <ui-Industry-filter></ui-Industry-filter>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Region/get'" x-cloak x-transition>
+                    <div x-import="views/Region/get">
+                        <h6>Region.get</h6>
+                        <ui-Region-get></ui-Region-get>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Region/filter'" x-cloak x-transition>
+                    <div x-import="views/Region/filter">
+                        <h6>Region.filter</h6>
+                        <ui-Region-filter></ui-Region-filter>
+                    </div>
+                </div>
+
+                
                 <div x-show="component == 'Task/filter'" x-cloak x-transition>
                     <div x-import="views/Task/filter">
                         <h6>Task.filter</h6>
@@ -679,11 +1677,45 @@
                 </div>
 
                 
+                <div x-show="component == 'Risk/get'" x-cloak x-transition>
+                    <div x-import="views/Risk/get">
+                        <h6>Risk.get</h6>
+                        <ui-Risk-get></ui-Risk-get>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'Risk/filter'" x-cloak x-transition>
+                    <div x-import="views/Risk/filter">
+                        <h6>Risk.filter</h6>
+                        <ui-Risk-filter></ui-Risk-filter>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'RiskAction/getActions'" x-cloak x-transition>
+                    <div x-import="views/RiskAction/getActions">
+                        <h6>RiskAction.getActions</h6>
+                        <ui-RiskAction-getActions></ui-RiskAction-getActions>
+                    </div>
+                </div>
+
+                
 
             </div>
             <div class="col-3">
                 <h4>Queries</h4>
                 <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'controltemplate.get'.includes(search.toLowerCase())"
+                            @click="component = 'ControlTemplate/get'">ControlTemplate.get
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'controltemplate.filter'.includes(search.toLowerCase())"
+                            @click="component = 'ControlTemplate/filter'">ControlTemplate.filter
+                    </button>
                     
                     <button type="button" class="btn btn-outline-primary"
                             x-show="'control.get'.includes(search.toLowerCase())"
@@ -696,23 +1728,18 @@
                     </button>
                     
                     <button type="button" class="btn btn-outline-primary"
-                            x-show="'profile.get'.includes(search.toLowerCase())"
-                            @click="component = 'Profile/get'">Profile.get
+                            x-show="'thirdparty.get'.includes(search.toLowerCase())"
+                            @click="component = 'ThirdParty/get'">ThirdParty.get
                     </button>
                     
                     <button type="button" class="btn btn-outline-primary"
-                            x-show="'profile.filter'.includes(search.toLowerCase())"
-                            @click="component = 'Profile/filter'">Profile.filter
+                            x-show="'thirdparty.filter'.includes(search.toLowerCase())"
+                            @click="component = 'ThirdParty/filter'">ThirdParty.filter
                     </button>
                     
                     <button type="button" class="btn btn-outline-primary"
-                            x-show="'controlassessment.get'.includes(search.toLowerCase())"
-                            @click="component = 'ControlAssessment/get'">ControlAssessment.get
-                    </button>
-                    
-                    <button type="button" class="btn btn-outline-primary"
-                            x-show="'controlassessment.filter'.includes(search.toLowerCase())"
-                            @click="component = 'ControlAssessment/filter'">ControlAssessment.filter
+                            x-show="'thirdpartytask.gettasks'.includes(search.toLowerCase())"
+                            @click="component = 'ThirdPartyTask/getTasks'">ThirdPartyTask.getTasks
                     </button>
                     
                     <button type="button" class="btn btn-outline-primary"
@@ -726,48 +1753,48 @@
                     </button>
                     
                     <button type="button" class="btn btn-outline-primary"
-                            x-show="'objective.get'.includes(search.toLowerCase())"
-                            @click="component = 'Objective/get'">Objective.get
-                    </button>
-                    
-                    <button type="button" class="btn btn-outline-primary"
-                            x-show="'objective.filter'.includes(search.toLowerCase())"
-                            @click="component = 'Objective/filter'">Objective.filter
-                    </button>
-                    
-                    <button type="button" class="btn btn-outline-primary"
-                            x-show="'region.get'.includes(search.toLowerCase())"
-                            @click="component = 'Region/get'">Region.get
-                    </button>
-                    
-                    <button type="button" class="btn btn-outline-primary"
-                            x-show="'region.filter'.includes(search.toLowerCase())"
-                            @click="component = 'Region/filter'">Region.filter
-                    </button>
-                    
-                    <button type="button" class="btn btn-outline-primary"
                             x-show="'user.get'.includes(search.toLowerCase())"
                             @click="component = 'User/get'">User.get
                     </button>
                     
                     <button type="button" class="btn btn-outline-primary"
-                            x-show="'tenant.get'.includes(search.toLowerCase())"
-                            @click="component = 'Tenant/get'">Tenant.get
+                            x-show="'profile.get'.includes(search.toLowerCase())"
+                            @click="component = 'Profile/get'">Profile.get
                     </button>
                     
                     <button type="button" class="btn btn-outline-primary"
-                            x-show="'tenant.filter'.includes(search.toLowerCase())"
-                            @click="component = 'Tenant/filter'">Tenant.filter
+                            x-show="'profile.filter'.includes(search.toLowerCase())"
+                            @click="component = 'Profile/filter'">Profile.filter
                     </button>
                     
                     <button type="button" class="btn btn-outline-primary"
-                            x-show="'risk.get'.includes(search.toLowerCase())"
-                            @click="component = 'Risk/get'">Risk.get
+                            x-show="'risktemplate.get'.includes(search.toLowerCase())"
+                            @click="component = 'RiskTemplate/get'">RiskTemplate.get
                     </button>
                     
                     <button type="button" class="btn btn-outline-primary"
-                            x-show="'risk.filter'.includes(search.toLowerCase())"
-                            @click="component = 'Risk/filter'">Risk.filter
+                            x-show="'risktemplate.filter'.includes(search.toLowerCase())"
+                            @click="component = 'RiskTemplate/filter'">RiskTemplate.filter
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'thirdpartytemplate.get'.includes(search.toLowerCase())"
+                            @click="component = 'ThirdPartyTemplate/get'">ThirdPartyTemplate.get
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'thirdpartytemplate.filter'.includes(search.toLowerCase())"
+                            @click="component = 'ThirdPartyTemplate/filter'">ThirdPartyTemplate.filter
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'integration.get'.includes(search.toLowerCase())"
+                            @click="component = 'Integration/get'">Integration.get
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'integration.filter'.includes(search.toLowerCase())"
+                            @click="component = 'Integration/filter'">Integration.filter
                     </button>
                     
                     <button type="button" class="btn btn-outline-primary"
@@ -781,33 +1808,78 @@
                     </button>
                     
                     <button type="button" class="btn btn-outline-primary"
-                            x-show="'company.get'.includes(search.toLowerCase())"
-                            @click="component = 'Company/get'">Company.get
+                            x-show="'controlassessment.get'.includes(search.toLowerCase())"
+                            @click="component = 'ControlAssessment/get'">ControlAssessment.get
                     </button>
                     
                     <button type="button" class="btn btn-outline-primary"
-                            x-show="'company.filter'.includes(search.toLowerCase())"
-                            @click="component = 'Company/filter'">Company.filter
+                            x-show="'controlassessment.filter'.includes(search.toLowerCase())"
+                            @click="component = 'ControlAssessment/filter'">ControlAssessment.filter
                     </button>
                     
                     <button type="button" class="btn btn-outline-primary"
-                            x-show="'demo.get'.includes(search.toLowerCase())"
-                            @click="component = 'Demo/get'">Demo.get
+                            x-show="'objective.get'.includes(search.toLowerCase())"
+                            @click="component = 'Objective/get'">Objective.get
                     </button>
                     
                     <button type="button" class="btn btn-outline-primary"
-                            x-show="'demo.filter'.includes(search.toLowerCase())"
-                            @click="component = 'Demo/filter'">Demo.filter
+                            x-show="'objective.filter'.includes(search.toLowerCase())"
+                            @click="component = 'Objective/filter'">Objective.filter
                     </button>
                     
                     <button type="button" class="btn btn-outline-primary"
-                            x-show="'industry.get'.includes(search.toLowerCase())"
-                            @click="component = 'Industry/get'">Industry.get
+                            x-show="'objectivetask.gettasks'.includes(search.toLowerCase())"
+                            @click="component = 'ObjectiveTask/getTasks'">ObjectiveTask.getTasks
                     </button>
                     
                     <button type="button" class="btn btn-outline-primary"
-                            x-show="'industry.filter'.includes(search.toLowerCase())"
-                            @click="component = 'Industry/filter'">Industry.filter
+                            x-show="'assettask.gettasks'.includes(search.toLowerCase())"
+                            @click="component = 'AssetTask/getTasks'">AssetTask.getTasks
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'asset.get'.includes(search.toLowerCase())"
+                            @click="component = 'Asset/get'">Asset.get
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'asset.filter'.includes(search.toLowerCase())"
+                            @click="component = 'Asset/filter'">Asset.filter
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'tenant.get'.includes(search.toLowerCase())"
+                            @click="component = 'Tenant/get'">Tenant.get
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'tenant.filter'.includes(search.toLowerCase())"
+                            @click="component = 'Tenant/filter'">Tenant.filter
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'questionaire.get'.includes(search.toLowerCase())"
+                            @click="component = 'Questionaire/get'">Questionaire.get
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'questionaire.filter'.includes(search.toLowerCase())"
+                            @click="component = 'Questionaire/filter'">Questionaire.filter
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'processingactivity.get'.includes(search.toLowerCase())"
+                            @click="component = 'ProcessingActivity/get'">ProcessingActivity.get
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'processingactivity.filter'.includes(search.toLowerCase())"
+                            @click="component = 'ProcessingActivity/filter'">ProcessingActivity.filter
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'processingactivitytask.gettasks'.includes(search.toLowerCase())"
+                            @click="component = 'ProcessingActivityTask/getTasks'">ProcessingActivityTask.getTasks
                     </button>
                     
                     <button type="button" class="btn btn-outline-primary"
@@ -821,6 +1893,46 @@
                     </button>
                     
                     <button type="button" class="btn btn-outline-primary"
+                            x-show="'company.get'.includes(search.toLowerCase())"
+                            @click="component = 'Company/get'">Company.get
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'company.filter'.includes(search.toLowerCase())"
+                            @click="component = 'Company/filter'">Company.filter
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'integrationimplementation.get'.includes(search.toLowerCase())"
+                            @click="component = 'IntegrationImplementation/get'">IntegrationImplementation.get
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'integrationimplementation.filter'.includes(search.toLowerCase())"
+                            @click="component = 'IntegrationImplementation/filter'">IntegrationImplementation.filter
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'industry.get'.includes(search.toLowerCase())"
+                            @click="component = 'Industry/get'">Industry.get
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'industry.filter'.includes(search.toLowerCase())"
+                            @click="component = 'Industry/filter'">Industry.filter
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'region.get'.includes(search.toLowerCase())"
+                            @click="component = 'Region/get'">Region.get
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'region.filter'.includes(search.toLowerCase())"
+                            @click="component = 'Region/filter'">Region.filter
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
                             x-show="'task.filter'.includes(search.toLowerCase())"
                             @click="component = 'Task/filter'">Task.filter
                     </button>
@@ -828,6 +1940,21 @@
                     <button type="button" class="btn btn-outline-primary"
                             x-show="'task.get'.includes(search.toLowerCase())"
                             @click="component = 'Task/get'">Task.get
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'risk.get'.includes(search.toLowerCase())"
+                            @click="component = 'Risk/get'">Risk.get
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'risk.filter'.includes(search.toLowerCase())"
+                            @click="component = 'Risk/filter'">Risk.filter
+                    </button>
+                    
+                    <button type="button" class="btn btn-outline-primary"
+                            x-show="'riskaction.getactions'.includes(search.toLowerCase())"
+                            @click="component = 'RiskAction/getActions'">RiskAction.getActions
                     </button>
                     
                 </div>

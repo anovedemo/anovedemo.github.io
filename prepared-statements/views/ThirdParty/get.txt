@@ -1,0 +1,19 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query GetThirdParty($key: ID = "") {
+  ThirdParty {
+    get(key: $key) {
+      key
+      arn
+      name
+      description
+      role
+      address
+      companyRegistrationNumber
+      country
+      knownCertification
+      isCritical
+      isDirectThirdParty
+      owner
+    }
+  }
+}

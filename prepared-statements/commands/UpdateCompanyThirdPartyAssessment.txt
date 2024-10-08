@@ -1,0 +1,12 @@
+# This file is managed by Tracepaper
+mutation Update($arn: String = "", $name: String = "", $formBricksId: String = "") {
+  Company{
+    ThirdParty{
+      Assessment{
+        update(input: {arn: $arn,name: $name,formBricksId: $formBricksId}) {
+           correlationId
+        }
+      }
+    }
+  }
+}

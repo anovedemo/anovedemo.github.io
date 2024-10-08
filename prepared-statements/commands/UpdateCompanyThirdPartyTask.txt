@@ -1,0 +1,12 @@
+# This file is managed by Tracepaper
+mutation Update($arn: String = "", $name: String = "", $description: String = "", $assignee: String = "", $dueDate: String = "", $notes: String = "default value") {
+  Company{
+    ThirdParty{
+      Task{
+        update(input: {arn: $arn,name: $name,description: $description,assignee: $assignee,dueDate: $dueDate,notes: $notes}) {
+           correlationId
+        }
+      }
+    }
+  }
+}

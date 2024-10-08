@@ -1,0 +1,94 @@
+[
+  {
+    "type": "meta",
+    "message": "This file is managed by Tracepaper"
+  },
+  {
+    "name": "arn",
+    "title": "Arn",
+    "type": "String",
+    "pattern": "^[a-z]+:company:[a-z]+:thirdparty:[^\\s]+$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "name",
+    "title": "Name",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "description",
+    "title": "Description",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "role",
+    "title": "Role",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "address",
+    "title": "Address",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "companyRegistrationNumber",
+    "title": "Companyregistrationnumber",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "country",
+    "title": "Country",
+    "type": "String",
+    "pattern": "^region:[A-Z]+:country:[A-Z]+$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "knownCertification",
+    "title": "Knowncertification",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "isCritical",
+    "title": "Iscritical",
+    "type": "Boolean",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "isDirectThirdParty",
+    "title": "Isdirectthirdparty",
+    "type": "Boolean",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "owner",
+    "title": "Owner",
+    "type": "String",
+    "pattern": "^[a-z]+:company:[a-z]+:employee:[^\\s]+$",
+    "placeholder": "",
+    "default": ""
+  }
+]

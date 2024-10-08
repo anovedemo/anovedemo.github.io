@@ -1,0 +1,10 @@
+# This file is managed by Tracepaper
+mutation Update($arn: String = "", $name: String = "", $description: String = "", $owner: String = "", $requiresDpia: Boolean = false, $weight: Int = 0) {
+  Company{
+    ProcessingActivity{
+      update(input: {arn: $arn,name: $name,description: $description,owner: $owner,requiresDpia: $requiresDpia,weight: $weight}) {
+         correlationId
+      }
+    }
+  }
+}

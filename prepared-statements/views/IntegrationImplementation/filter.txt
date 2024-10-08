@@ -1,0 +1,22 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query FilterIntegrationImplementation($key_begins_with: String = "") {
+  Company {
+    Integration {
+      filter(key_begins_with: $key_begins_with) {
+         resultset { 
+          key
+          arn
+          status
+          requirements
+          reference
+          notes {
+            uuid
+            message
+            user
+            order
+          } 
+        }
+      }
+    }
+  }
+}

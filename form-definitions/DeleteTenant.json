@@ -1,0 +1,14 @@
+[
+  {
+    "type": "meta",
+    "message": "This file is managed by Tracepaper"
+  },
+  {
+    "name": "key",
+    "title": "Key",
+    "type": "String",
+    "pattern": "^[a-z]+$",
+    "placeholder": "",
+    "default": ""
+  }
+]

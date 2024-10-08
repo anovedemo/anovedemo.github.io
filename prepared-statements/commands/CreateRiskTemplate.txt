@@ -1,0 +1,8 @@
+# This file is managed by Tracepaper
+mutation Create($arn: String = "", $name: String = "", $description: String = "", $grossLikelihood: Int = 0, $grossImpact: Int = 0, $reviewPeriodicity: String = "") {
+  RiskTemplate{
+    create(input: {arn: $arn,name: $name,description: $description,grossLikelihood: $grossLikelihood,grossImpact: $grossImpact,reviewPeriodicity: $reviewPeriodicity}) {
+       correlationId
+    }
+  }
+}

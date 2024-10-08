@@ -1,0 +1,16 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query FilterProcessingActivity($key_begins_with: String = "") {
+  ProcessingActivity {
+    filter(key_begins_with: $key_begins_with) {
+       resultset { 
+        key
+        arn
+        name
+        description
+        owner
+        requiresDpia
+        weight
+      }
+    }
+  }
+}

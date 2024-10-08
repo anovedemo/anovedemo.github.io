@@ -1,0 +1,12 @@
+# This file is managed by Tracepaper
+mutation Create($arn: String = "", $name: String = "", $description: String = "", $assignee: String = "", $dueDate: String = "", $notes: String = "") {
+  Company{
+    Objective{
+      Task{
+        create(input: {arn: $arn,name: $name,description: $description,assignee: $assignee,dueDate: $dueDate,notes: $notes}) {
+           correlationId
+        }
+      }
+    }
+  }
+}

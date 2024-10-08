@@ -1,0 +1,17 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query GettasksProcessingActivityTask($key_begins_with: String = "") {
+  ProcessingActivity {
+    getTasks(key_begins_with: $key_begins_with) {
+       resultset { 
+        key
+        name
+        description
+        assignee
+        dueDate
+        completeDate
+        notes
+        arn
+      }
+    }
+  }
+}

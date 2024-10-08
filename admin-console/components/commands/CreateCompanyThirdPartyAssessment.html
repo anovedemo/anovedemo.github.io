@@ -1,0 +1,26 @@
+<!-- This file is managed by Tracepaper -->
+<template x-component="CreateCompanyThirdPartyAssessment">
+    <div x-import="basic-form;tables">
+
+        <!-- The command object -->
+        <draftsman-mutation command="CreateCompanyThirdPartyAssessment" x-include="/prepared-statements/commands/CreateCompanyThirdPartyAssessment.txt" authenticated>
+        </draftsman-mutation>
+
+        <!-- The form definition -->
+        <div  style="display:none;" id="CreateCompanyThirdPartyAssessment"
+              x-include="/form-definitions/CreateCompanyThirdPartyAssessment.json"></div>
+
+        <!-- The trace table -->
+        <ui-trace-table></ui-trace-table>
+
+        <!-- The form -->
+        <ui-basic-form alias="CreateCompanyThirdPartyAssessment"></ui-basic-form>
+
+        <draftsman-trace command="CreateCompanyThirdPartyAssessment"
+              status="success"
+              @trace="
+                setTimeout(Draftsman.empty_track_and_trace_log,5000);
+                $dispatch('setdata', { command: 'CreateCompanyThirdPartyAssessment', data: {} });">
+        </draftsman-trace>
+    </div>
+</template>

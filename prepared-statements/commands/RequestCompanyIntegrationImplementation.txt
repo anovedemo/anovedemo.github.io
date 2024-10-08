@@ -1,0 +1,10 @@
+# This file is managed by Tracepaper
+mutation Request($arn: String = "", $requirements: String = "", $reference: String = "", $owner: String = "") {
+  Company{
+    IntegrationImplementation{
+      request(input: {arn: $arn,requirements: $requirements,reference: $reference,owner: $owner}) {
+         correlationId
+      }
+    }
+  }
+}

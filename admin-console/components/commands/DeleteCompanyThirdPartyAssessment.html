@@ -1,0 +1,26 @@
+<!-- This file is managed by Tracepaper -->
+<template x-component="DeleteCompanyThirdPartyAssessment">
+    <div x-import="basic-form;tables">
+
+        <!-- The command object -->
+        <draftsman-mutation command="DeleteCompanyThirdPartyAssessment" x-include="/prepared-statements/commands/DeleteCompanyThirdPartyAssessment.txt" authenticated>
+        </draftsman-mutation>
+
+        <!-- The form definition -->
+        <div  style="display:none;" id="DeleteCompanyThirdPartyAssessment"
+              x-include="/form-definitions/DeleteCompanyThirdPartyAssessment.json"></div>
+
+        <!-- The trace table -->
+        <ui-trace-table></ui-trace-table>
+
+        <!-- The form -->
+        <ui-basic-form alias="DeleteCompanyThirdPartyAssessment"></ui-basic-form>
+
+        <draftsman-trace command="DeleteCompanyThirdPartyAssessment"
+              status="success"
+              @trace="
+                setTimeout(Draftsman.empty_track_and_trace_log,5000);
+                $dispatch('setdata', { command: 'DeleteCompanyThirdPartyAssessment', data: {} });">
+        </draftsman-trace>
+    </div>
+</template>

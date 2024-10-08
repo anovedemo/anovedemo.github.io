@@ -1,0 +1,19 @@
+<!-- This file is managed by Tracepaper -->
+<template x-component="Integration-filter">
+    <div x-import="tables;query-form">
+
+        <!-- The query object -->
+        <draftsman-query alias="Integrationfilter" x-include="/prepared-statements/views/Integration/filter.txt" authenticated>
+        </draftsman-query>
+
+        <!-- The form definition -->
+        <div  style="display:none;" id="Integrationfilter"
+              x-include="/form-definitions/Integration/filter.json"></div>
+
+        <!-- The query form -->
+        <ui-query-form alias="Integrationfilter"></ui-query-form>
+
+        <!-- The data view --><ui-collection-table alias="Integrationfilter" path="filter.resultset"></ui-collection-table>
+
+    </div>
+</template>

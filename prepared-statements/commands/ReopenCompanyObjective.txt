@@ -1,0 +1,10 @@
+# This file is managed by Tracepaper
+mutation Reopen($arn: String = "") {
+  Company{
+    Objective{
+      reopen(input: {arn: $arn}) {
+         correlationId
+      }
+    }
+  }
+}

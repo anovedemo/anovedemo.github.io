@@ -1,0 +1,8 @@
+# This file is managed by Tracepaper
+mutation Delete($key: String = "") {
+  Tenant{
+    delete(input: {key: $key}) {
+       correlationId
+    }
+  }
+}

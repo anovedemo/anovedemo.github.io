@@ -1,0 +1,10 @@
+# This file is managed by Tracepaper
+mutation UnlinkSubprocessor($arn: String = "", $subprocessorArn: String = "") {
+  Company{
+    ThirdParty{
+      unlinkSubprocessor(input: {arn: $arn,subprocessorArn: $subprocessorArn}) {
+         correlationId
+      }
+    }
+  }
+}

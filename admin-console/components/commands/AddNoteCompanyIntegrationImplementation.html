@@ -1,0 +1,26 @@
+<!-- This file is managed by Tracepaper -->
+<template x-component="AddNoteCompanyIntegrationImplementation">
+    <div x-import="basic-form;tables">
+
+        <!-- The command object -->
+        <draftsman-mutation command="AddNoteCompanyIntegrationImplementation" x-include="/prepared-statements/commands/AddNoteCompanyIntegrationImplementation.txt" authenticated>
+        </draftsman-mutation>
+
+        <!-- The form definition -->
+        <div  style="display:none;" id="AddNoteCompanyIntegrationImplementation"
+              x-include="/form-definitions/AddNoteCompanyIntegrationImplementation.json"></div>
+
+        <!-- The trace table -->
+        <ui-trace-table></ui-trace-table>
+
+        <!-- The form -->
+        <ui-basic-form alias="AddNoteCompanyIntegrationImplementation"></ui-basic-form>
+
+        <draftsman-trace command="AddNoteCompanyIntegrationImplementation"
+              status="success"
+              @trace="
+                setTimeout(Draftsman.empty_track_and_trace_log,5000);
+                $dispatch('setdata', { command: 'AddNoteCompanyIntegrationImplementation', data: {} });">
+        </draftsman-trace>
+    </div>
+</template>

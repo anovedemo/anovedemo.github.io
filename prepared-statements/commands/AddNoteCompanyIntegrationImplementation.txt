@@ -1,0 +1,10 @@
+# This file is managed by Tracepaper
+mutation AddNote($arn: String = "", $message: String = "") {
+  Company{
+    IntegrationImplementation{
+      addNote(input: {arn: $arn,message: $message}) {
+         correlationId
+      }
+    }
+  }
+}

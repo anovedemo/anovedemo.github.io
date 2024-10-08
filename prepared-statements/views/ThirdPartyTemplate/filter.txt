@@ -1,0 +1,17 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query FilterThirdPartyTemplate {
+  ThirdPartyTemplate {
+    filter {
+       resultset { 
+        key
+        arn
+        name
+        description
+        address
+        companyRegistrationNumber
+        countryArn
+        knownCertification
+      }
+    }
+  }
+}

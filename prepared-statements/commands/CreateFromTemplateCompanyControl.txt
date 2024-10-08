@@ -1,0 +1,10 @@
+# This file is managed by Tracepaper
+mutation CreateFromTemplate($controlTemplateReference: String = "", $desiredMaturityLevel: Int = 0, $businessUnit: String = "", $companyArn: String = "", $nextAssessmentDate: String = "", $controlOwner: String = "") {
+  Company{
+    Control{
+      createFromTemplate(input: {controlTemplateReference: $controlTemplateReference,desiredMaturityLevel: $desiredMaturityLevel,businessUnit: $businessUnit,companyArn: $companyArn,nextAssessmentDate: $nextAssessmentDate,controlOwner: $controlOwner}) {
+         correlationId
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+<!-- This file is managed by Tracepaper -->
+<template x-component="RiskAction-getActions">
+    <div x-import="tables;query-form">
+
+        <!-- The query object -->
+        <draftsman-query alias="RiskActiongetActions" x-include="/prepared-statements/views/RiskAction/getActions.txt" authenticated>
+        </draftsman-query>
+
+        <!-- The form definition -->
+        <div  style="display:none;" id="RiskActiongetActions"
+              x-include="/form-definitions/RiskAction/getActions.json"></div>
+
+        <!-- The query form -->
+        <ui-query-form alias="RiskActiongetActions"></ui-query-form>
+
+        <!-- The data view --><ui-collection-table alias="RiskActiongetActions" path="getActions.resultset"></ui-collection-table>
+
+    </div>
+</template>

@@ -1,0 +1,22 @@
+[
+  {
+    "type": "meta",
+    "message": "This file is managed by Tracepaper"
+  },
+  {
+    "name": "reference",
+    "title": "Reference",
+    "type": "String",
+    "pattern": "^[a-z]+$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "path",
+    "title": "Path",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  }
+]

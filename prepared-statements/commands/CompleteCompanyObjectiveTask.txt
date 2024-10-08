@@ -1,0 +1,12 @@
+# This file is managed by Tracepaper
+mutation Complete($arn: String = "") {
+  Company{
+    Objective{
+      Task{
+        complete(input: {arn: $arn}) {
+           correlationId
+        }
+      }
+    }
+  }
+}

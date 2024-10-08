@@ -1,0 +1,14 @@
+[
+  {
+    "type": "meta",
+    "message": "This file is managed by Tracepaper"
+  },
+  {
+    "name": "arn",
+    "title": "Arn",
+    "type": "String",
+    "pattern": "^risktemplate:[a-z0-9]+$",
+    "placeholder": "",
+    "default": ""
+  }
+]

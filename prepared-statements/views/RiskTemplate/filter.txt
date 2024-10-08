@@ -1,0 +1,19 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query FilterRiskTemplate {
+  RiskTemplate {
+    filter {
+       resultset { 
+        key
+        arn
+        name
+        description
+        grossLikelihood
+        grossImpact
+        reviewPeriodicity
+        templateVersion
+        reference
+        previousVersion
+      }
+    }
+  }
+}

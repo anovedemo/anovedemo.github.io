@@ -1,0 +1,26 @@
+<!-- This file is managed by Tracepaper -->
+<template x-component="CreateRiskTemplate">
+    <div x-import="basic-form;tables">
+
+        <!-- The command object -->
+        <draftsman-mutation command="CreateRiskTemplate" x-include="/prepared-statements/commands/CreateRiskTemplate.txt" authenticated>
+        </draftsman-mutation>
+
+        <!-- The form definition -->
+        <div  style="display:none;" id="CreateRiskTemplate"
+              x-include="/form-definitions/CreateRiskTemplate.json"></div>
+
+        <!-- The trace table -->
+        <ui-trace-table></ui-trace-table>
+
+        <!-- The form -->
+        <ui-basic-form alias="CreateRiskTemplate"></ui-basic-form>
+
+        <draftsman-trace command="CreateRiskTemplate"
+              status="success"
+              @trace="
+                setTimeout(Draftsman.empty_track_and_trace_log,5000);
+                $dispatch('setdata', { command: 'CreateRiskTemplate', data: {} });">
+        </draftsman-trace>
+    </div>
+</template>

@@ -1,0 +1,54 @@
+[
+  {
+    "type": "meta",
+    "message": "This file is managed by Tracepaper"
+  },
+  {
+    "name": "controlTemplateReference",
+    "title": "Controltemplatereference",
+    "type": "String",
+    "pattern": "^controltemplate:[a-z0-9]+:[0-9]+(-PREVIEW)?$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "desiredMaturityLevel",
+    "title": "Desiredmaturitylevel",
+    "type": "Int",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "businessUnit",
+    "title": "Businessunit",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "companyArn",
+    "title": "Companyarn",
+    "type": "String",
+    "pattern": "^[a-z]+:company:[a-z]+$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "nextAssessmentDate",
+    "title": "Nextassessmentdate",
+    "type": "String",
+    "pattern": "^(?:20)\\d{2}-\\d{2}-\\d{2}$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "controlOwner",
+    "title": "Controlowner",
+    "type": "String",
+    "pattern": "^[a-z]+:company:[a-z]+:employee:[^\\s]+$",
+    "placeholder": "",
+    "default": ""
+  }
+]

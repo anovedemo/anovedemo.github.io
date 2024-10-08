@@ -1,0 +1,26 @@
+<!-- This file is managed by Tracepaper -->
+<template x-component="ReopenCompanyObjective">
+    <div x-import="basic-form;tables">
+
+        <!-- The command object -->
+        <draftsman-mutation command="ReopenCompanyObjective" x-include="/prepared-statements/commands/ReopenCompanyObjective.txt" authenticated>
+        </draftsman-mutation>
+
+        <!-- The form definition -->
+        <div  style="display:none;" id="ReopenCompanyObjective"
+              x-include="/form-definitions/ReopenCompanyObjective.json"></div>
+
+        <!-- The trace table -->
+        <ui-trace-table></ui-trace-table>
+
+        <!-- The form -->
+        <ui-basic-form alias="ReopenCompanyObjective"></ui-basic-form>
+
+        <draftsman-trace command="ReopenCompanyObjective"
+              status="success"
+              @trace="
+                setTimeout(Draftsman.empty_track_and_trace_log,5000);
+                $dispatch('setdata', { command: 'ReopenCompanyObjective', data: {} });">
+        </draftsman-trace>
+    </div>
+</template>

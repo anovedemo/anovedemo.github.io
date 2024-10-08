@@ -1,0 +1,26 @@
+<!-- This file is managed by Tracepaper -->
+<template x-component="CompleteCompanyThirdPartyTask">
+    <div x-import="basic-form;tables">
+
+        <!-- The command object -->
+        <draftsman-mutation command="CompleteCompanyThirdPartyTask" x-include="/prepared-statements/commands/CompleteCompanyThirdPartyTask.txt" authenticated>
+        </draftsman-mutation>
+
+        <!-- The form definition -->
+        <div  style="display:none;" id="CompleteCompanyThirdPartyTask"
+              x-include="/form-definitions/CompleteCompanyThirdPartyTask.json"></div>
+
+        <!-- The trace table -->
+        <ui-trace-table></ui-trace-table>
+
+        <!-- The form -->
+        <ui-basic-form alias="CompleteCompanyThirdPartyTask"></ui-basic-form>
+
+        <draftsman-trace command="CompleteCompanyThirdPartyTask"
+              status="success"
+              @trace="
+                setTimeout(Draftsman.empty_track_and_trace_log,5000);
+                $dispatch('setdata', { command: 'CompleteCompanyThirdPartyTask', data: {} });">
+        </draftsman-trace>
+    </div>
+</template>

@@ -1,0 +1,8 @@
+# This file is managed by Tracepaper
+mutation Delete($arn: String = "") {
+  Industry{
+    delete(input: {arn: $arn}) {
+       correlationId
+    }
+  }
+}

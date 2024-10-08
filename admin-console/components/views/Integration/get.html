@@ -1,0 +1,21 @@
+<!-- This file is managed by Tracepaper -->
+<template x-component="Integration-get">
+    <div x-import="tables;query-form">
+
+        <!-- The query object -->
+        <draftsman-query alias="Integrationget" x-include="/prepared-statements/views/Integration/get.txt" authenticated>
+        </draftsman-query>
+
+        <!-- The form definition -->
+        <div  style="display:none;" id="Integrationget"
+              x-include="/form-definitions/Integration/get.json"></div>
+
+        <!-- The query form -->
+        <ui-query-form alias="Integrationget"></ui-query-form>
+
+        <!-- The data view -->
+        <ui-item-table alias="Integrationget" path="get"></ui-item-table>
+        
+
+    </div>
+</template>

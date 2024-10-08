@@ -1,0 +1,10 @@
+# This file is managed by Tracepaper
+mutation Create($arn: String = "", $name: String = "", $description: String = "", $role: String = "", $address: String = "", $companyRegistrationNumber: String = "", $country: String = "", $knownCertification: String = "", $isCritical: Boolean = false, $isDirectThirdParty: Boolean = false, $owner: String = "") {
+  Company{
+    ThirdParty{
+      create(input: {arn: $arn,name: $name,description: $description,role: $role,address: $address,companyRegistrationNumber: $companyRegistrationNumber,country: $country,knownCertification: $knownCertification,isCritical: $isCritical,isDirectThirdParty: $isDirectThirdParty,owner: $owner}) {
+         correlationId
+      }
+    }
+  }
+}

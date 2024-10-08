@@ -1,0 +1,26 @@
+<!-- This file is managed by Tracepaper -->
+<template x-component="DeleteIntegrations">
+    <div x-import="basic-form;tables">
+
+        <!-- The command object -->
+        <draftsman-mutation command="DeleteIntegrations" x-include="/prepared-statements/commands/DeleteIntegrations.txt" authenticated>
+        </draftsman-mutation>
+
+        <!-- The form definition -->
+        <div  style="display:none;" id="DeleteIntegrations"
+              x-include="/form-definitions/DeleteIntegrations.json"></div>
+
+        <!-- The trace table -->
+        <ui-trace-table></ui-trace-table>
+
+        <!-- The form -->
+        <ui-basic-form alias="DeleteIntegrations"></ui-basic-form>
+
+        <draftsman-trace command="DeleteIntegrations"
+              status="success"
+              @trace="
+                setTimeout(Draftsman.empty_track_and_trace_log,5000);
+                $dispatch('setdata', { command: 'DeleteIntegrations', data: {} });">
+        </draftsman-trace>
+    </div>
+</template>

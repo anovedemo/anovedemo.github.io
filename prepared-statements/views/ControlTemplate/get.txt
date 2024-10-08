@@ -1,0 +1,15 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query GetControlTemplate($key: ID = "") {
+  ControlTemplate {
+    get(key: $key) {
+      key
+      name
+      description
+      assessmentPeriodicity
+      requirementArns
+      arn
+      templateVersion
+      reference
+    }
+  }
+}

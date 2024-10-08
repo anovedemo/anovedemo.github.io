@@ -1,0 +1,10 @@
+# This file is managed by Tracepaper
+mutation Update($arn: String = "", $owner: String = "", $dueDate: String = "", $definitionOfDone: String = "", $completionPercentage: Int = 0, $name: String = "") {
+  Company{
+    Objective{
+      update(input: {arn: $arn,owner: $owner,dueDate: $dueDate,definitionOfDone: $definitionOfDone,completionPercentage: $completionPercentage,name: $name}) {
+         correlationId
+      }
+    }
+  }
+}

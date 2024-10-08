@@ -1,0 +1,18 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query GetactionsRiskAction($key_begins_with: String = "") {
+  Risk {
+    getActions(key_begins_with: $key_begins_with) {
+       resultset { 
+        key
+        id
+        name
+        description
+        assignee
+        dueDate
+        completeDate
+        arn
+        notes
+      }
+    }
+  }
+}

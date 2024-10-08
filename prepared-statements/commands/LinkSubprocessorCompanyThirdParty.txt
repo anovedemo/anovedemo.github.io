@@ -1,0 +1,10 @@
+# This file is managed by Tracepaper
+mutation LinkSubprocessor($arn: String = "", $subprocessorArn: String = "") {
+  Company{
+    ThirdParty{
+      linkSubprocessor(input: {arn: $arn,subprocessorArn: $subprocessorArn}) {
+         correlationId
+      }
+    }
+  }
+}

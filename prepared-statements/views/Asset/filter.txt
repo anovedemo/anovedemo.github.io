@@ -1,0 +1,18 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query FilterAsset($key_begins_with: String = "") {
+  Asset {
+    filter(key_begins_with: $key_begins_with) {
+       resultset { 
+        key
+        arn
+        name
+        description
+        owner
+        confidentiality
+        integrity
+        availability
+        privacy
+      }
+    }
+  }
+}

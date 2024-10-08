@@ -1,0 +1,10 @@
+# This file is managed by Tracepaper
+mutation Create($arn: String = "", $name: String = "", $description: String = "", $owner: String = "", $confidentiality: String = "", $integrity: String = "", $availability: String = "", $privacy: String = "") {
+  Company{
+    Asset{
+      create(input: {arn: $arn,name: $name,description: $description,owner: $owner,confidentiality: $confidentiality,integrity: $integrity,availability: $availability,privacy: $privacy}) {
+         correlationId
+      }
+    }
+  }
+}

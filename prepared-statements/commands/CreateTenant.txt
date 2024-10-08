@@ -1,7 +1,7 @@
 # This file is managed by Tracepaper
-mutation Create($name: String = "") {
+mutation Create($key: String = "", $name: String = "") {
   Tenant{
-    create(input: {name: $name}) {
+    create(input: {key: $key,name: $name}) {
        correlationId
     }
   }

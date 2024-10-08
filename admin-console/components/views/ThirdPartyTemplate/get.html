@@ -1,0 +1,21 @@
+<!-- This file is managed by Tracepaper -->
+<template x-component="ThirdPartyTemplate-get">
+    <div x-import="tables;query-form">
+
+        <!-- The query object -->
+        <draftsman-query alias="ThirdPartyTemplateget" x-include="/prepared-statements/views/ThirdPartyTemplate/get.txt" authenticated>
+        </draftsman-query>
+
+        <!-- The form definition -->
+        <div  style="display:none;" id="ThirdPartyTemplateget"
+              x-include="/form-definitions/ThirdPartyTemplate/get.json"></div>
+
+        <!-- The query form -->
+        <ui-query-form alias="ThirdPartyTemplateget"></ui-query-form>
+
+        <!-- The data view -->
+        <ui-item-table alias="ThirdPartyTemplateget" path="get"></ui-item-table>
+        
+
+    </div>
+</template>

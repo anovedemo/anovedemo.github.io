@@ -1,0 +1,10 @@
+# This file is managed by Tracepaper
+mutation ChangeStatus($arn: String = "", $message: String = "", $status: String = "") {
+  Company{
+    IntegrationImplementation{
+      changeStatus(input: {arn: $arn,message: $message,status: $status}) {
+         correlationId
+      }
+    }
+  }
+}

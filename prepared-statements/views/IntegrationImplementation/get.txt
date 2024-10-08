@@ -1,0 +1,20 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query GetIntegrationImplementation($key: ID = "") {
+  Company {
+    Integration {
+      get(key: $key) {
+        key
+        arn
+        status
+        requirements
+        reference
+        notes {
+          uuid
+          message
+          user
+          order
+        } 
+      }
+    }
+  }
+}

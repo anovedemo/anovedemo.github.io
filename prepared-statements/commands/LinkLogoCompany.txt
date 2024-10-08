@@ -1,0 +1,8 @@
+# This file is managed by Tracepaper
+mutation LinkLogo($arn: String = "", $path: String = "") {
+  Company{
+    linkLogo(input: {arn: $arn,path: $path}) {
+       correlationId
+    }
+  }
+}

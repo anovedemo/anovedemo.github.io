@@ -1,0 +1,70 @@
+[
+  {
+    "type": "meta",
+    "message": "This file is managed by Tracepaper"
+  },
+  {
+    "name": "arn",
+    "title": "Arn",
+    "type": "String",
+    "pattern": "^[a-z]+:company:[a-z]+:asset:[^\\s]+$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "name",
+    "title": "Name",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "description",
+    "title": "Description",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "owner",
+    "title": "Owner",
+    "type": "String",
+    "pattern": "^[a-z]+:company:[a-z]+:employee:[^\\s]+$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "confidentiality",
+    "title": "Confidentiality",
+    "type": "String",
+    "pattern": "^(0|1|2|3)$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "integrity",
+    "title": "Integrity",
+    "type": "String",
+    "pattern": "^(0|1|2|3)$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "availability",
+    "title": "Availability",
+    "type": "String",
+    "pattern": "^(0|1|2|3)$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "privacy",
+    "title": "Privacy",
+    "type": "String",
+    "pattern": "^(0|1|2|3)$",
+    "placeholder": "",
+    "default": ""
+  }
+]

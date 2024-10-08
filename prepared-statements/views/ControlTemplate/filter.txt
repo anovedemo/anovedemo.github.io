@@ -1,0 +1,17 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query FilterControlTemplate {
+  ControlTemplate {
+    filter {
+       resultset { 
+        key
+        name
+        description
+        assessmentPeriodicity
+        requirementArns
+        arn
+        templateVersion
+        reference
+      }
+    }
+  }
+}

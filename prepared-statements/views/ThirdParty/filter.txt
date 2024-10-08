@@ -1,0 +1,21 @@
+# This file is NOT managed by Tracepaper, and can be customized.
+query FilterThirdParty($key_begins_with: String = "") {
+  ThirdParty {
+    filter(key_begins_with: $key_begins_with) {
+       resultset { 
+        key
+        arn
+        name
+        description
+        role
+        address
+        companyRegistrationNumber
+        country
+        knownCertification
+        isCritical
+        isDirectThirdParty
+        owner
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+<!-- This file is managed by Tracepaper -->
+<template x-component="UpdateCompanyProcessingActivity">
+    <div x-import="basic-form;tables">
+
+        <!-- The command object -->
+        <draftsman-mutation command="UpdateCompanyProcessingActivity" x-include="/prepared-statements/commands/UpdateCompanyProcessingActivity.txt" authenticated>
+        </draftsman-mutation>
+
+        <!-- The form definition -->
+        <div  style="display:none;" id="UpdateCompanyProcessingActivity"
+              x-include="/form-definitions/UpdateCompanyProcessingActivity.json"></div>
+
+        <!-- The trace table -->
+        <ui-trace-table></ui-trace-table>
+
+        <!-- The form -->
+        <ui-basic-form alias="UpdateCompanyProcessingActivity"></ui-basic-form>
+
+        <draftsman-trace command="UpdateCompanyProcessingActivity"
+              status="success"
+              @trace="
+                setTimeout(Draftsman.empty_track_and_trace_log,5000);
+                $dispatch('setdata', { command: 'UpdateCompanyProcessingActivity', data: {} });">
+        </draftsman-trace>
+    </div>
+</template>

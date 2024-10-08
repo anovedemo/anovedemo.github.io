@@ -1,0 +1,54 @@
+[
+  {
+    "type": "meta",
+    "message": "This file is managed by Tracepaper"
+  },
+  {
+    "name": "arn",
+    "title": "Arn",
+    "type": "String",
+    "pattern": "^[a-z]+:company:[a-z]+$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "description",
+    "title": "Description",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "companySize",
+    "title": "Companysize",
+    "type": "Int",
+    "pattern": "",
+    "placeholder": "0",
+    "default": "0"
+  },
+  {
+    "name": "revenue",
+    "title": "Revenue",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "industryLink",
+    "title": "Industrylink",
+    "type": "String",
+    "pattern": "^industry:[a-z]+(;industry:[a-z]+)*$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "countryArn",
+    "title": "Countryarn",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  }
+]

@@ -1,0 +1,46 @@
+[
+  {
+    "type": "meta",
+    "message": "This file is managed by Tracepaper"
+  },
+  {
+    "name": "arn",
+    "title": "Arn",
+    "type": "String",
+    "pattern": "^[a-z]+:company:[a-z]+:risk:[^\\s]+$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "template",
+    "title": "Template",
+    "type": "String",
+    "pattern": "^risktemplate:[a-z0-9]+:[0-9]+(-PREVIEW)?$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "apetiteLikelihood",
+    "title": "Apetitelikelihood",
+    "type": "Int",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "apetiteImpact",
+    "title": "Apetiteimpact",
+    "type": "Int",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "nextReviewDate",
+    "title": "Nextreviewdate",
+    "type": "String",
+    "pattern": "^(?:20)\\d{2}-\\d{2}-\\d{2}$",
+    "placeholder": "",
+    "default": ""
+  }
+]

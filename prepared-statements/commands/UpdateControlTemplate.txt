@@ -1,0 +1,8 @@
+# This file is managed by Tracepaper
+mutation Update($name: String = "", $description: String = "", $assessmentPeriodicity: String = "", $requirementLinks: String = "", $arn: String = "") {
+  ControlTemplate{
+    update(input: {name: $name,description: $description,assessmentPeriodicity: $assessmentPeriodicity,requirementLinks: $requirementLinks,arn: $arn}) {
+       correlationId
+    }
+  }
+}
