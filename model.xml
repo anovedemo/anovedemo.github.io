@@ -6595,7 +6595,7 @@ if snapshot.isDeleted != '':
 				<mapping target="username" operand="set" value="username"></mapping>
 				<mapping operand="set" target="roles" value="roles"></mapping>
 				<delete condition='#snapshot.isDeleted != ""' id="0IgYPJ"></delete>
-				<delete id="OrNt1h" condition='#item.businessRole == "blocked"'></delete>
+				<delete id="OrNt1h" condition='#item.roles == "blocked"'></delete>
 			</snapshot-handler>
 			<custom-handler id="XUqTGK" sub-domain="Customer" aggregate="Company">for depricated in snapshot.deletedEmployeeArns:
     entity = EntityManager.get(type="Employee", key=depricated)
