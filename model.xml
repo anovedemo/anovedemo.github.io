@@ -37,9 +37,9 @@
 		<pattern name="RegionArn" regex="^region:[A-Z]+$"></pattern>
 		<pattern name="ControlArn" regex="^{{CompanyArn}}:control:[^\s]+$"></pattern>
 		<pattern name="AssetTaskArn" regex="^{{AssetArn}}:[^\s]+$"></pattern>
-		<expression name="isAdministrator" type="ActorEventRole" input="arn" expression="${arn.split(':')[0]}:${arn.split(':')[1]}:${arn.split(':')[2]}:administrator"></expression>
+		<expression name="isAdministrator" type="ActorEventRole" input="arn" expression="${arn.split(':')[0]}:${arn.split(':')[1]}:${arn.split(':')[2]}:company-administrator"></expression>
 		<expression name="truncateArn" type="TriggerKeyField" input="arn;length" expression="':'.join(arn.split(':')[:int(length)])"></expression>
-		<expression name="isViewer" type="ActorEventRole" input="arn" expression="${arn.split(':')[0]}:${arn.split(':')[1]}:${arn.split(':')[2]}:viewer"></expression>
+		<expression name="isViewer" type="ActorEventRole" input="arn" expression="${arn.split(':')[0]}:${arn.split(':')[1]}:${arn.split(':')[2]}:company-viewer"></expression>
 	</global>
 	<events>
 		<event graphql-namespace="ControlTemplate" graphql-name="update" name="UpdateControlTemplateRequested" authorization="role" role="administrator" type="ActorEvent">
