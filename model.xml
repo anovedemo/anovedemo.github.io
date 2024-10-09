@@ -3253,7 +3253,7 @@
 						<mapping target="email" value="email"></mapping>
 						<mapping target="arn" value="companyArn"></mapping>
 					</trigger>
-					<processor type="code" id="o8gRni" file="" handler="" code='flow.employeeArn = flow.arn + ":employee:" + flow.username|LB|flow.oldArn = flow.arn + ":employee:" + flow.email|LB|if flow.oldArn not in flow.entity.employees:|LB|    raise ValidationConditionNotMet(f"Employee [{flow.username}/{flow.email}] not found in company.")|LB|flow.businessRole = flow.entity.employees[flow.oldArn]["businessRole"]|LB|'></processor>
+					<processor type="code" id="o8gRni" file="" handler="" code='flow.employeeArn = flow.arn + ":employee:" + flow.username|LB|flow.oldArn = flow.arn + ":employee:" + flow.email|LB|if flow.oldArn not in flow.entity.employees:|LB|    raise ValidationConditionNotMet(f"Employee [{flow.username}/{flow.email}] not found in company.")|LB|flow.businessRole = flow.entity.employees[flow.oldArn]["roles"]|LB|'></processor>
 					<processor type="emit-event" id="WrnvxO" ref="EmployeeArnUpdated">
 						<mapping target="employeeArn" value="#flow.employeeArn"></mapping>
 						<mapping target="oldArn" value="#flow.oldArn"></mapping>
@@ -3273,7 +3273,7 @@
     "company:draftsman:employee:j.doe@example.com": {
       "arn": "company:draftsman:employee:j.doe@example.com",
       "username": "j.doe@example.com",
-      "businessRole": "administrator"
+      "roles": "administrator"
     }
   }
 }</state>
