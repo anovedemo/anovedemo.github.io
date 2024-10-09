@@ -353,7 +353,7 @@
 		</event>
 		<event graphql-namespace="Company.Employee" graphql-name="updateBusinessRole" name="UpdateBusinessRoleCompanyEmployeeRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
 			<field name="arn" type="String" pattern="{{EmployeeArn}}"></field>
-			<field name="businessRole" type="String" pattern="{{BusinessRole}}"></field>
+			<field name="roles" type="String"></field>
 		</event>
 		<event graphql-namespace="Company.BusinessUnit" graphql-name="remove" name="RemoveCompanyBusinessUnitRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
 			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
@@ -818,7 +818,7 @@
 		</event>
 		<event name="BusinessRoleUpdated" source="Customer.Company" type="DomainEvent">
 			<field name="employeeArn" type="String"></field>
-			<field name="businessRole" type="String"></field>
+			<field name="roles" type="String"></field>
 			<field name="username" type="String"></field>
 		</event>
 		<event name="CompanyLogoLinked" source="Customer.Company" type="DomainEvent">
@@ -853,6 +853,7 @@
 			<field name="industry" type="String"></field>
 			<field name="user" type="String"></field>
 			<field name="country" type="String"></field>
+			<field name="roles" type="StringList"></field>
 		</event>
 		<event name="CompanyDeleted" source="Customer.Company" type="DomainEvent">
 			<field name="arn" type="String"></field>
@@ -3305,6 +3306,7 @@
 						<mapping target="user" value="user"></mapping>
 						<mapping target="country" value="country"></mapping>
 					</trigger>
+					<processor type="code" file="lib/AccessManagement.py" handler="retrieve_raw_roles" id="S9G78O"></processor>
 					<processor type="emit-event" id="AqKpZH" ref="CompanyCreated">
 						<mapping target="arn" value="#flow.arn"></mapping>
 						<mapping target="name" value="#flow.name"></mapping>
@@ -3314,6 +3316,7 @@
 						<mapping target="industry" value="#flow.industry"></mapping>
 						<mapping target="user" value="#flow.user"></mapping>
 						<mapping target="country" value="#flow.country"></mapping>
+						<mapping target="roles" value="#flow.roles"></mapping>
 					</processor>
 					<test-case name="CreateNewCompany" trigger-event="CreateCompanyRequested" expected-processing-status="success">
 						<input name="arn" value="company:draftsman" type="String"></input>
@@ -3332,15 +3335,7 @@
 							<field value="0" name="revenue" type="String"></field>
 							<field value="region:EMEA:country:NL" name="country" type="String"></field>
 						</expected>
-						<expected-state pk="company:draftsman">{
-        "arn":"company:draftsman",
-        "name":"Draftsman",
-        "description":"--",
-        "companySize": 2,
-        "revenue": "0",
-        "industryLink": ["--"],
-       "countryArn": "region:EMEA:country:NL"
-      }</expected-state>
+						<expected-state pk="company:draftsman">{"arn":"company:draftsman","name":"Draftsman","description":"--","companySize":2,"revenue":"0","industryLink":["--"],"countryArn":"region:EMEA:country:NL","employees":{"company:draftsman:employee:j.doe":{"arn":"company:draftsman:employee:j.doe","username":"j.doe","roles":"company-administrator;company-viewer;asset-administrator;control-administrator;integration-administrator;objective-administrator;processingactivity-administrator;risk-administrator;assessment-administrator;thirdparty-administrator"}}}</expected-state>
 						<state>{}</state>
 					</test-case>
 					<test-case name="CreateDuplicateCompany" trigger-event="CreateCompanyRequested" expected-processing-status="error">
@@ -3405,37 +3400,43 @@
 				<command name="UpdateBusinessRole">
 					<trigger source="UpdateBusinessRoleCompanyEmployeeRequested" key-field="#global.truncateArn(arn, '3')">
 						<mapping target="arn" value="arn"></mapping>
-						<mapping target="businessRole" value="businessRole"></mapping>
+						<mapping target="roles" value="roles"></mapping>
 					</trigger>
 					<processor type="set-variable" id="HmACgJ" name="username" expression='flow.arn.split(":")[-1]'></processor>
-					<processor type="emit-event" id="lqJZbl" ref="BusinessRoleUpdated">
+					<processor type="emit-event" id="DlMTCb" ref="BusinessRoleUpdated">
 						<mapping target="employeeArn" value="#flow.arn"></mapping>
-						<mapping target="businessRole" value="#flow.businessRole"></mapping>
+						<mapping target="roles" value="#flow.roles"></mapping>
 						<mapping target="username" value="#flow.username"></mapping>
 					</processor>
-					<test-case name="UpdateBusinessRoleForNewUser" trigger-event="UpdateBusinessRoleCompanyEmployeeRequested">
-						<input name="arn" value="anove:company:draftsman:employee:j.doe" type="String"></input>
-						<input name="businessRole" value="administrator" type="String"></input>
-						<expected domain-event="BusinessRoleUpdated">
-							<field value="anove:company:draftsman:employee:j.doe" name="employeeArn" type="String"></field>
-							<field value="administrator" name="businessRole" type="String"></field>
+					<test-case name="NewUser" trigger-event="UpdateBusinessRoleCompanyEmployeeRequested" expected-processing-status="success">
+						<input name="arn" type="String" value="anove:company:draftsman:employee:j.doe"></input>
+						<input name="roles" type="String" value="company-viewer"></input>
+						<state>{
+  "arn": "anove:company:draftsman"
+}</state>
+						<expected domain-event="BusinessRoleUpdated" id="pj4qhW">
+							<field name="employeeArn" type="String" value="anove:company:draftsman:employee:j.doe"></field>
+							<field name="roles" type="String" value="company-viewer"></field>
+							<field name="username" type="String" value="j.doe"></field>
 						</expected>
 						<expected-state pk="anove:company:draftsman">{
+  "arn": "anove:company:draftsman",
   "employees": {
     "anove:company:draftsman:employee:j.doe": {
       "arn": "anove:company:draftsman:employee:j.doe",
       "username": "j.doe",
-      "businessRole": "administrator"
+      "roles": "company-viewer"
     }
   }
 }</expected-state>
 					</test-case>
-					<test-case name="UpdateBusinessRoleForUser" trigger-event="UpdateBusinessRoleCompanyEmployeeRequested">
-						<input name="arn" value="anove:company:draftsman:employee:j.doe" type="String"></input>
-						<input name="businessRole" value="viewer" type="String"></input>
-						<expected domain-event="BusinessRoleUpdated">
-							<field value="anove:company:draftsman:employee:j.doe" name="employeeArn" type="String"></field>
-							<field value="viewer" name="businessRole" type="String"></field>
+					<test-case name="UpdateRoles" trigger-event="UpdateBusinessRoleCompanyEmployeeRequested" expected-processing-status="success">
+						<input name="arn" type="String" value="anove:company:draftsman:employee:j.doe"></input>
+						<input name="roles" type="String" value="company-viewer;company-administrator"></input>
+						<expected domain-event="BusinessRoleUpdated" id="BVYmev">
+							<field name="employeeArn" type="String" value="anove:company:draftsman:employee:j.doe"></field>
+							<field name="roles" type="String" value="company-viewer;company-administrator"></field>
+							<field name="username" type="String" value="j.doe"></field>
 						</expected>
 						<state>{
   "arn": "anove:company:draftsman",
@@ -3443,7 +3444,7 @@
     "anove:company:draftsman:employee:j.doe": {
       "arn": "anove:company:draftsman:employee:j.doe",
       "username": "j.doe",
-      "businessRole": ""
+      "roles": "company-viewer"
     }
   }
 }</state>
@@ -3453,7 +3454,7 @@
     "anove:company:draftsman:employee:j.doe": {
       "arn": "anove:company:draftsman:employee:j.doe",
       "username": "j.doe",
-      "businessRole": "viewer"
+      "roles": "company-viewer;company-administrator"
     }
   }
 }</expected-state>
@@ -3482,7 +3483,7 @@
 					</test-case>
 				</command>
 				<event-handler on="BusinessUnitRemoved" code="if event.name in self.businessUnits:|LB|    del self.businessUnits[event.name]"></event-handler>
-				<event-handler on="BusinessRoleUpdated" code='self.employees[event.employeeArn] = {|LB|    "arn": event.employeeArn,|LB|    "username": event.employeeArn.split(":")[-1],|LB|    "businessRole": event.businessRole|LB|}'></event-handler>
+				<event-handler on="BusinessRoleUpdated" code='self.employees[event.employeeArn] = {|LB|    "arn": event.employeeArn,|LB|    "username": event.employeeArn.split(":")[-1],|LB|    "roles": event.roles|LB|}'></event-handler>
 				<event-handler on="CompanyLogoLinked">
 					<mapping target="logoPath" value="logoPath" operand="set"></mapping>
 				</event-handler>
@@ -3499,7 +3500,7 @@
 						<mapping target="description" operand="set" value="description"></mapping>
 					</nested-mapping>
 				</event-handler>
-				<event-handler on="CompanyCreated" code="self.arn = event.arn|LB|self.name = event.name|LB|self.description = event.description|LB|self.companySize = event.companySize|LB|self.revenue = event.revenue|LB|self.industryLink = event.industry.split(';')|LB|self.countryArn = event.country|LB|employeeArn = event.arn + &quot;:employee:&quot; + event.user|LB|self.employees[employeeArn] = {|LB|    &quot;arn&quot;: employeeArn,|LB|    &quot;username&quot;: event.user,|LB|    &quot;businessRole&quot;: &quot;administrator&quot;|LB|    |LB|}"></event-handler>
+				<event-handler on="CompanyCreated" code="self.arn = event.arn|LB|self.name = event.name|LB|self.description = event.description|LB|self.companySize = event.companySize|LB|self.revenue = event.revenue|LB|self.industryLink = event.industry.split(';')|LB|self.countryArn = event.country|LB|employeeArn = event.arn + &quot;:employee:&quot; + event.user|LB|self.employees[employeeArn] = {|LB|    &quot;arn&quot;: employeeArn,|LB|    &quot;username&quot;: event.user,|LB|    &quot;roles&quot;: &quot;;&quot;.join(event.roles)|LB|}"></event-handler>
 				<event-handler on="CompanyDeleted" code='self.isDeleted = "soft"|LB|'></event-handler>
 				<event-handler on="LinkedControlFrameworkToCompany" code="if not hasattr(self, 'controlFrameworkLinks'):|LB|    self.controlFrameworkLinks = []|LB|self.controlFrameworkLinks.append(event.controlFrameworkArn)|LB|self.controlFrameworkLinks = list(set(self.controlFrameworkLinks))"></event-handler>
 				<event-handler on="UnlinkedControlFrameworkFromCompany" code="self.controlFrameworkLinks.remove(event.controlFrameworkArn)"></event-handler>
@@ -3511,7 +3512,7 @@
 				<nested-object name="employees" business-key="arn">
 					<field name="arn" type="String"></field>
 					<field name="username" type="String"></field>
-					<field name="businessRole" type="String"></field>
+					<field name="roles" type="String"></field>
 				</nested-object>
 			</aggregate>
 			<aggregate name="Risk" business-key="arn" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
@@ -4882,7 +4883,7 @@
 				<command name="LinkCompanyToUser">
 					<trigger source="BusinessRoleUpdated" key-field="username">
 						<mapping target="employeeArn" value="employeeArn"></mapping>
-						<mapping target="businessRole" value="businessRole"></mapping>
+						<mapping target="businessRole" value="roles"></mapping>
 						<mapping target="username" value="username"></mapping>
 					</trigger>
 					<processor type="set-variable" id="HRnMzH" name="active" expression="flow.entity.active"></processor>
@@ -4892,11 +4893,11 @@
 						<mapping target="active" value="#flow.active"></mapping>
 						<mapping target="companies" value="#flow.companies"></mapping>
 					</processor>
-					<test-case name="LinkCompanyToUser" trigger-event="BusinessRoleUpdated">
+					<test-case name="LinkCompanyToUser" trigger-event="BusinessRoleUpdated" expected-processing-status="success">
 						<input name="employeeArn" value="anove:company:tracepaper:employee:j.doe" type="String"></input>
-						<input name="businessRole" value="administrator" type="String"></input>
+						<input name="roles" value="administrator" type="String"></input>
 						<input name="username" value="j.doe" type="String"></input>
-						<expected domain-event="UserAddedToCompany">
+						<expected domain-event="UserAddedToCompany" id="mfM609">
 							<field value="j.doe" name="username" type="String"></field>
 							<field value="true" name="active" type="Boolean"></field>
 						</expected>
@@ -6240,10 +6241,10 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping target="username" operand="set" value="username"></mapping>
 				<mapping target="firstName" operand="set" value="firstName"></mapping>
 				<mapping target="lastName" operand="set" value="lastName"></mapping>
-				<delete condition="#snapshot.isDeleted != '' or snapshot.active == False"></delete>
+				<delete condition="#snapshot.isDeleted != '' or snapshot.active == False" id="q76aYg"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="Profile" field-name="get" type="get" authorization="authenticated"></query>
-			<query graphql-namespace="Profile" field-name="filter" type="filter" authorization="authenticated"></query>
+			<query graphql-namespace="Profile" field-name="filter" type="filter" authorization="authenticated" use-canonical-search="false"></query>
 		</view>
 		<view name="RiskTemplate" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String"></field>
@@ -6587,12 +6588,12 @@ if snapshot.isDeleted != '':
 		<view name="Employee" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String" pk="true"></field>
 			<field name="username" type="String"></field>
-			<field name="businessRole" type="String"></field>
+			<field name="roles" type="String"></field>
 			<field name="user" type="ManyToOne" ref="Profile" authorization="authenticated" foreign-key="username"></field>
 			<snapshot-handler id="mvobEq" sub-domain="Customer" aggregate="Company" key-mapping="arn" processor="dictionary" dictionary="employees">
 				<mapping target="arn" operand="set" value="arn"></mapping>
 				<mapping target="username" operand="set" value="username"></mapping>
-				<mapping target="businessRole" operand="set" value="businessRole"></mapping>
+				<mapping operand="set" target="roles" value="roles"></mapping>
 				<delete condition='#snapshot.isDeleted != ""' id="0IgYPJ"></delete>
 				<delete id="OrNt1h" condition='#item.businessRole == "blocked"'></delete>
 			</snapshot-handler>
@@ -6847,7 +6848,6 @@ if snapshot.isDeleted != '':
 			<activity type="set-variable" id="9V4dG1" name="systemUser" expression="#'system-user'"></activity>
 			<activity type="loop" id="ytmySk" array="#flow.roles">
 				<activity type="set-variable" id="ILrv7Y" name="role" expression="#item"></activity>
-				<activity type="create-iam-group" id="ONx6ky" group-name="#flow.role"></activity>
 				<activity type="add-user-to-iam-group" id="dri70C" group-name="#flow.role" username="#flow.user"></activity>
 				<activity type="add-user-to-iam-group" id="jBKEw3" group-name="#flow.role" username="#flow.systemUser"></activity>
 			</activity>
@@ -6952,19 +6952,19 @@ if snapshot.isDeleted != '':
 		<notifier name="UpdateAccessForEmployee">
 			<trigger source="BusinessRoleUpdated">
 				<mapping target="arn" value="employeeArn"></mapping>
-				<mapping target="businessRole" value="businessRole"></mapping>
+				<mapping target="businessRole" value="roles"></mapping>
 			</trigger>
 			<trigger source="EmployeeArnUpdated">
 				<mapping target="arn" value="employeeArn"></mapping>
 				<mapping target="businessRole" value="businessRole"></mapping>
 			</trigger>
 			<activity type="set-variable" id="IFN8ne" name="username" expression='#flow.arn.split(":")[-1]'></activity>
-			<activity type="code" id="q26CJL" python-file="lib/AccessManagement.py" handler="retrieve_all_roles"></activity>
+			<activity type="code" id="q26CJL" python-file="lib/AccessManagement.py" handler="retrieve_not_granted_roles"></activity>
 			<activity type="loop" id="rMzheY" array="#flow.roles">
 				<activity type="set-variable" id="FJN6tv" name="role" expression="#item"></activity>
 				<activity type="remove-user-from-iam-group" id="dlyKQu" group-name="#flow.role" username="#flow.username" fail-silent="true"></activity>
 			</activity>
-			<activity type="code" id="cp3AMN" python-file="lib/AccessManagement.py" handler="get_technical_roles_for_businessrole"></activity>
+			<activity type="code" id="cp3AMN" python-file="lib/AccessManagement.py" handler="retrieve_granted_roles"></activity>
 			<activity type="loop" id="XZC39S" array="#flow.roles">
 				<activity type="set-variable" id="p0OpGd" name="role" expression="#item"></activity>
 				<activity type="add-user-to-iam-group" id="XBvRzc" group-name="#flow.role" username="#flow.username" fail-silent="true"></activity>

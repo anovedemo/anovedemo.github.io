@@ -12,10 +12,10 @@
     "default": ""
   },
   {
-    "name": "businessRole",
-    "title": "Businessrole",
+    "name": "roles",
+    "title": "Roles",
     "type": "String",
-    "pattern": "^(administrator|guest|blocked)$",
+    "pattern": "",
     "placeholder": "",
     "default": ""
   }
