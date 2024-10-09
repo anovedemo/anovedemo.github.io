@@ -7049,7 +7049,7 @@ if snapshot.isDeleted != '':
 		<scenario name="InviteAndSwitchUser" extends="Controls">
 			<activity type="mutation" id="LrM74s" path="Company.Employee.updateBusinessRole" description="Add employee">
 				<input name="arn" type="String" value="anove:company:gate:employee:anove-invite-test@endtest-mail.io"></input>
-				<input name="businessRole" type="String" value="administrator"></input>
+				<input name="roles" type="String" value="administrator"></input>
 				<expected-trace command="Customer.Company.UpdateBusinessRole" status="success"></expected-trace>
 				<expected-trace command="Admin.User.LinkCompanyToUser" status="success"></expected-trace>
 				<expected-trace command="UpdateAccessForEmployee-Notifier" status="success"></expected-trace>
