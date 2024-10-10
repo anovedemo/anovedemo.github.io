@@ -7987,6 +7987,7 @@ if snapshot.isDeleted != '':
 			</activity>
 		</scenario>
 		<scenario name="Risks" extends="InviteAndSwitchUser">
+			<activity path="-select-" type="switch-user" user-number="1" description="Make sure user 1 is selected" id="83360u"></activity>
 			<activity path="-select-" type="set-variables" description="Prepare risk" id="Hqiihg">
 				<input name="riskArn" type="String" value="anove:company:gate:risk:myrisk"></input>
 				<input name="impactOnRisk" type="Numeric" value="50"></input>
