@@ -6911,7 +6911,7 @@ if snapshot.isDeleted != '':
 				<mapping target="dummy" value="#'dummy value'"></mapping>
 			</trigger>
 			<activity id="FWb0xG" type="add-user-to-iam-group" group-name="#'expresion'" username="#'expresion'"></activity>
-			<activity id="RNsdP7" group-name="#'administrator'" type="code" code="cognito_client."></activity>
+			<activity id="RNsdP7" group-name="#'administrator'" type="code" code="user_pool_id = Properties.get_property(&quot;UserPool&quot;)  # Pas dit aan naar jouw context|LB||LB|# Functie om de lijst van gebruikers te verkrijgen en hun groepen|LB|def get_users_with_groups():|LB|    users = []|LB|    response = cognito_client.list_users(UserPoolId=user_pool_id)|LB||LB|    # Doorloop alle gebruikers|LB|    for user in response['Users']:|LB|        username = user['Username']|LB|        |LB|        # Haal de groepen op waartoe de gebruiker behoort|LB|        groups_response = cognito_client.admin_list_groups_for_user(|LB|            UserPoolId=user_pool_id,|LB|            Username=username|LB|        )|LB|        |LB|        # Maak een dictionary met de gebruiker en zijn groepen|LB|        users.append({|LB|            'Username': username,|LB|            'Groups': [group['GroupName'] for group in groups_response['Groups']]|LB|        })|LB|    |LB|    return users|LB||LB||LB|print(get_users_with_groups())"></activity>
 		</notifier>
 		<notifier name="CleanupTenant">
 			<trigger source="TenantDeleted">
