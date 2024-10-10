@@ -289,14 +289,14 @@
 				<field name="assessorLink" type="String" pattern="{{EmployeeArn}}"></field>
 			</nested-object>
 		</event>
-		<event graphql-namespace="Company.ThirdParty" graphql-name="delete" name="DeleteCompanyThirdPartyRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ThirdParty" graphql-name="delete" name="DeleteCompanyThirdPartyRequested" authorization="role" role="#global.isThirdPartyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ThirdPartyArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.ThirdParty" graphql-name="linkSubprocessor" name="LinkSubprocessorCompanyThirdPartyRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ThirdParty" graphql-name="linkSubprocessor" name="LinkSubprocessorCompanyThirdPartyRequested" authorization="role" role="#global.isThirdPartyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ThirdPartyArn}}"></field>
 			<field name="subprocessorArn" type="String" pattern="{{ThirdPartyArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.ThirdParty" graphql-name="update" name="UpdateCompanyThirdPartyRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ThirdParty" graphql-name="update" name="UpdateCompanyThirdPartyRequested" authorization="role" role="#global.isThirdPartyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ThirdPartyArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
@@ -309,7 +309,7 @@
 			<field name="isDirectThirdParty" type="Boolean"></field>
 			<field name="owner" type="String" pattern="{{EmployeeArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.ThirdParty" graphql-name="create" name="CreateCompanyThirdPartyRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ThirdParty" graphql-name="create" name="CreateCompanyThirdPartyRequested" authorization="role" role="#global.isThirdPartyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ThirdPartyArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
@@ -322,24 +322,24 @@
 			<field name="isDirectThirdParty" type="Boolean"></field>
 			<field name="owner" type="String" pattern="{{EmployeeArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.ThirdParty" graphql-name="unlinkSubprocessor" name="UnlinkSubprocessorCompanyThirdPartyRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ThirdParty" graphql-name="unlinkSubprocessor" name="UnlinkSubprocessorCompanyThirdPartyRequested" authorization="role" role="#global.isThirdPartyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ThirdPartyArn}}"></field>
 			<field name="subprocessorArn" type="String" pattern="{{ThirdPartyArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.ThirdParty.Assessment" graphql-name="create" name="CreateCompanyThirdPartyAssessmentRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ThirdParty.Assessment" graphql-name="create" name="CreateCompanyThirdPartyAssessmentRequested" authorization="role" role="#global.isThirdPartyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{AssessmentArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="formBricksId" type="String"></field>
 		</event>
-		<event graphql-namespace="Company.ThirdParty.Assessment" graphql-name="delete" name="DeleteCompanyThirdPartyAssessmentRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ThirdParty.Assessment" graphql-name="delete" name="DeleteCompanyThirdPartyAssessmentRequested" authorization="role" role="#global.isThirdPartyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{AssessmentArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.ThirdParty.Assessment" graphql-name="update" name="UpdateCompanyThirdPartyAssessmentRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ThirdParty.Assessment" graphql-name="update" name="UpdateCompanyThirdPartyAssessmentRequested" authorization="role" role="#global.isThirdPartyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{AssessmentArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="formBricksId" type="String"></field>
 		</event>
-		<event graphql-namespace="Company.ThirdParty.Task" graphql-name="update" name="UpdateCompanyThirdPartyTaskRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ThirdParty.Task" graphql-name="update" name="UpdateCompanyThirdPartyTaskRequested" authorization="role" role="#global.isThirdPartyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ThirdPartyTaskArn}}"></field>
 			<field name="name" type="String" default=""></field>
 			<field name="description" type="String" default=""></field>
@@ -347,7 +347,7 @@
 			<field name="dueDate" type="String" default="" pattern="{{Date}}"></field>
 			<field name="notes" type="String" default="default value"></field>
 		</event>
-		<event graphql-namespace="Company.ThirdParty.Task" graphql-name="create" name="CreateCompanyThirdPartyTaskRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ThirdParty.Task" graphql-name="create" name="CreateCompanyThirdPartyTaskRequested" authorization="role" role="#global.isThirdPartyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ThirdPartyTaskArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
@@ -355,7 +355,7 @@
 			<field name="dueDate" type="String" pattern="{{Date}}"></field>
 			<field name="notes" type="String"></field>
 		</event>
-		<event graphql-namespace="Company.ThirdParty.Task" graphql-name="complete" name="CompleteCompanyThirdPartyTaskRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ThirdParty.Task" graphql-name="complete" name="CompleteCompanyThirdPartyTaskRequested" authorization="role" role="#global.isThirdPartyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ThirdPartyTaskArn}}"></field>
 			<field name="username" type="String" auto-fill="username"></field>
 		</event>
@@ -377,7 +377,7 @@
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
 		</event>
-		<event graphql-namespace="Company.IntegrationImplementation" graphql-name="addNote" name="AddNoteCompanyIntegrationImplementationRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.IntegrationImplementation" graphql-name="addNote" name="AddNoteCompanyIntegrationImplementationRequested" authorization="role" role="#global.isIntegrationAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{IntegrationImplementationArn}}"></field>
 			<field name="uuid" type="String" auto-fill="uuid"></field>
 			<field name="message" type="String"></field>
@@ -390,16 +390,16 @@
 			<field name="user" type="String" auto-fill="username"></field>
 			<field name="status" type="String"></field>
 		</event>
-		<event graphql-namespace="Company.IntegrationImplementation" graphql-name="request" name="RequestCompanyIntegrationImplementationRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.IntegrationImplementation" graphql-name="request" name="RequestCompanyIntegrationImplementationRequested" authorization="role" role="#global.isIntegrationAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{IntegrationImplementationArn}}"></field>
 			<field name="requirements" type="String"></field>
 			<field name="reference" type="String" pattern="{{IntegrationArn}}"></field>
 			<field name="owner" type="String" pattern="{{EmployeeArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.IntegrationImplementation" graphql-name="delete" name="DeleteCompanyIntegrationImplementationRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.IntegrationImplementation" graphql-name="delete" name="DeleteCompanyIntegrationImplementationRequested" authorization="role" role="administrator" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{IntegrationImplementationArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.Objective" graphql-name="create" name="CreateCompanyObjectiveRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.Objective" graphql-name="create" name="CreateCompanyObjectiveRequested" authorization="role" role="#global.isObjectiveAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ObjectiveArn}}"></field>
 			<field name="owner" type="String" pattern="{{EmployeeArn}}"></field>
 			<field name="startDate" type="String" pattern="{{Date}}"></field>
@@ -407,7 +407,7 @@
 			<field name="definitionOfDone" type="String"></field>
 			<field name="name" type="String"></field>
 		</event>
-		<event graphql-namespace="Company.Objective" graphql-name="update" name="UpdateCompanyObjectiveRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.Objective" graphql-name="update" name="UpdateCompanyObjectiveRequested" authorization="role" role="#global.isObjectiveAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ObjectiveArn}}"></field>
 			<field name="owner" type="String" pattern="{{EmployeeArn}}" default=""></field>
 			<field name="dueDate" type="String" pattern="{{Date}}" default=""></field>
@@ -415,13 +415,13 @@
 			<field name="completionPercentage" type="Int" default="0"></field>
 			<field name="name" type="String" default=""></field>
 		</event>
-		<event graphql-namespace="Company.Objective" graphql-name="reopen" name="ReopenCompanyObjectiveRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.Objective" graphql-name="reopen" name="ReopenCompanyObjectiveRequested" authorization="role" role="#global.isObjectiveAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ObjectiveArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.Objective" graphql-name="delete" name="DeleteCompanyObjectiveRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.Objective" graphql-name="delete" name="DeleteCompanyObjectiveRequested" authorization="role" role="#global.isObjectiveAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ObjectiveArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.Objective.Task" graphql-name="update" name="UpdateCompanyObjectiveTaskRequested" type="ActorEvent" authorization="role" role="#global.isCompanyAdministrator(arn)">
+		<event graphql-namespace="Company.Objective.Task" graphql-name="update" name="UpdateCompanyObjectiveTaskRequested" type="ActorEvent" authorization="role" role="#global.isObjectiveAdministrator(arn)">
 			<field name="arn" type="String" pattern="{{ObjectiveTaskArn}}"></field>
 			<field name="name" type="String" default=""></field>
 			<field name="description" type="String" default=""></field>
@@ -429,11 +429,11 @@
 			<field name="dueDate" type="String" pattern="{{Date}}" default=""></field>
 			<field name="notes" type="String" default=""></field>
 		</event>
-		<event graphql-namespace="Company.Objective.Task" graphql-name="complete" name="CompleteCompanyObjectiveTaskRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.Objective.Task" graphql-name="complete" name="CompleteCompanyObjectiveTaskRequested" authorization="role" role="#global.isObjectiveAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ObjectiveTaskArn}}"></field>
 			<field name="username" type="String" auto-fill="username"></field>
 		</event>
-		<event graphql-namespace="Company.Objective.Task" graphql-name="create" name="CreateCompanyObjectiveTaskRequested" type="ActorEvent" authorization="role" role="#global.isCompanyAdministrator(arn)">
+		<event graphql-namespace="Company.Objective.Task" graphql-name="create" name="CreateCompanyObjectiveTaskRequested" type="ActorEvent" authorization="role" role="#global.isObjectiveAdministrator(arn)">
 			<field name="arn" type="String" pattern="{{ObjectiveTaskArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
@@ -484,7 +484,7 @@
 			<field name="dueDate" type="String" pattern="{{Date}}"></field>
 			<field name="notes" type="String"></field>
 		</event>
-		<event graphql-namespace="Company.ProcessingActivity" graphql-name="create" name="CreateCompanyProcessingActivityRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ProcessingActivity" graphql-name="create" name="CreateCompanyProcessingActivityRequested" authorization="role" role="#global.isProcessingActivityAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ProcessingActivityArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
@@ -492,7 +492,7 @@
 			<field name="requiresDpia" type="Boolean"></field>
 			<field name="weight" type="Int"></field>
 		</event>
-		<event graphql-namespace="Company.ProcessingActivity" graphql-name="update" name="UpdateCompanyProcessingActivityRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ProcessingActivity" graphql-name="update" name="UpdateCompanyProcessingActivityRequested" authorization="role" role="#global.isProcessingActivityAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ProcessingActivityArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
@@ -500,10 +500,10 @@
 			<field name="requiresDpia" type="Boolean"></field>
 			<field name="weight" type="Int"></field>
 		</event>
-		<event graphql-namespace="Company.ProcessingActivity" graphql-name="delete" name="DeleteCompanyProcessingActivityRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ProcessingActivity" graphql-name="delete" name="DeleteCompanyProcessingActivityRequested" authorization="role" role="#global.isProcessingActivityAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ProcessingActivityArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.ProcessingActivity.Task" graphql-name="update" name="UpdateCompanyProcessingActivityTaskRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ProcessingActivity.Task" graphql-name="update" name="UpdateCompanyProcessingActivityTaskRequested" authorization="role" role="#global.isProcessingActivityAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ProcessingActivityTaskArn}}"></field>
 			<field name="name" type="String" default=""></field>
 			<field name="description" type="String" default=""></field>
@@ -511,7 +511,7 @@
 			<field name="dueDate" type="String" pattern="{{Date}}" default=""></field>
 			<field name="notes" type="String" default=""></field>
 		</event>
-		<event graphql-namespace="Company.ProcessingActivity.Task" graphql-name="create" name="CreateCompanyProcessingActivityTaskRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ProcessingActivity.Task" graphql-name="create" name="CreateCompanyProcessingActivityTaskRequested" authorization="role" role="#global.isProcessingActivityAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ProcessingActivityTaskArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
@@ -519,25 +519,25 @@
 			<field name="dueDate" type="String" pattern="{{Date}}"></field>
 			<field name="notes" type="String"></field>
 		</event>
-		<event graphql-namespace="Company.ProcessingActivity.Task" graphql-name="complete" name="CompleteCompanyProcessingActivityTaskRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ProcessingActivity.Task" graphql-name="complete" name="CompleteCompanyProcessingActivityTaskRequested" authorization="role" role="#global.isProcessingActivityAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ProcessingActivityTaskArn}}"></field>
 			<field name="username" type="String" auto-fill="username"></field>
 		</event>
-		<event graphql-namespace="Company.Risk" graphql-name="startAssessment" name="StartAssessmentCompanyRiskRequested" authorization="role" type="ActorEvent" role="#global.isCompanyAdministrator(arn)">
+		<event graphql-namespace="Company.Risk" graphql-name="startAssessment" name="StartAssessmentCompanyRiskRequested" authorization="role" type="ActorEvent" role="#global.isRiskAdministrator(arn)">
 			<field name="arn" type="String"></field>
 			<field name="id" type="String" auto-fill="uuid"></field>
 		</event>
-		<event graphql-namespace="Company.Risk" graphql-name="createFromTemplate" name="CreateFromTemplateCompanyRiskRequested" type="ActorEvent" authorization="role" role="#global.isCompanyAdministrator(arn)">
+		<event graphql-namespace="Company.Risk" graphql-name="createFromTemplate" name="CreateFromTemplateCompanyRiskRequested" type="ActorEvent" authorization="role" role="#global.isRiskAdministrator(arn)">
 			<field name="arn" type="String" pattern="{{RiskArn}}"></field>
 			<field name="template" type="String" pattern="{{RiskTemplateReference}}"></field>
 			<field name="apetiteLikelihood" type="Int"></field>
 			<field name="apetiteImpact" type="Int"></field>
 			<field name="nextReviewDate" type="String" pattern="{{Date}}"></field>
 		</event>
-		<event graphql-namespace="Company.Risk" graphql-name="delete" name="DeleteCompanyRiskRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.Risk" graphql-name="delete" name="DeleteCompanyRiskRequested" authorization="role" role="#global.isRiskAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{RiskArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.Risk" graphql-name="update" name="UpdateCompanyRiskRequested" authorization="role" type="ActorEvent" role="#global.isCompanyAdministrator(arn)">
+		<event graphql-namespace="Company.Risk" graphql-name="update" name="UpdateCompanyRiskRequested" authorization="role" type="ActorEvent" role="#global.isRiskAdministrator(arn)">
 			<field name="arn" type="String"></field>
 			<field name="description" type="String"></field>
 			<field name="grossLikelihood" type="Int"></field>
@@ -555,7 +555,7 @@
 				<field name="description" type="String"></field>
 			</nested-object>
 		</event>
-		<event graphql-namespace="Company.Risk" graphql-name="create" name="CreateCompanyRiskRequested" authorization="role" type="ActorEvent" role="#global.isCompanyAdministrator(arn)">
+		<event graphql-namespace="Company.Risk" graphql-name="create" name="CreateCompanyRiskRequested" authorization="role" type="ActorEvent" role="#global.isRiskAdministrator(arn)">
 			<field name="arn" type="String" pattern="{{RiskArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
@@ -574,7 +574,7 @@
 				<field name="description" type="String"></field>
 			</nested-object>
 		</event>
-		<event graphql-namespace="Company.Risk.Action" graphql-name="update" name="UpdateCompanyRiskActionRequested" authorization="role" type="ActorEvent" role="#global.isCompanyAdministrator(arn)">
+		<event graphql-namespace="Company.Risk.Action" graphql-name="update" name="UpdateCompanyRiskActionRequested" authorization="role" type="ActorEvent" role="#global.isRiskAdministrator(arn)">
 			<field name="arn" type="String"></field>
 			<nested-object name="actions">
 				<field name="name" type="String" default=""></field>
@@ -585,7 +585,7 @@
 				<field name="id" type="String"></field>
 			</nested-object>
 		</event>
-		<event graphql-namespace="Company.Risk.Action" graphql-name="create" name="CreateCompanyRiskActionRequested" authorization="role" type="ActorEvent" role="#global.isCompanyAdministrator(arn)">
+		<event graphql-namespace="Company.Risk.Action" graphql-name="create" name="CreateCompanyRiskActionRequested" authorization="role" type="ActorEvent" role="#global.isRiskAdministrator(arn)">
 			<field name="arn" type="String"></field>
 			<field name="id" type="String" auto-fill="uuid"></field>
 			<field name="name" type="String"></field>
@@ -593,7 +593,7 @@
 			<field name="assignee" type="String" pattern="{{EmployeeArn}}"></field>
 			<field name="dueDate" type="String" pattern="{{Date}}"></field>
 		</event>
-		<event graphql-namespace="Company.Risk.Action" graphql-name="complete" name="CompleteCompanyRiskActionRequested" authorization="role" type="ActorEvent" role="#global.isCompanyAdministrator(arn)">
+		<event graphql-namespace="Company.Risk.Action" graphql-name="complete" name="CompleteCompanyRiskActionRequested" authorization="role" type="ActorEvent" role="#global.isRiskAdministrator(arn)">
 			<field name="arn" type="String"></field>
 		</event>
 		<event graphql-namespace="Industry" graphql-name="add" name="AddIndustryRequested" authorization="role" type="ActorEvent" role="administrator">
@@ -6905,6 +6905,13 @@ if snapshot.isDeleted != '':
 				<mapping target="dummy" value="#''"></mapping>
 			</trigger>
 			<activity type="iam-create-systemuser" fail-silent="true" id="vMB9LZ"></activity>
+		</notifier>
+		<notifier name="AuthorizationMigration">
+			<trigger source="@afterDeployment">
+				<mapping target="dummy" value="#'dummy value'"></mapping>
+			</trigger>
+			<activity id="FWb0xG" type="add-user-to-iam-group" group-name="#'expresion'" username="#'expresion'"></activity>
+			<activity id="RNsdP7" group-name="#'administrator'" type="code" code="cognito_client."></activity>
 		</notifier>
 		<notifier name="CleanupTenant">
 			<trigger source="TenantDeleted">
