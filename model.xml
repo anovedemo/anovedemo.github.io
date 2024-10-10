@@ -37,9 +37,17 @@
 		<pattern name="RegionArn" regex="^region:[A-Z]+$"></pattern>
 		<pattern name="ControlArn" regex="^{{CompanyArn}}:control:[^\s]+$"></pattern>
 		<pattern name="AssetTaskArn" regex="^{{AssetArn}}:[^\s]+$"></pattern>
-		<expression name="isAdministrator" type="ActorEventRole" input="arn" expression="${arn.split(':')[0]}:${arn.split(':')[1]}:${arn.split(':')[2]}:company-administrator"></expression>
+		<expression name="isObjectiveAdministrator" type="ActorEventRole" input="arn" expression="${arn.split(':')[0]}:${arn.split(':')[1]}:${arn.split(':')[2]}:objective-administrator"></expression>
 		<expression name="truncateArn" type="TriggerKeyField" input="arn;length" expression="':'.join(arn.split(':')[:int(length)])"></expression>
-		<expression name="isViewer" type="ActorEventRole" input="arn" expression="${arn.split(':')[0]}:${arn.split(':')[1]}:${arn.split(':')[2]}:company-viewer"></expression>
+		<expression name="isProcessingActivityAdministrator" type="ActorEventRole" input="arn" expression="${arn.split(':')[0]}:${arn.split(':')[1]}:${arn.split(':')[2]}:processingactivity-administrator"></expression>
+		<expression name="isAssessmentAdministrator" type="ActorEventRole" input="arn" expression="${arn.split(':')[0]}:${arn.split(':')[1]}:${arn.split(':')[2]}:assessment-administrator"></expression>
+		<expression name="isThirdPartyAdministrator" type="ActorEventRole" input="arn" expression="${arn.split(':')[0]}:${arn.split(':')[1]}:${arn.split(':')[2]}:thirdparty-administrator"></expression>
+		<expression name="isIntegrationAdministrator" type="ActorEventRole" input="arn" expression="${arn.split(':')[0]}:${arn.split(':')[1]}:${arn.split(':')[2]}:integration-administrator"></expression>
+		<expression name="isAssetAdministrator" type="ActorEventRole" input="arn" expression="${arn.split(':')[0]}:${arn.split(':')[1]}:${arn.split(':')[2]}:asset-administrator"></expression>
+		<expression name="isControlAdministrator" type="ActorEventRole" input="arn" expression="${arn.split(':')[0]}:${arn.split(':')[1]}:${arn.split(':')[2]}:control-administrator"></expression>
+		<expression name="isCompanyAdministrator" type="ActorEventRole" input="arn" expression="${arn.split(':')[0]}:${arn.split(':')[1]}:${arn.split(':')[2]}:company-administrator"></expression>
+		<expression name="isCompanyViewer" type="ActorEventRole" input="arn" expression="${arn.split(':')[0]}:${arn.split(':')[1]}:${arn.split(':')[2]}:company-viewer"></expression>
+		<expression name="isRiskAdministrator" type="ActorEventRole" input="arn" expression="${arn.split(':')[0]}:${arn.split(':')[1]}:${arn.split(':')[2]}:risk-administrator"></expression>
 	</global>
 	<events>
 		<event graphql-namespace="ControlTemplate" graphql-name="update" name="UpdateControlTemplateRequested" authorization="role" role="administrator" type="ActorEvent">
@@ -197,11 +205,11 @@
 			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
 			<field name="path" type="String"></field>
 		</event>
-		<event graphql-namespace="Company" graphql-name="unlinkControlFramework" name="UnlinkControlFrameworkCompanyRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
+		<event graphql-namespace="Company" graphql-name="unlinkControlFramework" name="UnlinkControlFrameworkCompanyRequested" authorization="role" type="ActorEvent" role="#global.isCompanyAdministrator(arn)">
 			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
 			<field name="controlFrameworkArn" type="String" pattern="{{ControlFrameworkArn}}"></field>
 		</event>
-		<event graphql-namespace="Company" graphql-name="update" name="UpdateCompanyRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company" graphql-name="update" name="UpdateCompanyRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
 			<field name="description" type="String" default=""></field>
 			<field name="companySize" type="Int" default="0"></field>
@@ -219,14 +227,14 @@
 			<field name="user" type="String" auto-fill="username"></field>
 			<field name="country" type="String" pattern="{{CountryArn}}"></field>
 		</event>
-		<event graphql-namespace="Company" graphql-name="linkControlFramework" name="LinkControlFrameworkCompanyRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
+		<event graphql-namespace="Company" graphql-name="linkControlFramework" name="LinkControlFrameworkCompanyRequested" authorization="role" type="ActorEvent" role="#global.isCompanyAdministrator(arn)">
 			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
 			<field name="controlFrameworkArn" type="String" pattern="{{ControlFrameworkArn}}"></field>
 		</event>
-		<event graphql-namespace="Company" graphql-name="delete" name="DeleteCompanyRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company" graphql-name="delete" name="DeleteCompanyRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.Control" graphql-name="update" name="UpdateCompanyControlRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
+		<event graphql-namespace="Company.Control" graphql-name="update" name="UpdateCompanyControlRequested" authorization="role" type="ActorEvent" role="#global.isControlAdministrator(arn)">
 			<field name="description" type="String"></field>
 			<field name="controlTemplateArn" type="String" default=""></field>
 			<field name="assessmentPeriodicity" type="String"></field>
@@ -237,7 +245,7 @@
 			<field name="controlOwner" type="String" pattern="{{EmployeeArn}}"></field>
 			<field name="arn" type="String"></field>
 		</event>
-		<event graphql-namespace="Company.Control" graphql-name="create" name="CreateCompanyControlRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(companyArn)">
+		<event graphql-namespace="Company.Control" graphql-name="create" name="CreateCompanyControlRequested" authorization="role" type="ActorEvent" role="#global.isControlAdministrator(companyArn)">
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
 			<field name="controlTemplateArn" type="String" default=""></field>
@@ -249,7 +257,7 @@
 			<field name="nextAssessmentDate" type="String" pattern="{{Date}}"></field>
 			<field name="controlOwner" type="String" pattern="{{EmployeeArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.Control" graphql-name="createFromTemplate" name="CreateFromTemplateCompanyControlRequested" type="ActorEvent" authorization="role" role="#global.isAdministrator(companyArn)">
+		<event graphql-namespace="Company.Control" graphql-name="createFromTemplate" name="CreateFromTemplateCompanyControlRequested" type="ActorEvent" authorization="role" role="#global.isControlAdministrator(companyArn)">
 			<field name="controlTemplateReference" type="String" pattern="{{ControlTemplateReference}}"></field>
 			<field name="desiredMaturityLevel" type="Int"></field>
 			<field name="businessUnit" type="String"></field>
@@ -257,19 +265,19 @@
 			<field name="nextAssessmentDate" type="String" pattern="{{Date}}"></field>
 			<field name="controlOwner" type="String" pattern="{{EmployeeArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.Control" graphql-name="delete" name="DeleteCompanyControlRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.Control" graphql-name="delete" name="DeleteCompanyControlRequested" authorization="role" role="#global.isControlAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ControlArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.Control.Assessment" graphql-name="start" name="StartCompanyControlAssessmentRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(controlArn)">
+		<event graphql-namespace="Company.Control.Assessment" graphql-name="start" name="StartCompanyControlAssessmentRequested" authorization="role" type="ActorEvent" role="#global.isControlAdministrator(controlArn)">
 			<field name="controlArn" type="String"></field>
 			<field name="dueDate" type="String" default="" pattern="{{Date}}"></field>
 			<field name="category" type="String" pattern="{{AssesmentCategory}}" default=""></field>
 			<field name="assessorLink" type="String" default="" pattern="{{EmployeeArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.Control.Assessment" graphql-name="complete" name="CompleteCompanyControlAssessmentRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
+		<event graphql-namespace="Company.Control.Assessment" graphql-name="complete" name="CompleteCompanyControlAssessmentRequested" authorization="role" type="ActorEvent" role="#global.isControlAdministrator(arn)">
 			<field name="arn" type="String"></field>
 		</event>
-		<event graphql-namespace="Company.Control.Assessment" graphql-name="update" name="UpdateCompanyControlAssessmentRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
+		<event graphql-namespace="Company.Control.Assessment" graphql-name="update" name="UpdateCompanyControlAssessmentRequested" authorization="role" type="ActorEvent" role="#global.isControlAdministrator(arn)">
 			<field name="arn" type="String"></field>
 			<nested-object name="assessment">
 				<field name="dueDate" type="String" pattern="{{Date}}"></field>
@@ -281,14 +289,14 @@
 				<field name="assessorLink" type="String" pattern="{{EmployeeArn}}"></field>
 			</nested-object>
 		</event>
-		<event graphql-namespace="Company.ThirdParty" graphql-name="delete" name="DeleteCompanyThirdPartyRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ThirdParty" graphql-name="delete" name="DeleteCompanyThirdPartyRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ThirdPartyArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.ThirdParty" graphql-name="linkSubprocessor" name="LinkSubprocessorCompanyThirdPartyRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ThirdParty" graphql-name="linkSubprocessor" name="LinkSubprocessorCompanyThirdPartyRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ThirdPartyArn}}"></field>
 			<field name="subprocessorArn" type="String" pattern="{{ThirdPartyArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.ThirdParty" graphql-name="update" name="UpdateCompanyThirdPartyRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ThirdParty" graphql-name="update" name="UpdateCompanyThirdPartyRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ThirdPartyArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
@@ -301,7 +309,7 @@
 			<field name="isDirectThirdParty" type="Boolean"></field>
 			<field name="owner" type="String" pattern="{{EmployeeArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.ThirdParty" graphql-name="create" name="CreateCompanyThirdPartyRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ThirdParty" graphql-name="create" name="CreateCompanyThirdPartyRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ThirdPartyArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
@@ -314,24 +322,24 @@
 			<field name="isDirectThirdParty" type="Boolean"></field>
 			<field name="owner" type="String" pattern="{{EmployeeArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.ThirdParty" graphql-name="unlinkSubprocessor" name="UnlinkSubprocessorCompanyThirdPartyRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ThirdParty" graphql-name="unlinkSubprocessor" name="UnlinkSubprocessorCompanyThirdPartyRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ThirdPartyArn}}"></field>
 			<field name="subprocessorArn" type="String" pattern="{{ThirdPartyArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.ThirdParty.Assessment" graphql-name="create" name="CreateCompanyThirdPartyAssessmentRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ThirdParty.Assessment" graphql-name="create" name="CreateCompanyThirdPartyAssessmentRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{AssessmentArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="formBricksId" type="String"></field>
 		</event>
-		<event graphql-namespace="Company.ThirdParty.Assessment" graphql-name="delete" name="DeleteCompanyThirdPartyAssessmentRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ThirdParty.Assessment" graphql-name="delete" name="DeleteCompanyThirdPartyAssessmentRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{AssessmentArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.ThirdParty.Assessment" graphql-name="update" name="UpdateCompanyThirdPartyAssessmentRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ThirdParty.Assessment" graphql-name="update" name="UpdateCompanyThirdPartyAssessmentRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{AssessmentArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="formBricksId" type="String"></field>
 		</event>
-		<event graphql-namespace="Company.ThirdParty.Task" graphql-name="update" name="UpdateCompanyThirdPartyTaskRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ThirdParty.Task" graphql-name="update" name="UpdateCompanyThirdPartyTaskRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ThirdPartyTaskArn}}"></field>
 			<field name="name" type="String" default=""></field>
 			<field name="description" type="String" default=""></field>
@@ -339,7 +347,7 @@
 			<field name="dueDate" type="String" default="" pattern="{{Date}}"></field>
 			<field name="notes" type="String" default="default value"></field>
 		</event>
-		<event graphql-namespace="Company.ThirdParty.Task" graphql-name="create" name="CreateCompanyThirdPartyTaskRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ThirdParty.Task" graphql-name="create" name="CreateCompanyThirdPartyTaskRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ThirdPartyTaskArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
@@ -347,29 +355,29 @@
 			<field name="dueDate" type="String" pattern="{{Date}}"></field>
 			<field name="notes" type="String"></field>
 		</event>
-		<event graphql-namespace="Company.ThirdParty.Task" graphql-name="complete" name="CompleteCompanyThirdPartyTaskRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ThirdParty.Task" graphql-name="complete" name="CompleteCompanyThirdPartyTaskRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ThirdPartyTaskArn}}"></field>
 			<field name="username" type="String" auto-fill="username"></field>
 		</event>
-		<event graphql-namespace="Company.Employee" graphql-name="updateBusinessRole" name="UpdateBusinessRoleCompanyEmployeeRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
+		<event graphql-namespace="Company.Employee" graphql-name="updateBusinessRole" name="UpdateBusinessRoleCompanyEmployeeRequested" authorization="role" type="ActorEvent" role="#global.isCompanyAdministrator(arn)">
 			<field name="arn" type="String" pattern="{{EmployeeArn}}"></field>
 			<field name="roles" type="String"></field>
 		</event>
-		<event graphql-namespace="Company.BusinessUnit" graphql-name="remove" name="RemoveCompanyBusinessUnitRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
+		<event graphql-namespace="Company.BusinessUnit" graphql-name="remove" name="RemoveCompanyBusinessUnitRequested" authorization="role" type="ActorEvent" role="#global.isCompanyAdministrator(arn)">
 			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
 			<field name="name" type="String"></field>
 		</event>
-		<event graphql-namespace="Company.BusinessUnit" graphql-name="add" name="AddCompanyBusinessUnitRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
-			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
-			<field name="name" type="String"></field>
-			<field name="description" type="String"></field>
-		</event>
-		<event graphql-namespace="Company.BusinessUnit" graphql-name="update" name="UpdateCompanyBusinessUnitRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
+		<event graphql-namespace="Company.BusinessUnit" graphql-name="add" name="AddCompanyBusinessUnitRequested" authorization="role" type="ActorEvent" role="#global.isCompanyAdministrator(arn)">
 			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
 		</event>
-		<event graphql-namespace="Company.IntegrationImplementation" graphql-name="addNote" name="AddNoteCompanyIntegrationImplementationRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.BusinessUnit" graphql-name="update" name="UpdateCompanyBusinessUnitRequested" authorization="role" type="ActorEvent" role="#global.isCompanyAdministrator(arn)">
+			<field name="arn" type="String" pattern="{{CompanyArn}}"></field>
+			<field name="name" type="String"></field>
+			<field name="description" type="String"></field>
+		</event>
+		<event graphql-namespace="Company.IntegrationImplementation" graphql-name="addNote" name="AddNoteCompanyIntegrationImplementationRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{IntegrationImplementationArn}}"></field>
 			<field name="uuid" type="String" auto-fill="uuid"></field>
 			<field name="message" type="String"></field>
@@ -382,16 +390,16 @@
 			<field name="user" type="String" auto-fill="username"></field>
 			<field name="status" type="String"></field>
 		</event>
-		<event graphql-namespace="Company.IntegrationImplementation" graphql-name="request" name="RequestCompanyIntegrationImplementationRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.IntegrationImplementation" graphql-name="request" name="RequestCompanyIntegrationImplementationRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{IntegrationImplementationArn}}"></field>
 			<field name="requirements" type="String"></field>
 			<field name="reference" type="String" pattern="{{IntegrationArn}}"></field>
 			<field name="owner" type="String" pattern="{{EmployeeArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.IntegrationImplementation" graphql-name="delete" name="DeleteCompanyIntegrationImplementationRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.IntegrationImplementation" graphql-name="delete" name="DeleteCompanyIntegrationImplementationRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{IntegrationImplementationArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.Objective" graphql-name="create" name="CreateCompanyObjectiveRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.Objective" graphql-name="create" name="CreateCompanyObjectiveRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ObjectiveArn}}"></field>
 			<field name="owner" type="String" pattern="{{EmployeeArn}}"></field>
 			<field name="startDate" type="String" pattern="{{Date}}"></field>
@@ -399,7 +407,7 @@
 			<field name="definitionOfDone" type="String"></field>
 			<field name="name" type="String"></field>
 		</event>
-		<event graphql-namespace="Company.Objective" graphql-name="update" name="UpdateCompanyObjectiveRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.Objective" graphql-name="update" name="UpdateCompanyObjectiveRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ObjectiveArn}}"></field>
 			<field name="owner" type="String" pattern="{{EmployeeArn}}" default=""></field>
 			<field name="dueDate" type="String" pattern="{{Date}}" default=""></field>
@@ -407,13 +415,13 @@
 			<field name="completionPercentage" type="Int" default="0"></field>
 			<field name="name" type="String" default=""></field>
 		</event>
-		<event graphql-namespace="Company.Objective" graphql-name="reopen" name="ReopenCompanyObjectiveRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.Objective" graphql-name="reopen" name="ReopenCompanyObjectiveRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ObjectiveArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.Objective" graphql-name="delete" name="DeleteCompanyObjectiveRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.Objective" graphql-name="delete" name="DeleteCompanyObjectiveRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ObjectiveArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.Objective.Task" graphql-name="update" name="UpdateCompanyObjectiveTaskRequested" type="ActorEvent" authorization="role" role="#global.isAdministrator(arn)">
+		<event graphql-namespace="Company.Objective.Task" graphql-name="update" name="UpdateCompanyObjectiveTaskRequested" type="ActorEvent" authorization="role" role="#global.isCompanyAdministrator(arn)">
 			<field name="arn" type="String" pattern="{{ObjectiveTaskArn}}"></field>
 			<field name="name" type="String" default=""></field>
 			<field name="description" type="String" default=""></field>
@@ -421,11 +429,11 @@
 			<field name="dueDate" type="String" pattern="{{Date}}" default=""></field>
 			<field name="notes" type="String" default=""></field>
 		</event>
-		<event graphql-namespace="Company.Objective.Task" graphql-name="complete" name="CompleteCompanyObjectiveTaskRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.Objective.Task" graphql-name="complete" name="CompleteCompanyObjectiveTaskRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ObjectiveTaskArn}}"></field>
 			<field name="username" type="String" auto-fill="username"></field>
 		</event>
-		<event graphql-namespace="Company.Objective.Task" graphql-name="create" name="CreateCompanyObjectiveTaskRequested" type="ActorEvent" authorization="role" role="#global.isAdministrator(arn)">
+		<event graphql-namespace="Company.Objective.Task" graphql-name="create" name="CreateCompanyObjectiveTaskRequested" type="ActorEvent" authorization="role" role="#global.isCompanyAdministrator(arn)">
 			<field name="arn" type="String" pattern="{{ObjectiveTaskArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
@@ -433,7 +441,7 @@
 			<field name="dueDate" type="String" pattern="{{Date}}"></field>
 			<field name="notes" type="String"></field>
 		</event>
-		<event graphql-namespace="Company.Asset" graphql-name="create" name="CreateCompanyAssetRequested" type="ActorEvent" authorization="role" role="#global.isAdministrator(arn)">
+		<event graphql-namespace="Company.Asset" graphql-name="create" name="CreateCompanyAssetRequested" type="ActorEvent" authorization="role" role="#global.isAssetAdministrator(arn)">
 			<field name="arn" type="String" pattern="{{AssetArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
@@ -443,10 +451,10 @@
 			<field name="availability" type="String" pattern="{{CiapRating}}"></field>
 			<field name="privacy" type="String" pattern="{{CiapRating}}"></field>
 		</event>
-		<event graphql-namespace="Company.Asset" graphql-name="delete" name="DeleteCompanyAssetRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.Asset" graphql-name="delete" name="DeleteCompanyAssetRequested" authorization="role" role="#global.isAssetAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{AssetArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.Asset" graphql-name="update" name="UpdateCompanyAssetRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.Asset" graphql-name="update" name="UpdateCompanyAssetRequested" authorization="role" role="#global.isAssetAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{AssetArn}}"></field>
 			<field name="name" type="String" default=""></field>
 			<field name="description" type="String" default=""></field>
@@ -456,11 +464,11 @@
 			<field name="availability" type="String" pattern="{{CiapRating}}" default=""></field>
 			<field name="privacy" type="String" pattern="{{CiapRating}}" default=""></field>
 		</event>
-		<event graphql-namespace="Company.Asset.Task" graphql-name="complete" name="CompleteCompanyAssetTaskRequested" type="ActorEvent" authorization="authenticated" role="#global.isAdministrator(arn)">
+		<event graphql-namespace="Company.Asset.Task" graphql-name="complete" name="CompleteCompanyAssetTaskRequested" type="ActorEvent" authorization="authenticated">
 			<field name="arn" type="String" pattern="{{AssetTaskArn}}"></field>
 			<field name="username" type="String" auto-fill="username"></field>
 		</event>
-		<event graphql-namespace="Company.Asset.Task" graphql-name="update" name="UpdateCompanyAssetTaskRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.Asset.Task" graphql-name="update" name="UpdateCompanyAssetTaskRequested" authorization="role" role="#global.isAssetAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{AssetTaskArn}}"></field>
 			<field name="name" type="String" default=""></field>
 			<field name="description" type="String" default=""></field>
@@ -468,7 +476,7 @@
 			<field name="dueDate" type="String" pattern="{{Date}}" default=""></field>
 			<field name="notes" type="String" default=""></field>
 		</event>
-		<event graphql-namespace="Company.Asset.Task" graphql-name="create" name="CreateCompanyAssetTaskRequested" type="ActorEvent" authorization="role" role="#global.isAdministrator(arn)">
+		<event graphql-namespace="Company.Asset.Task" graphql-name="create" name="CreateCompanyAssetTaskRequested" type="ActorEvent" authorization="role" role="#global.isAssetAdministrator(arn)">
 			<field name="arn" type="String" pattern="{{AssetTaskArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
@@ -476,7 +484,7 @@
 			<field name="dueDate" type="String" pattern="{{Date}}"></field>
 			<field name="notes" type="String"></field>
 		</event>
-		<event graphql-namespace="Company.ProcessingActivity" graphql-name="create" name="CreateCompanyProcessingActivityRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ProcessingActivity" graphql-name="create" name="CreateCompanyProcessingActivityRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ProcessingActivityArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
@@ -484,7 +492,7 @@
 			<field name="requiresDpia" type="Boolean"></field>
 			<field name="weight" type="Int"></field>
 		</event>
-		<event graphql-namespace="Company.ProcessingActivity" graphql-name="update" name="UpdateCompanyProcessingActivityRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ProcessingActivity" graphql-name="update" name="UpdateCompanyProcessingActivityRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ProcessingActivityArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
@@ -492,10 +500,10 @@
 			<field name="requiresDpia" type="Boolean"></field>
 			<field name="weight" type="Int"></field>
 		</event>
-		<event graphql-namespace="Company.ProcessingActivity" graphql-name="delete" name="DeleteCompanyProcessingActivityRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ProcessingActivity" graphql-name="delete" name="DeleteCompanyProcessingActivityRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ProcessingActivityArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.ProcessingActivity.Task" graphql-name="update" name="UpdateCompanyProcessingActivityTaskRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ProcessingActivity.Task" graphql-name="update" name="UpdateCompanyProcessingActivityTaskRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ProcessingActivityTaskArn}}"></field>
 			<field name="name" type="String" default=""></field>
 			<field name="description" type="String" default=""></field>
@@ -503,7 +511,7 @@
 			<field name="dueDate" type="String" pattern="{{Date}}" default=""></field>
 			<field name="notes" type="String" default=""></field>
 		</event>
-		<event graphql-namespace="Company.ProcessingActivity.Task" graphql-name="create" name="CreateCompanyProcessingActivityTaskRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ProcessingActivity.Task" graphql-name="create" name="CreateCompanyProcessingActivityTaskRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ProcessingActivityTaskArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
@@ -511,25 +519,25 @@
 			<field name="dueDate" type="String" pattern="{{Date}}"></field>
 			<field name="notes" type="String"></field>
 		</event>
-		<event graphql-namespace="Company.ProcessingActivity.Task" graphql-name="complete" name="CompleteCompanyProcessingActivityTaskRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.ProcessingActivity.Task" graphql-name="complete" name="CompleteCompanyProcessingActivityTaskRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ProcessingActivityTaskArn}}"></field>
 			<field name="username" type="String" auto-fill="username"></field>
 		</event>
-		<event graphql-namespace="Company.Risk" graphql-name="startAssessment" name="StartAssessmentCompanyRiskRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
+		<event graphql-namespace="Company.Risk" graphql-name="startAssessment" name="StartAssessmentCompanyRiskRequested" authorization="role" type="ActorEvent" role="#global.isCompanyAdministrator(arn)">
 			<field name="arn" type="String"></field>
 			<field name="id" type="String" auto-fill="uuid"></field>
 		</event>
-		<event graphql-namespace="Company.Risk" graphql-name="createFromTemplate" name="CreateFromTemplateCompanyRiskRequested" type="ActorEvent" authorization="role" role="#global.isAdministrator(arn)">
+		<event graphql-namespace="Company.Risk" graphql-name="createFromTemplate" name="CreateFromTemplateCompanyRiskRequested" type="ActorEvent" authorization="role" role="#global.isCompanyAdministrator(arn)">
 			<field name="arn" type="String" pattern="{{RiskArn}}"></field>
 			<field name="template" type="String" pattern="{{RiskTemplateReference}}"></field>
 			<field name="apetiteLikelihood" type="Int"></field>
 			<field name="apetiteImpact" type="Int"></field>
 			<field name="nextReviewDate" type="String" pattern="{{Date}}"></field>
 		</event>
-		<event graphql-namespace="Company.Risk" graphql-name="delete" name="DeleteCompanyRiskRequested" authorization="role" role="#global.isAdministrator(arn)" type="ActorEvent">
+		<event graphql-namespace="Company.Risk" graphql-name="delete" name="DeleteCompanyRiskRequested" authorization="role" role="#global.isCompanyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{RiskArn}}"></field>
 		</event>
-		<event graphql-namespace="Company.Risk" graphql-name="update" name="UpdateCompanyRiskRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
+		<event graphql-namespace="Company.Risk" graphql-name="update" name="UpdateCompanyRiskRequested" authorization="role" type="ActorEvent" role="#global.isCompanyAdministrator(arn)">
 			<field name="arn" type="String"></field>
 			<field name="description" type="String"></field>
 			<field name="grossLikelihood" type="Int"></field>
@@ -547,7 +555,7 @@
 				<field name="description" type="String"></field>
 			</nested-object>
 		</event>
-		<event graphql-namespace="Company.Risk" graphql-name="create" name="CreateCompanyRiskRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
+		<event graphql-namespace="Company.Risk" graphql-name="create" name="CreateCompanyRiskRequested" authorization="role" type="ActorEvent" role="#global.isCompanyAdministrator(arn)">
 			<field name="arn" type="String" pattern="{{RiskArn}}"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
@@ -566,7 +574,7 @@
 				<field name="description" type="String"></field>
 			</nested-object>
 		</event>
-		<event graphql-namespace="Company.Risk.Action" graphql-name="update" name="UpdateCompanyRiskActionRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
+		<event graphql-namespace="Company.Risk.Action" graphql-name="update" name="UpdateCompanyRiskActionRequested" authorization="role" type="ActorEvent" role="#global.isCompanyAdministrator(arn)">
 			<field name="arn" type="String"></field>
 			<nested-object name="actions">
 				<field name="name" type="String" default=""></field>
@@ -577,7 +585,7 @@
 				<field name="id" type="String"></field>
 			</nested-object>
 		</event>
-		<event graphql-namespace="Company.Risk.Action" graphql-name="create" name="CreateCompanyRiskActionRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
+		<event graphql-namespace="Company.Risk.Action" graphql-name="create" name="CreateCompanyRiskActionRequested" authorization="role" type="ActorEvent" role="#global.isCompanyAdministrator(arn)">
 			<field name="arn" type="String"></field>
 			<field name="id" type="String" auto-fill="uuid"></field>
 			<field name="name" type="String"></field>
@@ -585,7 +593,7 @@
 			<field name="assignee" type="String" pattern="{{EmployeeArn}}"></field>
 			<field name="dueDate" type="String" pattern="{{Date}}"></field>
 		</event>
-		<event graphql-namespace="Company.Risk.Action" graphql-name="complete" name="CompleteCompanyRiskActionRequested" authorization="role" type="ActorEvent" role="#global.isAdministrator(arn)">
+		<event graphql-namespace="Company.Risk.Action" graphql-name="complete" name="CompleteCompanyRiskActionRequested" authorization="role" type="ActorEvent" role="#global.isCompanyAdministrator(arn)">
 			<field name="arn" type="String"></field>
 		</event>
 		<event graphql-namespace="Industry" graphql-name="add" name="AddIndustryRequested" authorization="role" type="ActorEvent" role="administrator">
@@ -6121,8 +6129,8 @@ if snapshot.isDeleted != '':
 				<mapping target="hasPendingSelfAssessment" operand="set" value="hasPendingSelfAssessment"></mapping>
 				<delete condition="#snapshot.isDeleted != ''" id="Dx89I3"></delete>
 			</snapshot-handler>
-			<query graphql-namespace="Control" field-name="get" type="get" authorization="role" role="#global.isViewer(key)"></query>
-			<query graphql-namespace="Control" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isViewer(key_begins_with)"></query>
+			<query graphql-namespace="Control" field-name="get" type="get" authorization="role" role="#global.isCompanyViewer(key)"></query>
+			<query graphql-namespace="Control" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isCompanyViewer(key_begins_with)"></query>
 		</view>
 		<view name="ThirdParty" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String" pk="true"></field>
@@ -6152,8 +6160,8 @@ if snapshot.isDeleted != '':
 				<mapping target="owner" value="owner" operand="set"></mapping>
 				<delete id="mLCii1" condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
-			<query graphql-namespace="ThirdParty" field-name="get" type="get" authorization="role" use-canonical-search="false" role="#global.isViewer(key)"></query>
-			<query graphql-namespace="ThirdParty" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isViewer(key_begins_with)"></query>
+			<query graphql-namespace="ThirdParty" field-name="get" type="get" authorization="role" use-canonical-search="false" role="#global.isCompanyViewer(key)"></query>
+			<query graphql-namespace="ThirdParty" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isCompanyViewer(key_begins_with)"></query>
 		</view>
 		<view name="ThirdPartyTask" data-retention-days="-1" exclude-notification="false">
 			<field name="name" type="String"></field>
@@ -6173,7 +6181,7 @@ if snapshot.isDeleted != '':
 				<mapping operand="set" target="notes" value="notes"></mapping>
 				<delete id="vqYpiW" condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
-			<query graphql-namespace="ThirdParty" field-name="getTasks" type="query" authorization="role" use-canonical-search="true" role="#global.isViewer(key_begins_with)"></query>
+			<query graphql-namespace="ThirdParty" field-name="getTasks" type="query" authorization="role" use-canonical-search="true" role="#global.isCompanyViewer(key_begins_with)"></query>
 		</view>
 		<view name="SubprocessorLink" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String" pk="true"></field>
@@ -6229,9 +6237,9 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 		</view>
 		<view name="UserCompanyLink" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String"></field>
-			<field name="company" type="ManyToOne" ref="Company" authorization="role" foreign-key="arn" role="#global.isViewer(arn)"></field>
+			<field name="company" type="ManyToOne" ref="Company" authorization="role" foreign-key="arn" role="#global.isCompanyViewer(arn)"></field>
 			<field name="employeeArn" type="String"></field>
-			<field name="employee" type="OneToOne" ref="Employee" authorization="role" foreign-key="employeeArn" role="#global.isViewer(employeeArn)"></field>
+			<field name="employee" type="OneToOne" ref="Employee" authorization="role" foreign-key="employeeArn" role="#global.isCompanyViewer(employeeArn)"></field>
 		</view>
 		<view name="Profile" data-retention-days="-1" exclude-notification="false">
 			<field name="username" type="String" pk="true"></field>
@@ -6364,8 +6372,8 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping target="assessorLink" operand="set" value="assessorLink"></mapping>
 				<delete condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
-			<query graphql-namespace="ControlAssessment" field-name="get" type="get" authorization="role" role="#global.isViewer(key)"></query>
-			<query graphql-namespace="ControlAssessment" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isViewer(key_begins_with)"></query>
+			<query graphql-namespace="ControlAssessment" field-name="get" type="get" authorization="role" role="#global.isCompanyViewer(key)"></query>
+			<query graphql-namespace="ControlAssessment" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isCompanyViewer(key_begins_with)"></query>
 		</view>
 		<view name="Objective" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String" pk="true"></field>
@@ -6386,8 +6394,8 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping operand="set" target="name" value="name"></mapping>
 				<delete id="Hz8due" condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
-			<query graphql-namespace="Objective" field-name="get" type="get" authorization="role" use-canonical-search="false" role="#global.isViewer(key)"></query>
-			<query graphql-namespace="Objective" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isViewer(key_begins_with)">
+			<query graphql-namespace="Objective" field-name="get" type="get" authorization="role" use-canonical-search="false" role="#global.isCompanyViewer(key)"></query>
+			<query graphql-namespace="Objective" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isCompanyViewer(key_begins_with)">
 				<filter-clause operand="equals" field-name="owner" id="qFRLPQ"></filter-clause>
 				<filter-clause operand="equals" field-name="completionPercentage" id="chdfSO"></filter-clause>
 			</query>
@@ -6410,7 +6418,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping operand="set" target="notes" value="notes"></mapping>
 				<delete id="wM4n11" condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
-			<query graphql-namespace="Objective" field-name="getTasks" type="query" authorization="role" use-canonical-search="true" role="#global.isViewer(key_begins_with)"></query>
+			<query graphql-namespace="Objective" field-name="getTasks" type="query" authorization="role" use-canonical-search="true" role="#global.isCompanyViewer(key_begins_with)"></query>
 		</view>
 		<view name="AssetTask" data-retention-days="-1" exclude-notification="false">
 			<field name="name" type="String"></field>
@@ -6430,7 +6438,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping operand="set" target="notes" value="notes"></mapping>
 				<delete id="kxA0ps" condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
-			<query graphql-namespace="Asset" field-name="getTasks" type="query" authorization="role" use-canonical-search="true" role="#global.isViewer(key_begins_with)"></query>
+			<query graphql-namespace="Asset" field-name="getTasks" type="query" authorization="role" use-canonical-search="true" role="#global.isCompanyViewer(key_begins_with)"></query>
 		</view>
 		<view name="Asset" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String" pk="true"></field>
@@ -6452,8 +6460,8 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping target="privacy" value="privacy" operand="set"></mapping>
 				<delete id="bankRW" condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
-			<query graphql-namespace="Asset" field-name="get" type="get" authorization="role" use-canonical-search="false" role="#global.isAdministrator(key)"></query>
-			<query graphql-namespace="Asset" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isAdministrator(key_begins_with)"></query>
+			<query graphql-namespace="Asset" field-name="get" type="get" authorization="role" use-canonical-search="false" role="#global.isCompanyViewer(key)"></query>
+			<query graphql-namespace="Asset" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isCompanyViewer(key_begins_with)"></query>
 		</view>
 		<view name="Tenant" data-retention-days="-1" exclude-notification="false">
 			<field name="name" type="String"></field>
@@ -6480,8 +6488,8 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping target="formBricksId" value="formBricksId" operand="set"></mapping>
 				<delete id="xzNL5C" condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
-			<query graphql-namespace="Questionaire" field-name="get" type="get" authorization="role" use-canonical-search="false" role="#global.isViewer(key)"></query>
-			<query graphql-namespace="Questionaire" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isViewer(key_begins_with)"></query>
+			<query graphql-namespace="Questionaire" field-name="get" type="get" authorization="role" use-canonical-search="false" role="#global.isCompanyViewer(key)"></query>
+			<query graphql-namespace="Questionaire" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isCompanyViewer(key_begins_with)"></query>
 		</view>
 		<view name="ProcessingActivity" data-retention-days="-1" exclude-notification="false">
 			<field name="arn" type="String" pk="true"></field>
@@ -6500,8 +6508,8 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping target="weight" value="weight" operand="set"></mapping>
 				<delete id="Kmp21v" condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
-			<query graphql-namespace="ProcessingActivity" field-name="get" type="get" authorization="role" use-canonical-search="false" role="#global.isViewer(key)"></query>
-			<query graphql-namespace="ProcessingActivity" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isViewer(key_begins_with)"></query>
+			<query graphql-namespace="ProcessingActivity" field-name="get" type="get" authorization="role" use-canonical-search="false" role="#global.isCompanyViewer(key)"></query>
+			<query graphql-namespace="ProcessingActivity" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isCompanyViewer(key_begins_with)"></query>
 		</view>
 		<view name="ProcessingActivityTask" data-retention-days="-1" exclude-notification="false">
 			<field name="name" type="String"></field>
@@ -6521,7 +6529,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping operand="set" target="notes" value="notes"></mapping>
 				<delete id="AAxdxf" condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
-			<query graphql-namespace="ProcessingActivity" field-name="getTasks" type="query" authorization="role" use-canonical-search="true" role="#global.isAdministrator(key_begins_with)"></query>
+			<query graphql-namespace="ProcessingActivity" field-name="getTasks" type="query" authorization="role" use-canonical-search="true" role="#global.isCompanyViewer(key_begins_with)"></query>
 		</view>
 		<view name="Requirement" data-retention-days="-1" exclude-notification="false">
 			<field name="name" type="String"></field>
@@ -6561,7 +6569,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<field name="processingActivities" type="OneToMany" ref="ProcessingActivity" authorization="authenticated" foreign-key="#canonical"></field>
 			<field name="thirdParties" type="OneToMany" ref="ThirdParty" authorization="authenticated" foreign-key="#canonical"></field>
 			<field name="integrations" type="OneToMany" ref="IntegrationImplementation" authorization="authenticated" foreign-key="#canonical"></field>
-			<query graphql-namespace="Company" field-name="get" type="get" authorization="role" role="#global.isViewer(key)"></query>
+			<query graphql-namespace="Company" field-name="get" type="get" authorization="role" role="#global.isCompanyViewer(key)"></query>
 			<query graphql-namespace="Company" field-name="filter" type="filter" authorization="role" role="administrator" use-canonical-search="true"></query>
 			<custom-handler id="LCvx9K" sub-domain="Customer" aggregate="Company">#Your custom logic, you have access to:
 #  The 'event' object
@@ -6620,8 +6628,8 @@ if snapshot.isDeleted != '':
 				<mapping operand="convert_items" target="notes" value="note" template='{ "uuid": value["uuid"] if "uuid" in value else "", "message": value["message"] if "message" in value else "", "user": value["user"] if "user" in value else "", "order": value["order"] if "order" in value else "", }'></mapping>
 				<delete id="tCh4B3" condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
-			<query graphql-namespace="Company.Integration" field-name="get" type="get" authorization="role" use-canonical-search="false" role="#global.isViewer(key)"></query>
-			<query graphql-namespace="Company.Integration" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isViewer(key_begins_with)"></query>
+			<query graphql-namespace="Company.Integration" field-name="get" type="get" authorization="role" use-canonical-search="false" role="#global.isCompanyViewer(key)"></query>
+			<query graphql-namespace="Company.Integration" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isCompanyViewer(key_begins_with)"></query>
 		</view>
 		<view name="ImplementationNote" data-retention-days="-1" exclude-notification="false">
 			<field name="uuid" type="String"></field>
@@ -6723,8 +6731,8 @@ if snapshot.isDeleted != '':
 				<delete id="HCBHpE" condition="#snapshot.isDeleted != ''"></delete>
 				<delete id="Sru7Uy" condition="#'completeDate' in item and item.completeDate != ''"></delete>
 			</snapshot-handler>
-			<query graphql-namespace="Task" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isViewer(key_begins_with)"></query>
-			<query graphql-namespace="Task" field-name="get" type="get" authorization="role" role="#global.isViewer(key)"></query>
+			<query graphql-namespace="Task" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isCompanyViewer(key_begins_with)"></query>
+			<query graphql-namespace="Task" field-name="get" type="get" authorization="role" role="#global.isCompanyViewer(key)"></query>
 		</view>
 		<view name="RiskTreatmentPlan" data-retention-days="-1" exclude-notification="false">
 			<field name="type" type="String"></field>
@@ -6763,8 +6771,8 @@ if snapshot.isDeleted != '':
 				<mapping target="hasPendingSelfAssessment" operand="set" value="hasPendingSelfAssessment"></mapping>
 				<delete condition="#snapshot.isDeleted != ''" id="YPdzVb"></delete>
 			</snapshot-handler>
-			<query graphql-namespace="Risk" field-name="get" type="get" authorization="role" role="#global.isViewer(key)"></query>
-			<query graphql-namespace="Risk" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isViewer(key_begins_with)"></query>
+			<query graphql-namespace="Risk" field-name="get" type="get" authorization="role" role="#global.isCompanyViewer(key)"></query>
+			<query graphql-namespace="Risk" field-name="filter" type="filter" authorization="role" use-canonical-search="true" role="#global.isCompanyViewer(key_begins_with)"></query>
 		</view>
 		<view name="ChangeLog" data-retention-days="-1" exclude-notification="false">
 			<field name="timestamp" type="String"></field>
@@ -6797,7 +6805,7 @@ if snapshot.isDeleted != '':
 				<mapping operand="set" target="notes" value="notes"></mapping>
 				<delete condition="#snapshot.isDeleted != ''" id="cVkGGO"></delete>
 			</snapshot-handler>
-			<query graphql-namespace="Risk" field-name="getActions" type="query" authorization="role" use-canonical-search="true" role="#global.isViewer(key_begins_with)"></query>
+			<query graphql-namespace="Risk" field-name="getActions" type="query" authorization="role" use-canonical-search="true" role="#global.isCompanyViewer(key_begins_with)"></query>
 		</view>
 	</views>
 	<projections>
