@@ -3408,12 +3408,14 @@
 				<command name="UpdateBusinessRole">
 					<trigger source="UpdateBusinessRoleCompanyEmployeeRequested" key-field="#global.truncateArn(arn, '3')">
 						<mapping target="arn" value="arn"></mapping>
-						<mapping target="roles" value="roles"></mapping>
+						<mapping target="newRoles" value="roles"></mapping>
 					</trigger>
 					<processor type="set-variable" id="HmACgJ" name="username" expression='flow.arn.split(":")[-1]'></processor>
+					<processor type="code" file="lib/AccessManagement.py" handler="retrieve_raw_roles" id="yB6oo4"></processor>
+					<processor type="validator" id="lTpZ9j" condition='set(flow.newRoles.split(";")).issubset(set(flow.roles))' exception="Invalid role assignment"></processor>
 					<processor type="emit-event" id="DlMTCb" ref="BusinessRoleUpdated">
 						<mapping target="employeeArn" value="#flow.arn"></mapping>
-						<mapping target="roles" value="#flow.roles"></mapping>
+						<mapping target="roles" value="#flow.newRoles"></mapping>
 						<mapping target="username" value="#flow.username"></mapping>
 					</processor>
 					<test-case name="NewUser" trigger-event="UpdateBusinessRoleCompanyEmployeeRequested" expected-processing-status="success">
@@ -3466,6 +3468,11 @@
     }
   }
 }</expected-state>
+					</test-case>
+					<test-case name="InvalidRole" trigger-event="UpdateBusinessRoleCompanyEmployeeRequested" expected-processing-status="error">
+						<input name="arn" type="String" value="anove:company:draftsman:employee:j.doe"></input>
+						<input name="roles" type="String" value="administrator"></input>
+						<state>{}</state>
 					</test-case>
 				</command>
 				<command name="LinkLogo">
