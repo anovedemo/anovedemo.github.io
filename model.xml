@@ -21,7 +21,6 @@
 		<pattern name="EmployeeArn" regex="^{{CompanyArn}}:employee:[^\s]+$"></pattern>
 		<pattern name="RiskTemplateArn" regex="^risktemplate:[a-z0-9]+$"></pattern>
 		<pattern name="GeoCode" regex="^[A-Z]+$"></pattern>
-		<pattern name="BusinessRole" regex="^(administrator|guest|blocked)$"></pattern>
 		<pattern name="AssessmentArn" regex="^{{CompanyArn}}:thirdparty:[^\s]+:assessment:[^\s]+$"></pattern>
 		<pattern name="Date" regex="^(?:20)\d{2}-\d{2}-\d{2}$"></pattern>
 		<pattern name="ThirdPartyArn" regex="^{{CompanyArn}}:thirdparty:[^\s]+$"></pattern>
@@ -359,7 +358,7 @@
 			<field name="arn" type="String" pattern="{{ThirdPartyTaskArn}}"></field>
 			<field name="username" type="String" auto-fill="username"></field>
 		</event>
-		<event graphql-namespace="Company.Employee" graphql-name="updateBusinessRole" name="UpdateBusinessRoleCompanyEmployeeRequested" authorization="role" type="ActorEvent" role="#global.isCompanyAdministrator(arn)">
+		<event graphql-namespace="Company.Employee" graphql-name="updateRoles" name="UpdateRolesCompanyEmployeeRequested" authorization="role" type="ActorEvent" role="#global.isCompanyAdministrator(arn)">
 			<field name="arn" type="String" pattern="{{EmployeeArn}}"></field>
 			<field name="roles" type="String"></field>
 		</event>
@@ -824,7 +823,7 @@
 		<event name="BusinessUnitRemoved" source="Customer.Company" type="DomainEvent">
 			<field name="name" type="String"></field>
 		</event>
-		<event name="BusinessRoleUpdated" source="Customer.Company" type="DomainEvent">
+		<event name="RolesUpdated" source="Customer.Company" type="DomainEvent">
 			<field name="employeeArn" type="String"></field>
 			<field name="roles" type="String"></field>
 			<field name="username" type="String"></field>
@@ -835,7 +834,7 @@
 		<event name="EmployeeArnUpdated" source="Customer.Company" type="DomainEvent">
 			<field name="employeeArn" type="String"></field>
 			<field name="oldArn" type="String"></field>
-			<field name="businessRole" type="String"></field>
+			<field name="roles" type="String"></field>
 			<field name="username" type="String"></field>
 		</event>
 		<event name="BusinessUnitAdded" source="Customer.Company" type="DomainEvent">
@@ -3261,11 +3260,11 @@
 						<mapping target="email" value="email"></mapping>
 						<mapping target="arn" value="companyArn"></mapping>
 					</trigger>
-					<processor type="code" id="o8gRni" file="" handler="" code='flow.employeeArn = flow.arn + ":employee:" + flow.username|LB|flow.oldArn = flow.arn + ":employee:" + flow.email|LB|if flow.oldArn not in flow.entity.employees:|LB|    raise ValidationConditionNotMet(f"Employee [{flow.username}/{flow.email}] not found in company.")|LB|flow.businessRole = flow.entity.employees[flow.oldArn]["roles"]|LB|'></processor>
+					<processor type="code" id="o8gRni" file="" handler="" code='flow.employeeArn = flow.arn + ":employee:" + flow.username|LB|flow.oldArn = flow.arn + ":employee:" + flow.email|LB|if flow.oldArn not in flow.entity.employees:|LB|    raise ValidationConditionNotMet(f"Employee [{flow.username}/{flow.email}] not found in company.")|LB|flow.roles = flow.entity.employees[flow.oldArn]["roles"]|LB|'></processor>
 					<processor type="emit-event" id="WrnvxO" ref="EmployeeArnUpdated">
 						<mapping target="employeeArn" value="#flow.employeeArn"></mapping>
 						<mapping target="oldArn" value="#flow.oldArn"></mapping>
-						<mapping target="businessRole" value="#flow.businessRole"></mapping>
+						<mapping target="roles" value="#flow.roles"></mapping>
 						<mapping target="username" value="#flow.username"></mapping>
 					</processor>
 					<test-case name="UpdateEmployeeArn" trigger-event="UserActivated" expected-processing-status="success">
@@ -3291,14 +3290,14 @@
     "company:draftsman:employee:j.doe": {
       "arn": "company:draftsman:employee:j.doe",
       "username": "j.doe",
-      "businessRole": "administrator"
+      "roles": "administrator"
     }
   }
 }</expected-state>
 						<expected domain-event="EmployeeArnUpdated" id="HowbDL">
 							<field value="company:draftsman:employee:j.doe" name="employeeArn" type="String"></field>
 							<field value="company:draftsman:employee:j.doe@example.com" name="oldArn" type="String"></field>
-							<field value="administrator" name="businessRole" type="String"></field>
+							<field value="administrator" name="roles" type="String"></field>
 							<field value="j.doe" name="username" type="String"></field>
 						</expected>
 					</test-case>
@@ -3405,26 +3404,26 @@
 }</expected-state>
 					</test-case>
 				</command>
-				<command name="UpdateBusinessRole">
-					<trigger source="UpdateBusinessRoleCompanyEmployeeRequested" key-field="#global.truncateArn(arn, '3')">
+				<command name="UpdateRoles">
+					<trigger source="UpdateRolesCompanyEmployeeRequested" key-field="#global.truncateArn(arn, '3')">
 						<mapping target="arn" value="arn"></mapping>
 						<mapping target="newRoles" value="roles"></mapping>
 					</trigger>
 					<processor type="set-variable" id="HmACgJ" name="username" expression='flow.arn.split(":")[-1]'></processor>
 					<processor type="code" file="lib/AccessManagement.py" handler="retrieve_raw_roles" id="yB6oo4"></processor>
 					<processor type="validator" id="lTpZ9j" condition='set(flow.newRoles.split(";")).issubset(set(flow.roles))' exception="Invalid role assignment"></processor>
-					<processor type="emit-event" id="DlMTCb" ref="BusinessRoleUpdated">
+					<processor type="emit-event" id="DlMTCb" ref="RolesUpdated">
 						<mapping target="employeeArn" value="#flow.arn"></mapping>
 						<mapping target="roles" value="#flow.newRoles"></mapping>
 						<mapping target="username" value="#flow.username"></mapping>
 					</processor>
-					<test-case name="NewUser" trigger-event="UpdateBusinessRoleCompanyEmployeeRequested" expected-processing-status="success">
+					<test-case name="NewUser" trigger-event="UpdateRolesCompanyEmployeeRequested" expected-processing-status="success">
 						<input name="arn" type="String" value="anove:company:draftsman:employee:j.doe"></input>
 						<input name="roles" type="String" value="company-viewer"></input>
 						<state>{
   "arn": "anove:company:draftsman"
 }</state>
-						<expected domain-event="BusinessRoleUpdated" id="pj4qhW">
+						<expected domain-event="RolesUpdated" id="pj4qhW">
 							<field name="employeeArn" type="String" value="anove:company:draftsman:employee:j.doe"></field>
 							<field name="roles" type="String" value="company-viewer"></field>
 							<field name="username" type="String" value="j.doe"></field>
@@ -3440,10 +3439,10 @@
   }
 }</expected-state>
 					</test-case>
-					<test-case name="UpdateRoles" trigger-event="UpdateBusinessRoleCompanyEmployeeRequested" expected-processing-status="success">
+					<test-case name="UpdateRoles" trigger-event="UpdateRolesCompanyEmployeeRequested" expected-processing-status="success">
 						<input name="arn" type="String" value="anove:company:draftsman:employee:j.doe"></input>
 						<input name="roles" type="String" value="company-viewer;company-administrator"></input>
-						<expected domain-event="BusinessRoleUpdated" id="BVYmev">
+						<expected domain-event="RolesUpdated" id="BVYmev">
 							<field name="employeeArn" type="String" value="anove:company:draftsman:employee:j.doe"></field>
 							<field name="roles" type="String" value="company-viewer;company-administrator"></field>
 							<field name="username" type="String" value="j.doe"></field>
@@ -3469,7 +3468,7 @@
   }
 }</expected-state>
 					</test-case>
-					<test-case name="InvalidRole" trigger-event="UpdateBusinessRoleCompanyEmployeeRequested" expected-processing-status="error">
+					<test-case name="InvalidRole" trigger-event="UpdateRolesCompanyEmployeeRequested" expected-processing-status="error">
 						<input name="arn" type="String" value="anove:company:draftsman:employee:j.doe"></input>
 						<input name="roles" type="String" value="administrator"></input>
 						<state>{}</state>
@@ -3498,11 +3497,11 @@
 					</test-case>
 				</command>
 				<event-handler on="BusinessUnitRemoved" code="if event.name in self.businessUnits:|LB|    del self.businessUnits[event.name]"></event-handler>
-				<event-handler on="BusinessRoleUpdated" code='self.employees[event.employeeArn] = {|LB|    "arn": event.employeeArn,|LB|    "username": event.employeeArn.split(":")[-1],|LB|    "roles": event.roles|LB|}'></event-handler>
+				<event-handler on="RolesUpdated" code='self.employees[event.employeeArn] = {|LB|    "arn": event.employeeArn,|LB|    "username": event.employeeArn.split(":")[-1],|LB|    "roles": event.roles|LB|}'></event-handler>
 				<event-handler on="CompanyLogoLinked">
 					<mapping target="logoPath" value="logoPath" operand="set"></mapping>
 				</event-handler>
-				<event-handler on="EmployeeArnUpdated" code='self.employees[event.employeeArn] = {|LB|    "arn": event.employeeArn,|LB|    "username": event.username,|LB|    "businessRole": event.businessRole|LB|}|LB|if event.oldArn in self.employees:|LB|    del self.employees[event.oldArn]|LB|    |LB|self.deletedEmployeeArns.append(event.oldArn)'></event-handler>
+				<event-handler on="EmployeeArnUpdated" code='self.employees[event.employeeArn] = {|LB|    "arn": event.employeeArn,|LB|    "username": event.username,|LB|    "roles": event.roles|LB|}|LB|if event.oldArn in self.employees:|LB|    del self.employees[event.oldArn]|LB|    |LB|self.deletedEmployeeArns.append(event.oldArn)'></event-handler>
 				<event-handler on="BusinessUnitAdded">
 					<nested-mapping source="businessUnits" target="businessUnits" business-key="name">
 						<mapping target="name" operand="set" value="name"></mapping>
@@ -4896,9 +4895,9 @@
 					</test-case>
 				</command>
 				<command name="LinkCompanyToUser">
-					<trigger source="BusinessRoleUpdated" key-field="username">
+					<trigger source="RolesUpdated" key-field="username">
 						<mapping target="employeeArn" value="employeeArn"></mapping>
-						<mapping target="businessRole" value="roles"></mapping>
+						<mapping target="roles" value="roles"></mapping>
 						<mapping target="username" value="username"></mapping>
 					</trigger>
 					<processor type="set-variable" id="HRnMzH" name="active" expression="flow.entity.active"></processor>
@@ -4908,7 +4907,7 @@
 						<mapping target="active" value="#flow.active"></mapping>
 						<mapping target="companies" value="#flow.companies"></mapping>
 					</processor>
-					<test-case name="LinkCompanyToUser" trigger-event="BusinessRoleUpdated" expected-processing-status="success">
+					<test-case name="LinkCompanyToUser" trigger-event="RolesUpdated" expected-processing-status="success">
 						<input name="employeeArn" value="anove:company:tracepaper:employee:j.doe" type="String"></input>
 						<input name="roles" value="administrator" type="String"></input>
 						<input name="username" value="j.doe" type="String"></input>
@@ -6965,13 +6964,13 @@ if snapshot.isDeleted != '':
 			</activity>
 		</notifier>
 		<notifier name="UpdateAccessForEmployee">
-			<trigger source="BusinessRoleUpdated">
+			<trigger source="RolesUpdated">
 				<mapping target="arn" value="employeeArn"></mapping>
-				<mapping target="businessRole" value="roles"></mapping>
+				<mapping target="roles" value="roles"></mapping>
 			</trigger>
 			<trigger source="EmployeeArnUpdated">
 				<mapping target="arn" value="employeeArn"></mapping>
-				<mapping target="businessRole" value="businessRole"></mapping>
+				<mapping target="roles" value="roles"></mapping>
 			</trigger>
 			<activity type="set-variable" id="IFN8ne" name="username" expression='#flow.arn.split(":")[-1]'></activity>
 			<activity type="code" id="q26CJL" python-file="lib/AccessManagement.py" handler="retrieve_not_granted_roles"></activity>
@@ -7062,10 +7061,10 @@ if snapshot.isDeleted != '':
 			</activity>
 		</scenario>
 		<scenario name="InviteAndSwitchUser" extends="Controls">
-			<activity type="mutation" id="LrM74s" path="Company.Employee.updateBusinessRole" description="Add employee">
+			<activity type="mutation" id="LrM74s" path="Company.Employee.updateRoles" description="Add employee">
 				<input name="arn" type="String" value="anove:company:gate:employee:anove-invite-test@endtest-mail.io"></input>
 				<input name="roles" type="String" value="company-administrator"></input>
-				<expected-trace command="Customer.Company.UpdateBusinessRole" status="success"></expected-trace>
+				<expected-trace command="Customer.Company.UpdateRoles" status="success"></expected-trace>
 				<expected-trace command="Admin.User.LinkCompanyToUser" status="success"></expected-trace>
 				<expected-trace command="UpdateAccessForEmployee-Notifier" status="success"></expected-trace>
 				<expected-trace command="SendInvite-Notifier" status="success"></expected-trace>

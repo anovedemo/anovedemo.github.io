@@ -319,9 +319,9 @@
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
-                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateBusinessRoleCompanyEmployee'"
-                                x-show="'updatebusinessrolecompanyemployee'.includes(search.toLowerCase())">
-                            UpdateBusinessRoleCompanyEmployee
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UpdateRolesCompanyEmployee'"
+                                x-show="'updaterolescompanyemployee'.includes(search.toLowerCase())">
+                            UpdateRolesCompanyEmployee
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
@@ -979,10 +979,10 @@
                 </div>
 
                 
-                <div x-show="component == 'UpdateBusinessRoleCompanyEmployee'" x-cloak x-transition>
-                    <div x-import="commands/UpdateBusinessRoleCompanyEmployee">
-                        <h6>UpdateBusinessRoleCompanyEmployee</h6>
-                        <ui-UpdateBusinessRoleCompanyEmployee></ui-UpdateBusinessRoleCompanyEmployee>
+                <div x-show="component == 'UpdateRolesCompanyEmployee'" x-cloak x-transition>
+                    <div x-import="commands/UpdateRolesCompanyEmployee">
+                        <h6>UpdateRolesCompanyEmployee</h6>
+                        <ui-UpdateRolesCompanyEmployee></ui-UpdateRolesCompanyEmployee>
                     </div>
                 </div>
 
