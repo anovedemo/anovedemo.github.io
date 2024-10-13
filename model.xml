@@ -6966,11 +6966,11 @@ if snapshot.isDeleted != '':
 		<notifier name="UpdateAccessForEmployee">
 			<trigger source="RolesUpdated">
 				<mapping target="arn" value="employeeArn"></mapping>
-				<mapping target="roles" value="roles"></mapping>
+				<mapping target="roleset" value="roles"></mapping>
 			</trigger>
 			<trigger source="EmployeeArnUpdated">
 				<mapping target="arn" value="employeeArn"></mapping>
-				<mapping target="roles" value="roles"></mapping>
+				<mapping target="roleset" value="roles"></mapping>
 			</trigger>
 			<activity type="set-variable" id="IFN8ne" name="username" expression='#flow.arn.split(":")[-1]'></activity>
 			<activity type="code" id="q26CJL" python-file="lib/AccessManagement.py" handler="retrieve_not_granted_roles"></activity>
