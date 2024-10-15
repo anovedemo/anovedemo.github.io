@@ -19,15 +19,15 @@
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
-                                @click="Draftsman.empty_track_and_trace_log();component = 'CreateControlTemplate'"
-                                x-show="'createcontroltemplate'.includes(search.toLowerCase())">
-                            CreateControlTemplate
-                        </button>
-                        
-                        <button type="button" class="btn btn-outline-primary"
                                 @click="Draftsman.empty_track_and_trace_log();component = 'DeleteControlTemplate'"
                                 x-show="'deletecontroltemplate'.includes(search.toLowerCase())">
                             DeleteControlTemplate
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'CreateControlTemplate'"
+                                x-show="'createcontroltemplate'.includes(search.toLowerCase())">
+                            CreateControlTemplate
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
@@ -349,15 +349,15 @@
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
-                                @click="Draftsman.empty_track_and_trace_log();component = 'ChangeStatusCompanyIntegrationImplementation'"
-                                x-show="'changestatuscompanyintegrationimplementation'.includes(search.toLowerCase())">
-                            ChangeStatusCompanyIntegrationImplementation
-                        </button>
-                        
-                        <button type="button" class="btn btn-outline-primary"
                                 @click="Draftsman.empty_track_and_trace_log();component = 'RequestCompanyIntegrationImplementation'"
                                 x-show="'requestcompanyintegrationimplementation'.includes(search.toLowerCase())">
                             RequestCompanyIntegrationImplementation
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'ChangeStatusCompanyIntegrationImplementation'"
+                                x-show="'changestatuscompanyintegrationimplementation'.includes(search.toLowerCase())">
+                            ChangeStatusCompanyIntegrationImplementation
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
@@ -579,18 +579,18 @@
                 </div>
 
                 
-                <div x-show="component == 'CreateControlTemplate'" x-cloak x-transition>
-                    <div x-import="commands/CreateControlTemplate">
-                        <h6>CreateControlTemplate</h6>
-                        <ui-CreateControlTemplate></ui-CreateControlTemplate>
-                    </div>
-                </div>
-
-                
                 <div x-show="component == 'DeleteControlTemplate'" x-cloak x-transition>
                     <div x-import="commands/DeleteControlTemplate">
                         <h6>DeleteControlTemplate</h6>
                         <ui-DeleteControlTemplate></ui-DeleteControlTemplate>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'CreateControlTemplate'" x-cloak x-transition>
+                    <div x-import="commands/CreateControlTemplate">
+                        <h6>CreateControlTemplate</h6>
+                        <ui-CreateControlTemplate></ui-CreateControlTemplate>
                     </div>
                 </div>
 
@@ -1019,18 +1019,18 @@
                 </div>
 
                 
-                <div x-show="component == 'ChangeStatusCompanyIntegrationImplementation'" x-cloak x-transition>
-                    <div x-import="commands/ChangeStatusCompanyIntegrationImplementation">
-                        <h6>ChangeStatusCompanyIntegrationImplementation</h6>
-                        <ui-ChangeStatusCompanyIntegrationImplementation></ui-ChangeStatusCompanyIntegrationImplementation>
-                    </div>
-                </div>
-
-                
                 <div x-show="component == 'RequestCompanyIntegrationImplementation'" x-cloak x-transition>
                     <div x-import="commands/RequestCompanyIntegrationImplementation">
                         <h6>RequestCompanyIntegrationImplementation</h6>
                         <ui-RequestCompanyIntegrationImplementation></ui-RequestCompanyIntegrationImplementation>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'ChangeStatusCompanyIntegrationImplementation'" x-cloak x-transition>
+                    <div x-import="commands/ChangeStatusCompanyIntegrationImplementation">
+                        <h6>ChangeStatusCompanyIntegrationImplementation</h6>
+                        <ui-ChangeStatusCompanyIntegrationImplementation></ui-ChangeStatusCompanyIntegrationImplementation>
                     </div>
                 </div>
 

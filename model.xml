@@ -59,14 +59,14 @@
 		<event graphql-namespace="ControlTemplate" graphql-name="release" name="ReleaseControlTemplateRequested" authorization="role" role="administrator" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ControlTemplateArn}}"></field>
 		</event>
+		<event graphql-namespace="ControlTemplate" graphql-name="delete" name="DeleteControlTemplateRequested" authorization="role" role="administrator" type="ActorEvent">
+			<field name="arn" type="String" pattern="{{ControlTemplateArn}}"></field>
+		</event>
 		<event graphql-namespace="ControlTemplate" graphql-name="create" name="CreateControlTemplateRequested" authorization="role" role="administrator" type="ActorEvent">
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
 			<field name="assessmentPeriodicity" type="String"></field>
 			<field name="requirementLinks" type="String" pattern="{{RequirementLink}}"></field>
-			<field name="arn" type="String" pattern="{{ControlTemplateArn}}"></field>
-		</event>
-		<event graphql-namespace="ControlTemplate" graphql-name="delete" name="DeleteControlTemplateRequested" authorization="role" role="administrator" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ControlTemplateArn}}"></field>
 		</event>
 		<event graphql-namespace="User" graphql-name="update" name="UpdateUserRequested" type="ActorEvent" authorization="authenticated">
@@ -382,18 +382,18 @@
 			<field name="message" type="String"></field>
 			<field name="user" type="String" auto-fill="username"></field>
 		</event>
+		<event graphql-namespace="Company.IntegrationImplementation" graphql-name="request" name="RequestCompanyIntegrationImplementationRequested" authorization="role" role="#global.isIntegrationAdministrator(arn)" type="ActorEvent">
+			<field name="arn" type="String" pattern="{{IntegrationImplementationArn}}"></field>
+			<field name="requirements" type="String"></field>
+			<field name="reference" type="String" pattern="{{IntegrationArn}}"></field>
+			<field name="owner" type="String" pattern="{{EmployeeArn}}"></field>
+		</event>
 		<event graphql-namespace="Company.IntegrationImplementation" graphql-name="changeStatus" name="ChangeStatusCompanyIntegrationImplementationRequested" authorization="role" role="administrator" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{IntegrationImplementationArn}}"></field>
 			<field name="uuid" type="String" auto-fill="uuid"></field>
 			<field name="message" type="String"></field>
 			<field name="user" type="String" auto-fill="username"></field>
 			<field name="status" type="String"></field>
-		</event>
-		<event graphql-namespace="Company.IntegrationImplementation" graphql-name="request" name="RequestCompanyIntegrationImplementationRequested" authorization="role" role="#global.isIntegrationAdministrator(arn)" type="ActorEvent">
-			<field name="arn" type="String" pattern="{{IntegrationImplementationArn}}"></field>
-			<field name="requirements" type="String"></field>
-			<field name="reference" type="String" pattern="{{IntegrationArn}}"></field>
-			<field name="owner" type="String" pattern="{{EmployeeArn}}"></field>
 		</event>
 		<event graphql-namespace="Company.IntegrationImplementation" graphql-name="delete" name="DeleteCompanyIntegrationImplementationRequested" authorization="role" role="administrator" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{IntegrationImplementationArn}}"></field>
@@ -1320,9 +1320,9 @@
 						<mapping target="hasPendingSelfAssessment" value="#flow.hasPendingSelfAssessment"></mapping>
 						<mapping target="assessment" value="#flow.assessment"></mapping>
 					</processor>
-					<test-case name="CompleteAssessment" trigger-event="CompleteCompanyControlAssessmentRequested">
+					<test-case name="CompleteAssessment" trigger-event="CompleteCompanyControlAssessmentRequested" expected-processing-status="success">
 						<input name="arn" value="anove:company:draftsman:control:test:2024-08-01" type="String"></input>
-						<expected domain-event="AssessmentCompleted">
+						<expected domain-event="AssessmentCompleted" id="EDwjCK">
 							<field value="2025-08-01" name="nextAssessmentDate" type="String"></field>
 							<field value="false" name="hasPendingSelfAssessment" type="Boolean"></field>
 						</expected>
@@ -1341,10 +1341,12 @@
       "category": "self",
       "assessorLink": "anove:company:draftsman:employee:default-test-user"
     }
-  }
+  },
+  "arn": "anove:company:draftsman:control:test"
 }</state>
 						<expected-state pk="anove:company:draftsman:control:test">{
-  "hasPendingSelfAssessment": false
+  "hasPendingSelfAssessment": false,
+  "arn": "anove:company:draftsman:control:test"
 }</expected-state>
 					</test-case>
 				</command>
@@ -1704,18 +1706,7 @@
   "status": "requested",
   "arn": "dummy"
 }</state>
-						<expected-state pk="dummy">{
-  "arn": "dummy",
-  "note": {
-    "123456": {
-      "uuid": "123456",
-      "message": "Hello World!",
-      "user": "j.doe",
-      "order": 1
-    }
-  },
-  "status": "requested"
-}</expected-state>
+						<expected-state pk="dummy">{"arn":"dummy","note":{"123456":{"uuid":"123456","message":"Hello World!","user":"j.doe","order":1}},"status":"requested"}</expected-state>
 					</test-case>
 					<test-case name="ChangeStatus" trigger-event="ChangeStatusCompanyIntegrationImplementationRequested" expected-processing-status="success">
 						<input name="arn" type="String" value="dummy"></input>
@@ -5567,7 +5558,6 @@
 				</command>
 				<event-handler on="TenantCreated">
 					<mapping target="name" operand="set" value="name"></mapping>
-					<mapping operand="set" target="key" value="key"></mapping>
 					<mapping operand="set" target="reference" value="key"></mapping>
 				</event-handler>
 				<event-handler on="StyleSheetLinked">
