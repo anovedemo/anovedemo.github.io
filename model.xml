@@ -1810,7 +1810,8 @@
       "assignee": "j.doe",
       "dueDate": "2024-08-01",
       "completeDate": "",
-      "notes": "Meanigfull notes"
+      "notes": "Meanigfull notes",
+      "updatedAt": 0
     }
   }
 }</expected-state>
@@ -1854,7 +1855,8 @@
       "assignee": "j.doe",
       "dueDate": "text",
       "completeDate": "",
-      "notes": "text"
+      "notes": "text",
+      "completedAt":0
     }
   }
 }</state>
@@ -2047,7 +2049,8 @@
       "assignee": "anove:company:gate:employee:j.doe",
       "dueDate": "2025-01-01",
       "completeDate": "",
-      "notes": "Some longer text"
+      "notes": "Some longer text",
+      "createdAt":0
     }
   }
 }</expected-state>
@@ -2155,9 +2158,9 @@
 				<event-handler on="ObjectiveDeleted" code='self.isDeleted = "soft"|LB|'></event-handler>
 				<event-handler on="ObjectiveReopened" code="self.completionPercentage = 80"></event-handler>
 				<event-handler on="ObjectiveUpdated" code="|LB|if event.owner:|LB|    self.owner = event.owner|LB|if event.dueDate:|LB|    self.dueDate = event.dueDate|LB|if event.definitionOfDone:|LB|    self.definitionOfDone = event.definitionOfDone|LB|if event.completionPercentage:|LB|    self.completionPercentage = event.completionPercentage|LB|if event.name:|LB|    self.name = event.name"></event-handler>
-				<event-handler on="ObjectiveTaskCreated" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|target["name"] = event.name|LB|target["description"] = event.description|LB|target["assignee"] = event.assignee|LB|target["dueDate"] = event.dueDate|LB|target["completeDate"] = ""|LB|target["notes"] = event.notes|LB|target["arn"] = event.arn|LB||LB|self.task[event["arn"]] = target'></event-handler>
-				<event-handler on="ObjectiveTaskCompleted" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|target["completeDate"] = event.completeDate|LB||LB|self.task[event["arn"]] = target'></event-handler>
-				<event-handler on="ObjectiveTaskUpdated" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|if event.name:|LB|    target["name"] = event.name|LB|if event.description:|LB|    target["description"] = event.description|LB|if event.assignee:|LB|    target["assignee"] = event.assignee|LB|if event.dueDate:|LB|    target["dueDate"] = event.dueDate|LB|if event.notes:|LB|    target["notes"] = event.notes|LB||LB|self.task[event["arn"]] = target'></event-handler>
+				<event-handler on="ObjectiveTaskCreated" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|target["name"] = event.name|LB|target["description"] = event.description|LB|target["assignee"] = event.assignee|LB|target["dueDate"] = event.dueDate|LB|target["completeDate"] = ""|LB|target["notes"] = event.notes|LB|target["arn"] = event.arn|LB|target["createdAt"] = event.published_at|LB|self.task[event["arn"]] = target'></event-handler>
+				<event-handler on="ObjectiveTaskCompleted" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|target["completeDate"] = event.completeDate|LB|target["completedAt"] = event.published_at|LB|self.task[event["arn"]] = target'></event-handler>
+				<event-handler on="ObjectiveTaskUpdated" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|if event.name:|LB|    target["name"] = event.name|LB|if event.description:|LB|    target["description"] = event.description|LB|if event.assignee:|LB|    target["assignee"] = event.assignee|LB|if event.dueDate:|LB|    target["dueDate"] = event.dueDate|LB|if event.notes:|LB|    target["notes"] = event.notes|LB|target["updatedAt"] = event.published_at|LB|self.task[event["arn"]] = target'></event-handler>
 				<event-handler on="ObjectiveCreated">
 					<mapping target="arn" value="arn" operand="set"></mapping>
 					<mapping target="owner" value="owner" operand="set"></mapping>
@@ -6411,6 +6414,9 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<field name="completeDate" type="String"></field>
 			<field name="notes" type="String"></field>
 			<field name="arn" type="String" pk="true"></field>
+			<field name="createdAt" type="Int"></field>
+			<field name="updatedAt" type="Int"></field>
+			<field name="completedAt" type="Int"></field>
 			<snapshot-handler id="RmM6HV" processor="dictionary" sub-domain="Customer" aggregate="Objective" dictionary="task" key-mapping="arn">
 				<mapping target="arn" value="arn" operand="set"></mapping>
 				<mapping target="dueDate" value="dueDate" operand="set"></mapping>
@@ -6419,6 +6425,9 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping operand="set" target="assignee" value="assignee"></mapping>
 				<mapping operand="set" target="completeDate" value="completeDate"></mapping>
 				<mapping operand="set" target="notes" value="notes"></mapping>
+				<mapping operand="set" target="createdAt" value="createdAt"></mapping>
+				<mapping operand="set" target="updatedAt" value="updatedAt"></mapping>
+				<mapping operand="set" target="completedAt" value="completedAt"></mapping>
 				<delete id="wM4n11" condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="Objective" field-name="getTasks" type="query" authorization="role" use-canonical-search="true" role="#global.isCompanyViewer(key_begins_with)"></query>
