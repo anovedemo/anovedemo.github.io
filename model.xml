@@ -1810,8 +1810,7 @@
       "assignee": "j.doe",
       "dueDate": "2024-08-01",
       "completeDate": "",
-      "notes": "Meanigfull notes",
-      "updatedAt": 0
+      "notes": "Meanigfull notes"
     }
   }
 }</expected-state>
@@ -1855,8 +1854,7 @@
       "assignee": "j.doe",
       "dueDate": "text",
       "completeDate": "",
-      "notes": "text",
-      "completedAt":0
+      "notes": "text"
     }
   }
 }</state>
@@ -2049,8 +2047,7 @@
       "assignee": "anove:company:gate:employee:j.doe",
       "dueDate": "2025-01-01",
       "completeDate": "",
-      "notes": "Some longer text",
-      "createdAt":0
+      "notes": "Some longer text"
     }
   }
 }</expected-state>
