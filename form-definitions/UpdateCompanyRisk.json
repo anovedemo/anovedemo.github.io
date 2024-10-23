@@ -68,6 +68,14 @@
     "default": ""
   },
   {
+    "name": "owner",
+    "title": "Owner",
+    "type": "String",
+    "pattern": "^[a-z]+:company:[a-z]+:employee:[^\\s]+$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
     "name": "controlLinks",
     "title": "Controllinks",
     "type": "nested",

@@ -1,8 +1,8 @@
 # This file is managed by Tracepaper
-mutation Create($arn: String = "", $name: String = "", $description: String = "", $grossLikelihood: Int = 0, $grossImpact: Int = 0, $apetiteLikelihood: Int = 0, $apetiteImpact: Int = 0, $reviewPeriodicity: String = "", $nextReviewDate: String = "", $controlLinks: [CreateCompanyRisk_Controllinks!] = [], $treatmentPlan: [CreateCompanyRisk_Treatmentplan!] = []) {
+mutation Create($arn: String = "", $name: String = "", $description: String = "", $grossLikelihood: Int = 0, $grossImpact: Int = 0, $apetiteLikelihood: Int = 0, $apetiteImpact: Int = 0, $reviewPeriodicity: String = "", $nextReviewDate: String = "", $owner: String = "", $controlLinks: [CreateCompanyRisk_Controllinks!] = [], $treatmentPlan: [CreateCompanyRisk_Treatmentplan!] = []) {
   Company{
     Risk{
-      create(input: {arn: $arn,name: $name,description: $description,grossLikelihood: $grossLikelihood,grossImpact: $grossImpact,apetiteLikelihood: $apetiteLikelihood,apetiteImpact: $apetiteImpact,reviewPeriodicity: $reviewPeriodicity,nextReviewDate: $nextReviewDate,controlLinks: $controlLinks,treatmentPlan: $treatmentPlan}) {
+      create(input: {arn: $arn,name: $name,description: $description,grossLikelihood: $grossLikelihood,grossImpact: $grossImpact,apetiteLikelihood: $apetiteLikelihood,apetiteImpact: $apetiteImpact,reviewPeriodicity: $reviewPeriodicity,nextReviewDate: $nextReviewDate,owner: $owner,controlLinks: $controlLinks,treatmentPlan: $treatmentPlan}) {
          correlationId
       }
     }
