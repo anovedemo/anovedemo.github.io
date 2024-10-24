@@ -8041,7 +8041,7 @@ if snapshot.isDeleted != '':
 				<input name="grossImpact" type="Int" value="5"></input>
 				<input name="apetiteLikelihood" type="Int" value="4"></input>
 				<input name="apetiteImpact" type="Int" value="4"></input>
-				<input name="owner" type="Int" value="#employeeArn#"></input>
+				<input name="owner" type="String" value="#employeeArn#"></input>
 				<input name="reviewPeriodicity" type="String" value="1Y"></input>
 				<input name="nextReviewDate" type="String" value="2024-08-01"></input>
 				<input name="controlLinks" type="Nested" value='[{"arn":"#controlArn#","impactOnRisk":"#impactOnRisk#"}]'></input>
@@ -8072,7 +8072,7 @@ if snapshot.isDeleted != '':
 				<input name="apetiteImpact" type="Int" value="3"></input>
 				<input name="reviewPeriodicity" type="String" value="2Y"></input>
 				<input name="nextReviewDate" type="String" value="2025-08-01"></input>
-				<input name="owner" type="Int" value="#employeeArn#"></input>
+				<input name="owner" type="String" value="#employeeArn#"></input>
 				<input name="controlLinks" type="Nested" value='[{"arn":"#controlArn#","impactOnRisk":"#impactOnRisk#"}]'></input>
 				<input name="treatmentPlan" type="Nested" value='[{"type":"mitigate","description":"user controls"}]'></input>
 				<expected-trace command="Customer.Risk.Update" status="success"></expected-trace>
