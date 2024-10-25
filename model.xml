@@ -7015,7 +7015,7 @@ if snapshot.isDeleted != '':
 		<notifier name="CreateRiskFromTemplate">
 			<trigger source="CreateFromTemplateCompanyRiskRequested">
 				<mapping target="arn" value="arn"></mapping>
-				<mapping target="template" value="template"></mapping>
+				<mapping target="templateArn" value="template"></mapping>
 				<mapping target="apetiteLikelihood" value="apetiteLikelihood"></mapping>
 				<mapping target="apetiteImpact" value="apetiteImpact"></mapping>
 				<mapping target="nextReviewDate" value="nextReviewDate"></mapping>
