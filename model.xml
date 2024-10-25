@@ -532,6 +532,7 @@
 			<field name="apetiteLikelihood" type="Int"></field>
 			<field name="apetiteImpact" type="Int"></field>
 			<field name="nextReviewDate" type="String" pattern="{{Date}}"></field>
+			<field name="owner" type="String" pattern="{{EmployeeArn}}"></field>
 		</event>
 		<event graphql-namespace="Company.Risk" graphql-name="delete" name="DeleteCompanyRiskRequested" authorization="role" role="#global.isRiskAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{RiskArn}}"></field>
@@ -7014,14 +7015,15 @@ if snapshot.isDeleted != '':
 		<notifier name="CreateRiskFromTemplate">
 			<trigger source="CreateFromTemplateCompanyRiskRequested">
 				<mapping target="arn" value="arn"></mapping>
-				<mapping target="templateArn" value="template"></mapping>
+				<mapping target="template" value="template"></mapping>
 				<mapping target="apetiteLikelihood" value="apetiteLikelihood"></mapping>
 				<mapping target="apetiteImpact" value="apetiteImpact"></mapping>
 				<mapping target="nextReviewDate" value="nextReviewDate"></mapping>
+				<mapping target="owner" value="owner"></mapping>
 			</trigger>
 			<activity id="lSyHrc" type="call-internal-api" query='query MyQuery {|LB|  RiskTemplate {|LB|    get(key: "{{flow.templateArn}}") {|LB|      description|LB|      grossImpact|LB|      grossLikelihood|LB|      name|LB|      reviewPeriodicity|LB|    }|LB|  }|LB|}|LB|' name="template"></activity>
 			<activity id="E9gGZK" type="code" code='flow.template = flow.template["data"]["RiskTemplate"]'></activity>
-			<activity id="SShzI4" type="call-internal-api" query='mutation MyMutation {|LB|  Company {|LB|    Risk {|LB|      create(input: {|LB|         arn: "{{flow.arn}}", |LB|         name: "{{flow.template.get.name}}", |LB|         description: "{{flow.template.get.description}}", |LB|         grossLikelihood: {{flow.template.get.grossLikelihood}}, |LB|         grossImpact: {{flow.template.get.grossImpact}}, |LB|         apetiteLikelihood: {{flow.apetiteLikelihood}}, |LB|         apetiteImpact: {{flow.apetiteImpact}}, |LB|         reviewPeriodicity: "{{flow.template.get.reviewPeriodicity}}", |LB|         nextReviewDate: "{{flow.nextReviewDate}}", |LB|         controlLinks: [], |LB|         treatmentPlan: []}) {|LB|        correlationId|LB|      }|LB|    }|LB|  }|LB|}|LB|' name="result"></activity>
+			<activity id="SShzI4" type="call-internal-api" query='mutation MyMutation {|LB|  Company {|LB|    Risk {|LB|      create(input: {|LB|         arn: "{{flow.arn}}", |LB|         name: "{{flow.template.get.name}}", |LB|         description: "{{flow.template.get.description}}", |LB|         grossLikelihood: {{flow.template.get.grossLikelihood}}, |LB|         grossImpact: {{flow.template.get.grossImpact}}, |LB|         apetiteLikelihood: {{flow.apetiteLikelihood}}, |LB|         apetiteImpact: {{flow.apetiteImpact}}, |LB|         reviewPeriodicity: "{{flow.template.get.reviewPeriodicity}}", |LB|         nextReviewDate: "{{flow.nextReviewDate}}", |LB|         owner: "{{flow.owner}}",|LB|         controlLinks: [], |LB|         treatmentPlan: []}) {|LB|        correlationId|LB|      }|LB|    }|LB|  }|LB|}|LB|' name="result"></activity>
 		</notifier>
 		<notifier name="CreateControlFromTemplate">
 			<trigger source="CreateFromTemplateCompanyControlRequested">
@@ -8134,6 +8136,7 @@ if snapshot.isDeleted != '':
 				<input name="apetiteLikelihood" type="Int" value="1"></input>
 				<input name="apetiteImpact" type="Int" value="1"></input>
 				<input name="nextReviewDate" type="String" value="2025-09-01"></input>
+				<input name="owner" type="String" value="#employeeArn#"></input>
 				<expected-trace command="CreateRiskFromTemplate-Notifier" status="success"></expected-trace>
 				<expected-trace command="Customer.Risk.Create" status="success"></expected-trace>
 			</activity>

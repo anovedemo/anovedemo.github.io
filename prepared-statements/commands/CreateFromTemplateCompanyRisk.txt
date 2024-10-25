@@ -1,8 +1,8 @@
 # This file is managed by Tracepaper
-mutation CreateFromTemplate($arn: String = "", $template: String = "", $apetiteLikelihood: Int = 0, $apetiteImpact: Int = 0, $nextReviewDate: String = "") {
+mutation CreateFromTemplate($arn: String = "", $template: String = "", $apetiteLikelihood: Int = 0, $apetiteImpact: Int = 0, $nextReviewDate: String = "", $owner: String = "") {
   Company{
     Risk{
-      createFromTemplate(input: {arn: $arn,template: $template,apetiteLikelihood: $apetiteLikelihood,apetiteImpact: $apetiteImpact,nextReviewDate: $nextReviewDate}) {
+      createFromTemplate(input: {arn: $arn,template: $template,apetiteLikelihood: $apetiteLikelihood,apetiteImpact: $apetiteImpact,nextReviewDate: $nextReviewDate,owner: $owner}) {
          correlationId
       }
     }
