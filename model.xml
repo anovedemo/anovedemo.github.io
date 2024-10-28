@@ -757,6 +757,9 @@
 			<field name="notes" type="String"></field>
 			<field name="arn" type="String"></field>
 		</event>
+		<event name="ThirdpartyLinkedToAsset" source="Customer.Asset" type="DomainEvent">
+			<field name="thirdpartyArn" type="String"></field>
+		</event>
 		<event name="AssetCreated" source="Customer.Asset" type="DomainEvent">
 			<field name="arn" type="String"></field>
 			<field name="name" type="String"></field>
@@ -2201,6 +2204,7 @@
 				<field name="integrity" type="String"></field>
 				<field name="availability" type="String"></field>
 				<field name="privacy" type="String"></field>
+				<field name="thirdpartyLink" type="String"></field>
 				<command name="UpdateTask">
 					<trigger source="UpdateCompanyAssetTaskRequested" key-field="#global.truncateArn(arn, '5')">
 						<mapping target="arn" value="arn"></mapping>
@@ -2579,6 +2583,7 @@
 					</test-case>
 				</command>
 				<event-handler on="AssetTaskUpdated" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|if event.name:|LB|    target["name"] = event.name|LB|if event.description:|LB|    target["description"] = event.description|LB|if event.assignee:|LB|    target["assignee"] = event.assignee|LB|if event.dueDate:|LB|    target["dueDate"] = event.dueDate|LB|if event.notes:|LB|    target["notes"] = event.notes|LB|self.task[event["arn"]] = target'></event-handler>
+				<event-handler on="ThirdpartyLinkedToAsset" code="this.thirdpartyLink.append(event.thirdpartyArn)"></event-handler>
 				<event-handler on="AssetCreated">
 					<mapping operand="set" target="arn" value="arn"></mapping>
 					<mapping operand="set" target="name" value="name"></mapping>
@@ -7712,7 +7717,7 @@ if snapshot.isDeleted != '':
 				<input name="tpOneArn" type="String" value="anove:company:gate:thirdparty:draftsman"></input>
 				<input name="tpTwoArn" type="String" value="anove:company:gate:thirdparty:aws"></input>
 				<input name="tpTaskArn" type="String" value="anove:company:gate:thirdparty:draftsman:mytask"></input>
-				<input name="tpThreeArn" type="String" value=""></input>
+				<input name="tpThreeArn" type="String" value="anove:company:gate:thirdparty:tmp"></input>
 			</activity>
 			<activity path="Company.ThirdParty.create" type="mutation" description="Create thirdparty" id="lGYyKm">
 				<input name="arn" type="String" value="#tpOneArn#"></input>
