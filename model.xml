@@ -325,6 +325,14 @@
 			<field name="arn" type="String" pattern="{{ThirdPartyArn}}"></field>
 			<field name="subprocessorArn" type="String" pattern="{{ThirdPartyArn}}"></field>
 		</event>
+		<event graphql-namespace="Company.ThirdParty" graphql-name="createFromTemplate" name="CreateFromTemplateCompanyThirdPartyRequested" authorization="role" role="#global.isThirdPartyAdministrator(arn)" type="ActorEvent">
+			<field name="arn" type="String" pattern="{{ThirdPartyArn}}"></field>
+			<field name="role" type="String"></field>
+			<field name="isCritical" type="Boolean"></field>
+			<field name="isDirectThirdParty" type="Boolean"></field>
+			<field name="owner" type="String" pattern="{{EmployeeArn}}"></field>
+			<field name="templateArn" type="String" pattern="{{ThirdPartyTemplateArn}}"></field>
+		</event>
 		<event graphql-namespace="Company.ThirdParty.Assessment" graphql-name="create" name="CreateCompanyThirdPartyAssessmentRequested" authorization="role" role="#global.isThirdPartyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{AssessmentArn}}"></field>
 			<field name="name" type="String"></field>
@@ -2557,7 +2565,17 @@
 							<field name="availability" type="String" value="3"></field>
 							<field name="privacy" type="String" value="1"></field>
 						</expected>
-						<expected-state pk="anove:company:draftsman:asset:tracepaper">{"arn":"anove:company:draftsman:asset:tracepaper","name":"Tracepaper","description":"SaaS","owner":"anove:company:draftsman:employee:j.doe","confidentiality":"1","integrity":"2","availability":"3","privacy":"1","version":1}</expected-state>
+						<expected-state pk="anove:company:draftsman:asset:tracepaper">{
+  "arn": "anove:company:draftsman:asset:tracepaper",
+  "name": "Tracepaper",
+  "description": "SaaS",
+  "owner": "anove:company:draftsman:employee:j.doe",
+  "confidentiality": "1",
+  "integrity": "2",
+  "availability": "3",
+  "privacy": "1",
+  "version": 1
+}</expected-state>
 					</test-case>
 				</command>
 				<event-handler on="AssetTaskUpdated" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|if event.name:|LB|    target["name"] = event.name|LB|if event.description:|LB|    target["description"] = event.description|LB|if event.assignee:|LB|    target["assignee"] = event.assignee|LB|if event.dueDate:|LB|    target["dueDate"] = event.dueDate|LB|if event.notes:|LB|    target["notes"] = event.notes|LB|self.task[event["arn"]] = target'></event-handler>
@@ -6940,6 +6958,19 @@ if snapshot.isDeleted != '':
 			</trigger>
 			<activity type="iam-create-systemuser" fail-silent="true" id="vMB9LZ"></activity>
 		</notifier>
+		<notifier name="CreateThirdpartyFromTemplate">
+			<trigger source="CreateFromTemplateCompanyThirdPartyRequested">
+				<mapping target="arn" value="arn"></mapping>
+				<mapping target="role" value="role"></mapping>
+				<mapping target="isCritical" value="isCritical"></mapping>
+				<mapping target="isDirectThirdParty" value="isDirectThirdParty"></mapping>
+				<mapping target="owner" value="owner"></mapping>
+				<mapping target="templateArn" value="templateArn"></mapping>
+			</trigger>
+			<activity id="pa6G5b" type="call-internal-api" name="template" query='query MyQuery { |LB|  ThirdPartyTemplate { |LB|    get(key: "{{flow.templateArn}}") { |LB|      address |LB|      companyRegistrationNumber |LB|      countryArn |LB|      description |LB|      knownCertification |LB|      name |LB|    } |LB|  } |LB|}'></activity>
+			<activity id="pZl1cV" name="template" type="code" code='flow.template = flow.template["data"]["ThirdPartyTemplate"]["get"]'></activity>
+			<activity id="XqnuXQ" type="call-internal-api" query='mutation MyMutation { |LB|  Company { |LB|    ThirdParty { |LB|      create(input: { |LB|         arn: "{{flow.arn}}",  |LB|         name: "{{template.name}}",  |LB|         description: "{{template.description}}",  |LB|         role: "{{flow.role}}",  |LB|         address: "{{template.addres}}",  |LB|         companyRegistrationNumber: "{{template.companyRegistrationNumber}}",  |LB|         country: "{{template.country}}",  |LB|         knownCertification: "{{template.knownCertification}}",  |LB|         isCritical: {{flow.isCritical}},  |LB|          isDirectThirdParty: {{flow.isDirectThirdParty}},  |LB|            owner: "{{flow.owner}}"}) { |LB|        correlationId |LB|      } |LB|    } |LB|  } |LB|} |LB|' name="result"></activity>
+		</notifier>
 		<notifier name="CleanupTenant">
 			<trigger source="TenantDeleted">
 				<mapping target="key" value="key"></mapping>
@@ -7681,6 +7712,7 @@ if snapshot.isDeleted != '':
 				<input name="tpOneArn" type="String" value="anove:company:gate:thirdparty:draftsman"></input>
 				<input name="tpTwoArn" type="String" value="anove:company:gate:thirdparty:aws"></input>
 				<input name="tpTaskArn" type="String" value="anove:company:gate:thirdparty:draftsman:mytask"></input>
+				<input name="tpThreeArn" type="String" value=""></input>
 			</activity>
 			<activity path="Company.ThirdParty.create" type="mutation" description="Create thirdparty" id="lGYyKm">
 				<input name="arn" type="String" value="#tpOneArn#"></input>
@@ -7776,6 +7808,16 @@ if snapshot.isDeleted != '':
 			<activity path="Company.ThirdParty.Task.complete" type="mutation" description="Complete task" id="gFSQfO">
 				<input name="arn" type="String" value="#tpTaskArn#"></input>
 				<expected-trace command="ThirdPartyManagement.ThirdParty.CompleteTask" status="success"></expected-trace>
+			</activity>
+			<activity path="Company.ThirdParty.createFromTemplate" type="mutation" description="Create from template" id="bxf9ld">
+				<input name="arn" type="String" value="#tpThreeArn#"></input>
+				<input name="role" type="String" value="-"></input>
+				<input name="isCritical" type="Boolean" value="true"></input>
+				<input name="isDirectThirdParty" type="Boolean" value="true"></input>
+				<input name="owner" type="String" value="#employeeArn#"></input>
+				<input name="templateArn" type="String" value="#tpTemplateArn#"></input>
+				<expected-trace command="ThirdPartyManagement.ThirdParty.Create" status="success"></expected-trace>
+				<expected-trace command="CreateThirdpartyFromTemplate-Notifier" status="success"></expected-trace>
 			</activity>
 		</scenario>
 		<scenario extends="CreateAdministrator" name="RiskTemplate">
