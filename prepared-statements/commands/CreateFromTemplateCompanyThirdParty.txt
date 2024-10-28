@@ -1,8 +1,8 @@
 # This file is managed by Tracepaper
-mutation CreateFromTemplate($arn: String = "", $role: String = "", $isCritical: Boolean = false, $isDirectThirdParty: Boolean = false, $owner: String = "") {
+mutation CreateFromTemplate($arn: String = "", $role: String = "", $isCritical: Boolean = false, $isDirectThirdParty: Boolean = false, $owner: String = "", $templateArn: String = "") {
   Company{
     ThirdParty{
-      createFromTemplate(input: {arn: $arn,role: $role,isCritical: $isCritical,isDirectThirdParty: $isDirectThirdParty,owner: $owner}) {
+      createFromTemplate(input: {arn: $arn,role: $role,isCritical: $isCritical,isDirectThirdParty: $isDirectThirdParty,owner: $owner,templateArn: $templateArn}) {
          correlationId
       }
     }
