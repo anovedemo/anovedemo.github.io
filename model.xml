@@ -8373,6 +8373,10 @@ if snapshot.isDeleted != '':
 				<input name="assetArn" type="String" value="#assetArn#"></input>
 				<expected-trace command="ThirdPartyManagement.ThirdParty.LinkAsset" status="success"></expected-trace>
 			</activity>
+			<activity path="ThirdParty.get" type="query" view="ThirdParty" description="Check if asset is linked to TP" id="wLMJ2a">
+				<input name="key" type="String" value="#tpOneArn#"></input>
+				<expect-value name="assets.0.arn" type="String" value="#assetArn#"></expect-value>
+			</activity>
 			<activity path="Company.ThirdParty.unlinkAsset" type="mutation" description="Unlink asset from TP" id="yqJGFM">
 				<input name="arn" type="String" value="#tpOneArn#"></input>
 				<input name="assetArn" type="String" value="#assetArn#"></input>
