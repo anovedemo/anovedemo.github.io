@@ -7544,7 +7544,7 @@ if snapshot.isDeleted != '':
 				<expected-trace command="Customer.ProcessingActivity.UnlinkAsset" status="success"></expected-trace>
 			</activity>
 			<activity path="Company.ProcessingActivity.addStakeholder" type="mutation" description="Add stakeholder" id="EVvRpI">
-				<input name="arn" type="String" value="#"></input>
+				<input name="arn" type="String" value="#activityArn#"></input>
 				<input name="reference" type="String" value="st-1"></input>
 				<input name="role" type="String" value="processor"></input>
 				<input name="thirdpartyArn" type="String" value="#tpTwoArn#"></input>
