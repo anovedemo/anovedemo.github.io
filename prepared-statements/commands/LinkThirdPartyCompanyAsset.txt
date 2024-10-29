@@ -1,0 +1,10 @@
+# This file is managed by Tracepaper
+mutation LinkThirdParty($arn: String = "", $thirdpartyArn: String = "") {
+  Company{
+    Asset{
+      linkThirdParty(input: {arn: $arn,thirdpartyArn: $thirdpartyArn}) {
+         correlationId
+      }
+    }
+  }
+}

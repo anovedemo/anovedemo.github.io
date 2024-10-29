@@ -1,0 +1,10 @@
+# This file is managed by Tracepaper
+mutation UnlinkThirdparty($arn: String = "", $thirdpartyArn: String = "") {
+  Company{
+    Asset{
+      unlinkThirdparty(input: {arn: $arn,thirdpartyArn: $thirdpartyArn}) {
+         correlationId
+      }
+    }
+  }
+}
