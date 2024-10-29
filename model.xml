@@ -528,6 +528,10 @@
 			<field name="arn" type="String" pattern="{{ProcessingActivityArn}}"></field>
 			<field name="assetArn" type="String" pattern="{{AssetArn}}"></field>
 		</event>
+		<event graphql-namespace="Company.ProcessingActivity" graphql-name="removeStakeholder" name="RemoveStakeholderCompanyProcessingActivityRequested" type="ActorEvent">
+			<field name="arn" type="String" pattern="{{ProcessingActivityArn}}"></field>
+			<field name="reference" type="String" pattern="{{Reference}}"></field>
+		</event>
 		<event graphql-namespace="Company.ProcessingActivity" graphql-name="delete" name="DeleteCompanyProcessingActivityRequested" authorization="role" role="#global.isProcessingActivityAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ProcessingActivityArn}}"></field>
 		</event>
@@ -828,6 +832,9 @@
 			<field name="integrity" type="String"></field>
 			<field name="availability" type="String"></field>
 			<field name="privacy" type="String"></field>
+		</event>
+		<event name="ProcessingActivityStakeholderRemoved" source="Customer.ProcessingActivity" type="DomainEvent">
+			<field name="arn" type="String"></field>
 		</event>
 		<event name="LinkedAssetToProcessingActivity" source="Customer.ProcessingActivity" type="DomainEvent">
 			<field name="assetArn" type="String"></field>
@@ -2948,6 +2955,49 @@
 }</expected-state>
 					</test-case>
 				</command>
+				<command name="RemoveStakeholder">
+					<trigger source="RemoveStakeholderCompanyProcessingActivityRequested" key-field="arn">
+						<mapping target="arn" value="arn"></mapping>
+						<mapping target="reference" value="reference"></mapping>
+					</trigger>
+					<processor condition="flow." type="code" code='flow.stakeholder = flow.arn + ":" + flow.reference' id="Li8Eqe"></processor>
+					<processor condition="flow.stakeholder in flow.entity.stakeholder" type="validator" id="4kd3LU" exception="Stakeholder not found"></processor>
+					<processor type="emit-event" ref="ProcessingActivityStakeholderRemoved" id="KQ1Rdz">
+						<mapping target="arn" value="#flow.stakeholder"></mapping>
+					</processor>
+					<test-case name="RemoveStakeholder" trigger-event="RemoveStakeholderCompanyProcessingActivityRequested" expected-processing-status="success">
+						<input name="arn" type="String" value="dummy"></input>
+						<input name="reference" type="String" value="ref"></input>
+						<expected domain-event="ProcessingActivityStakeholderRemoved" id="h63VpI">
+							<field name="arn" type="String" value="dummy:ref"></field>
+						</expected>
+						<state>{
+  "arn": "dummy",
+  "stakeholder": {
+    "dummy:ref": {
+      "arn": "dummy:ref",
+      "role": "text",
+      "thirdpartyArn": "text"
+    },
+    "dummy:ref2": {
+      "arn": "dummy:ref2",
+      "role": "text",
+      "thirdpartyArn": "text"
+    }
+  }
+}</state>
+						<expected-state pk="dummy">{
+  "arn": "dummy",
+  "stakeholder": {
+    "dummy:ref2": {
+      "arn": "dummy:ref2",
+      "role": "text",
+      "thirdpartyArn": "text"
+    }
+  }
+}</expected-state>
+					</test-case>
+				</command>
 				<command name="AddStakeholder">
 					<trigger source="AddStakeholderCompanyProcessingActivityRequested" key-field="arn">
 						<mapping target="arn" value="arn"></mapping>
@@ -3180,6 +3230,7 @@
 }</expected-state>
 					</test-case>
 				</command>
+				<event-handler on="ProcessingActivityStakeholderRemoved" code='del self.stakeholder[event["arn"]]'></event-handler>
 				<event-handler on="LinkedAssetToProcessingActivity" code="if not event.assetArn in self.assetLinks:|LB|    self.assetLinks.append(event.assetArn)"></event-handler>
 				<event-handler on="UnlinkedAssetFromProcessingActivity" code="self.assetLinks = [x for x in self.assetLinks if x != event.assetArn]"></event-handler>
 				<event-handler on="ProcessingActivityTaskCreated" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|target["name"] = event.name|LB|target["description"] = event.description|LB|target["assignee"] = event.assignee|LB|target["dueDate"] = event.dueDate|LB|target["completeDate"] = ""|LB|target["notes"] = event.notes|LB|target["arn"] = event.arn|LB|self.task[event["arn"]] = target'></event-handler>
@@ -6822,6 +6873,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<field name="tasks" type="OneToMany" ref="ProcessingActivityTask" authorization="authenticated" foreign-key="#canonical"></field>
 			<field name="assetLinks" type="StringList"></field>
 			<field name="assets" type="ManyToMany" ref="Asset" authorization="authenticated" foreign-key="assetLinks"></field>
+			<field name="stakeholders" type="ObjectList" ref="ProcessingActivityStakeholder" authorization="authenticated"></field>
 			<snapshot-handler id="DSVogu" processor="item" sub-domain="Customer" aggregate="ProcessingActivity" key-mapping="arn">
 				<mapping target="arn" value="arn" operand="set"></mapping>
 				<mapping target="name" value="name" operand="set"></mapping>
@@ -6830,6 +6882,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping target="requiresDpia" value="requiresDpia" operand="set"></mapping>
 				<mapping target="weight" value="weight" operand="set"></mapping>
 				<mapping operand="set" target="assetLinks" value="assetLinks"></mapping>
+				<mapping operand="convert_items" target="stakeholders" value="stakeholder" template='{ "arn": value["arn"] if "arn" in value else "", "role": value["role"] if "role" in value else "", "thirdpartyArn": value["thirdpartyArn"] if "thirdpartyArn" in value else "", "thirdparty": value["arn"] if "arn" in value else "", }'></mapping>
 				<delete id="Kmp21v" condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="ProcessingActivity" field-name="get" type="get" authorization="role" use-canonical-search="false" role="#global.isCompanyViewer(key)"></query>
@@ -6854,6 +6907,12 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<delete id="AAxdxf" condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="ProcessingActivity" field-name="getTasks" type="query" authorization="role" use-canonical-search="true" role="#global.isCompanyViewer(key_begins_with)"></query>
+		</view>
+		<view name="ProcessingActivityStakeholder" data-retention-days="-1" exclude-notification="false">
+			<field name="arn" type="String"></field>
+			<field name="role" type="String"></field>
+			<field name="thirdpartyArn" type="String"></field>
+			<field name="thirdparty" type="OneToMany" ref="ThirdParty" authorization="authenticated" foreign-key="thirdpartyArn"></field>
 		</view>
 		<view name="Requirement" data-retention-days="-1" exclude-notification="false">
 			<field name="name" type="String"></field>
@@ -7483,6 +7542,22 @@ if snapshot.isDeleted != '':
 				<input name="arn" type="String" value="#activityArn#"></input>
 				<input name="assetArn" type="String" value="#assetArn#"></input>
 				<expected-trace command="Customer.ProcessingActivity.UnlinkAsset" status="success"></expected-trace>
+			</activity>
+			<activity path="Company.ProcessingActivity.addStakeholder" type="mutation" description="Add stakeholder" id="EVvRpI">
+				<input name="arn" type="String" value="#"></input>
+				<input name="reference" type="String" value="st-1"></input>
+				<input name="role" type="String" value="processor"></input>
+				<input name="thirdpartyArn" type="String" value="#tpTwoArn#"></input>
+				<expected-trace command="Customer.ProcessingActivity.AddStakeholder" status="success"></expected-trace>
+			</activity>
+			<activity path="ProcessingActivity.get" type="query" view="ProcessingActivity" description="Check if stakeholder is added" id="TaPRHE">
+				<input name="key" type="String" value="#activityArn#"></input>
+				<expect-value name="stakeholders.0.thirdparty.arn" type="String" value="#tpTwoArn#"></expect-value>
+			</activity>
+			<activity path="Company.ProcessingActivity.removeStakeholder" type="mutation" description="Remove stakeholder" id="QFNatP">
+				<input name="arn" type="String" value="#activityArn#"></input>
+				<input name="reference" type="String" value="st-1"></input>
+				<expected-trace command="Customer.ProcessingActivity.RemoveStakeholder" status="success"></expected-trace>
 			</activity>
 		</scenario>
 		<scenario name="Objectives" extends="Controls">

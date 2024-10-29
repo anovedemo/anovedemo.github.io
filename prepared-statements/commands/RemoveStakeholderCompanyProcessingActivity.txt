@@ -1,0 +1,10 @@
+# This file is managed by Tracepaper
+mutation RemoveStakeholder($arn: String = "", $reference: String = "") {
+  Company{
+    ProcessingActivity{
+      removeStakeholder(input: {arn: $arn,reference: $reference}) {
+         correlationId
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+<!-- This file is managed by Tracepaper -->
+<template x-component="RemoveStakeholderCompanyProcessingActivity">
+    <div x-import="basic-form;tables">
+
+        <!-- The command object -->
+        <draftsman-mutation command="RemoveStakeholderCompanyProcessingActivity" x-include="/prepared-statements/commands/RemoveStakeholderCompanyProcessingActivity.txt" authenticated>
+        </draftsman-mutation>
+
+        <!-- The form definition -->
+        <div  style="display:none;" id="RemoveStakeholderCompanyProcessingActivity"
+              x-include="/form-definitions/RemoveStakeholderCompanyProcessingActivity.json"></div>
+
+        <!-- The trace table -->
+        <ui-trace-table></ui-trace-table>
+
+        <!-- The form -->
+        <ui-basic-form alias="RemoveStakeholderCompanyProcessingActivity"></ui-basic-form>
+
+        <draftsman-trace command="RemoveStakeholderCompanyProcessingActivity"
+              status="success"
+              @trace="
+                setTimeout(Draftsman.empty_track_and_trace_log,5000);
+                $dispatch('setdata', { command: 'RemoveStakeholderCompanyProcessingActivity', data: {} });">
+        </draftsman-trace>
+    </div>
+</template>
