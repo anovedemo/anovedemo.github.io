@@ -1,0 +1,38 @@
+[
+  {
+    "type": "meta",
+    "message": "This file is managed by Tracepaper"
+  },
+  {
+    "name": "arn",
+    "title": "Arn",
+    "type": "String",
+    "pattern": "^[a-z]+:company:[a-z]+:processingactivity:[^\\s]+$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "reference",
+    "title": "Reference",
+    "type": "String",
+    "pattern": "^tenant:[a-z]+$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "role",
+    "title": "Role",
+    "type": "String",
+    "pattern": "",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "thirdpartyArn",
+    "title": "Thirdpartyarn",
+    "type": "String",
+    "pattern": "^[a-z]+:company:[a-z]+:thirdparty:[^\\s]+$",
+    "placeholder": "",
+    "default": ""
+  }
+]

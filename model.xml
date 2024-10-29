@@ -22,6 +22,7 @@
 		<pattern name="RiskTemplateArn" regex="^risktemplate:[a-z0-9]+$"></pattern>
 		<pattern name="GeoCode" regex="^[A-Z]+$"></pattern>
 		<pattern name="AssessmentArn" regex="^{{CompanyArn}}:thirdparty:[^\s]+:assessment:[^\s]+$"></pattern>
+		<pattern name="Reference" regex="^tenant:[a-z]+$"></pattern>
 		<pattern name="Date" regex="^(?:20)\d{2}-\d{2}-\d{2}$"></pattern>
 		<pattern name="ThirdPartyArn" regex="^{{CompanyArn}}:thirdparty:[^\s]+$"></pattern>
 		<pattern name="ProcessingActivityTaskArn" regex="^{{ProcessingActivityArn}}:[^\s]+$"></pattern>
@@ -530,6 +531,12 @@
 		<event graphql-namespace="Company.ProcessingActivity" graphql-name="delete" name="DeleteCompanyProcessingActivityRequested" authorization="role" role="#global.isProcessingActivityAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ProcessingActivityArn}}"></field>
 		</event>
+		<event graphql-namespace="Company.ProcessingActivity" graphql-name="addStakeholder" name="AddStakeholderCompanyProcessingActivityRequested" type="ActorEvent" authorization="role" role="#global.isProcessingActivityAdministrator(arn)">
+			<field name="arn" type="String" pattern="{{ProcessingActivityArn}}"></field>
+			<field name="reference" type="String" pattern="{{Reference}}"></field>
+			<field name="role" type="String"></field>
+			<field name="thirdpartyArn" type="String" pattern="{{ThirdPartyArn}}"></field>
+		</event>
 		<event graphql-namespace="Company.ProcessingActivity" graphql-name="linkAsset" name="LinkAssetCompanyProcessingActivityRequested" authorization="role" role="#global.isProcessingActivityAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ProcessingActivityArn}}"></field>
 			<field name="assetArn" type="String" pattern="{{AssetArn}}"></field>
@@ -839,6 +846,11 @@
 		<event name="ProcessingActivityTaskCompleted" source="Customer.ProcessingActivity" type="DomainEvent">
 			<field name="completeDate" type="String"></field>
 			<field name="arn" type="String"></field>
+		</event>
+		<event name="ProcessingActivityStakeholderAdded" source="Customer.ProcessingActivity" type="DomainEvent">
+			<field name="arn" type="String"></field>
+			<field name="role" type="String"></field>
+			<field name="thirdpartyArn" type="String"></field>
 		</event>
 		<event name="ProcessingActivityUpdated" source="Customer.ProcessingActivity" type="DomainEvent">
 			<field name="arn" type="String"></field>
@@ -2936,6 +2948,47 @@
 }</expected-state>
 					</test-case>
 				</command>
+				<command name="AddStakeholder">
+					<trigger source="AddStakeholderCompanyProcessingActivityRequested" key-field="arn">
+						<mapping target="arn" value="arn"></mapping>
+						<mapping target="reference" value="reference"></mapping>
+						<mapping target="role" value="role"></mapping>
+						<mapping target="thirdpartyArn" value="thirdpartyArn"></mapping>
+					</trigger>
+					<processor type="validator" condition="flow.entity.version != 0" id="rBmI5I" exception="Activity does not exist"></processor>
+					<processor type="code" code='flow.stakeholderArn = flow.arn + ":" + flow.reference' id="iifVTc"></processor>
+					<processor type="validator" condition="not flow.stakeholderArn in flow.entity.stakeholder" exception="Stakeholder with reference {flow.stakeholderArn} already exists" id="naK3Bx"></processor>
+					<processor type="emit-event" ref="ProcessingActivityStakeholderAdded" id="3N379Z">
+						<mapping target="arn" value="#flow.stakeholderArn"></mapping>
+						<mapping target="role" value="#flow.role"></mapping>
+						<mapping target="thirdpartyArn" value="#flow.thirdpartyArn"></mapping>
+					</processor>
+					<test-case name="AddStakeholder" trigger-event="AddStakeholderCompanyProcessingActivityRequested" expected-processing-status="success">
+						<input name="arn" type="String" value="dummy"></input>
+						<input name="reference" type="String" value="ref"></input>
+						<input name="role" type="String" value="processor"></input>
+						<input name="thirdpartyArn" type="String" value="myLink"></input>
+						<expected domain-event="ProcessingActivityStakeholderAdded" id="nTOTkB">
+							<field name="arn" type="String" value="dummy:ref"></field>
+							<field name="role" type="String" value="processor"></field>
+							<field name="thirdpartyArn" type="String" value="myLink"></field>
+						</expected>
+						<state>{
+  "arn": "dummy",
+  "version": 1
+}</state>
+						<expected-state pk="dummy">{
+  "arn": "dummy",
+  "stakeholder": {
+    "dummy:ref": {
+      "arn": "dummy:ref",
+      "role": "processor",
+      "thirdpartyArn": "myLink"
+    }
+  }
+}</expected-state>
+					</test-case>
+				</command>
 				<command name="Update">
 					<trigger source="UpdateCompanyProcessingActivityRequested" key-field="arn">
 						<mapping target="arn" value="arn"></mapping>
@@ -3131,6 +3184,7 @@
 				<event-handler on="UnlinkedAssetFromProcessingActivity" code="self.assetLinks = [x for x in self.assetLinks if x != event.assetArn]"></event-handler>
 				<event-handler on="ProcessingActivityTaskCreated" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|target["name"] = event.name|LB|target["description"] = event.description|LB|target["assignee"] = event.assignee|LB|target["dueDate"] = event.dueDate|LB|target["completeDate"] = ""|LB|target["notes"] = event.notes|LB|target["arn"] = event.arn|LB|self.task[event["arn"]] = target'></event-handler>
 				<event-handler on="ProcessingActivityTaskCompleted" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|target["completeDate"] = event.completeDate|LB|self.task[event["arn"]] = target'></event-handler>
+				<event-handler on="ProcessingActivityStakeholderAdded" code='target = retrieve_nested_target(event.arn, self.stakeholder, {})|LB|target["arn"] = event.arn|LB|target["role"] = event.role|LB|target["thirdpartyArn"] = event.thirdpartyArn|LB|self.stakeholder[event.arn] = target'></event-handler>
 				<event-handler on="ProcessingActivityUpdated">
 					<mapping target="arn" value="arn" operand="set"></mapping>
 					<mapping target="name" value="name" operand="set"></mapping>
@@ -3149,6 +3203,11 @@
 					<mapping target="weight" value="weight" operand="set"></mapping>
 				</event-handler>
 				<event-handler on="ProcessingActivityTaskUpdated" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|if event.name:|LB|    target["name"] = event.name|LB|if event.description:|LB|    target["description"] = event.description|LB|if event.assignee:|LB|    target["assignee"] = event.assignee|LB|if event.dueDate:|LB|    target["dueDate"] = event.dueDate|LB|if event.notes:|LB|    target["notes"] = event.notes|LB|target["arn"] = event.arn|LB|self.task[event["arn"]] = target'></event-handler>
+				<nested-object name="stakeholder" business-key="arn">
+					<field name="arn" type="String"></field>
+					<field name="role" type="String"></field>
+					<field name="thirdpartyArn" type="String"></field>
+				</nested-object>
 				<nested-object name="task" business-key="arn">
 					<field name="name" type="String"></field>
 					<field name="description" type="String"></field>
@@ -7183,7 +7242,7 @@ if snapshot.isDeleted != '':
 				<mapping target="templateArn" value="templateArn"></mapping>
 			</trigger>
 			<activity id="pa6G5b" type="call-internal-api" name="template" query='query MyQuery {   ThirdPartyTemplate {     get(key: "{{flow.templateArn}}") {       address       companyRegistrationNumber       countryArn       description       knownCertification       name     }   } }'></activity>
-			<activity id="pZl1cV" name="template" type="code" code='flow.template = flow.template["data"]["ThirdPartyTemplate"]["get"]'></activity>
+			<activity id="pZl1cV" name="template" type="code" code='flow.template = flow.template["data"]["ThirdPartyTemplate"]["get"]|LB|flow.isCritical = str(flow.isCritical).lower()|LB|flow.isDirectThirdParty = str(flow.isDirectThirdParty).lower()'></activity>
 			<activity id="XqnuXQ" type="call-internal-api" query='mutation MyMutation {|LB|  Company {|LB|    ThirdParty {|LB|      create(input: {|LB|         arn: "{{flow.arn}}", |LB|         name: "{{flow.template.name}}", |LB|         description: "{{flow.template.description}}", |LB|         role: "{{flow.role}}", |LB|         address: "{{flow.template.addres}}", |LB|         companyRegistrationNumber: "{{flow.template.companyRegistrationNumber}}", |LB|         country: "{{flow.template.countryArn}}", |LB|         knownCertification: "{{flow.template.knownCertification}}", |LB|         isCritical: {{flow.isCritical}}, |LB|            isDirectThirdParty: {{flow.isDirectThirdParty}}, |LB|            owner: "{{flow.owner}}"}) {|LB|        correlationId|LB|      }|LB|    }|LB|  }|LB|}' name="result"></activity>
 		</notifier>
 		<notifier name="CleanupTenant">
@@ -7419,6 +7478,11 @@ if snapshot.isDeleted != '':
 				<input name="arn" type="String" value="#activityArn#"></input>
 				<input name="assetArn" type="String" value="#assetArn#"></input>
 				<expected-trace command="Customer.ProcessingActivity.LinkAsset" status="success"></expected-trace>
+			</activity>
+			<activity path="Company.ProcessingActivity.unlinkAsset" type="mutation" description="Unlink asset from pa" id="ikuZbj">
+				<input name="arn" type="String" value="#activityArn#"></input>
+				<input name="assetArn" type="String" value="#assetArn#"></input>
+				<expected-trace command="Customer.ProcessingActivity.UnlinkAsset" status="success"></expected-trace>
 			</activity>
 		</scenario>
 		<scenario name="Objectives" extends="Controls">

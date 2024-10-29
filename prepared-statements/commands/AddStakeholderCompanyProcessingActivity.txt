@@ -1,0 +1,10 @@
+# This file is managed by Tracepaper
+mutation AddStakeholder($arn: String = "", $reference: String = "", $role: String = "", $thirdpartyArn: String = "") {
+  Company{
+    ProcessingActivity{
+      addStakeholder(input: {arn: $arn,reference: $reference,role: $role,thirdpartyArn: $thirdpartyArn}) {
+         correlationId
+      }
+    }
+  }
+}

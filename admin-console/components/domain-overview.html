@@ -499,6 +499,12 @@
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'AddStakeholderCompanyProcessingActivity'"
+                                x-show="'addstakeholdercompanyprocessingactivity'.includes(search.toLowerCase())">
+                            AddStakeholderCompanyProcessingActivity
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
                                 @click="Draftsman.empty_track_and_trace_log();component = 'LinkAssetCompanyProcessingActivity'"
                                 x-show="'linkassetcompanyprocessingactivity'.includes(search.toLowerCase())">
                             LinkAssetCompanyProcessingActivity
@@ -1257,6 +1263,14 @@
                     <div x-import="commands/DeleteCompanyProcessingActivity">
                         <h6>DeleteCompanyProcessingActivity</h6>
                         <ui-DeleteCompanyProcessingActivity></ui-DeleteCompanyProcessingActivity>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'AddStakeholderCompanyProcessingActivity'" x-cloak x-transition>
+                    <div x-import="commands/AddStakeholderCompanyProcessingActivity">
+                        <h6>AddStakeholderCompanyProcessingActivity</h6>
+                        <ui-AddStakeholderCompanyProcessingActivity></ui-AddStakeholderCompanyProcessingActivity>
                     </div>
                 </div>
 
