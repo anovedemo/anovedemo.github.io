@@ -253,6 +253,12 @@
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'UnlinkAssetCompanyThirdParty'"
+                                x-show="'unlinkassetcompanythirdparty'.includes(search.toLowerCase())">
+                            UnlinkAssetCompanyThirdParty
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
                                 @click="Draftsman.empty_track_and_trace_log();component = 'DeleteCompanyThirdParty'"
                                 x-show="'deletecompanythirdparty'.includes(search.toLowerCase())">
                             DeleteCompanyThirdParty
@@ -268,6 +274,12 @@
                                 @click="Draftsman.empty_track_and_trace_log();component = 'UpdateCompanyThirdParty'"
                                 x-show="'updatecompanythirdparty'.includes(search.toLowerCase())">
                             UpdateCompanyThirdParty
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'LinkAssetCompanyThirdParty'"
+                                x-show="'linkassetcompanythirdparty'.includes(search.toLowerCase())">
+                            LinkAssetCompanyThirdParty
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
@@ -478,6 +490,12 @@
                                 @click="Draftsman.empty_track_and_trace_log();component = 'DeleteCompanyProcessingActivity'"
                                 x-show="'deletecompanyprocessingactivity'.includes(search.toLowerCase())">
                             DeleteCompanyProcessingActivity
+                        </button>
+                        
+                        <button type="button" class="btn btn-outline-primary"
+                                @click="Draftsman.empty_track_and_trace_log();component = 'LinkAssetCompanyProcessingActivity'"
+                                x-show="'linkassetcompanyprocessingactivity'.includes(search.toLowerCase())">
+                            LinkAssetCompanyProcessingActivity
                         </button>
                         
                         <button type="button" class="btn btn-outline-primary"
@@ -909,6 +927,14 @@
                 </div>
 
                 
+                <div x-show="component == 'UnlinkAssetCompanyThirdParty'" x-cloak x-transition>
+                    <div x-import="commands/UnlinkAssetCompanyThirdParty">
+                        <h6>UnlinkAssetCompanyThirdParty</h6>
+                        <ui-UnlinkAssetCompanyThirdParty></ui-UnlinkAssetCompanyThirdParty>
+                    </div>
+                </div>
+
+                
                 <div x-show="component == 'DeleteCompanyThirdParty'" x-cloak x-transition>
                     <div x-import="commands/DeleteCompanyThirdParty">
                         <h6>DeleteCompanyThirdParty</h6>
@@ -929,6 +955,14 @@
                     <div x-import="commands/UpdateCompanyThirdParty">
                         <h6>UpdateCompanyThirdParty</h6>
                         <ui-UpdateCompanyThirdParty></ui-UpdateCompanyThirdParty>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'LinkAssetCompanyThirdParty'" x-cloak x-transition>
+                    <div x-import="commands/LinkAssetCompanyThirdParty">
+                        <h6>LinkAssetCompanyThirdParty</h6>
+                        <ui-LinkAssetCompanyThirdParty></ui-LinkAssetCompanyThirdParty>
                     </div>
                 </div>
 
@@ -1209,6 +1243,14 @@
                     <div x-import="commands/DeleteCompanyProcessingActivity">
                         <h6>DeleteCompanyProcessingActivity</h6>
                         <ui-DeleteCompanyProcessingActivity></ui-DeleteCompanyProcessingActivity>
+                    </div>
+                </div>
+
+                
+                <div x-show="component == 'LinkAssetCompanyProcessingActivity'" x-cloak x-transition>
+                    <div x-import="commands/LinkAssetCompanyProcessingActivity">
+                        <h6>LinkAssetCompanyProcessingActivity</h6>
+                        <ui-LinkAssetCompanyProcessingActivity></ui-LinkAssetCompanyProcessingActivity>
                     </div>
                 </div>
 

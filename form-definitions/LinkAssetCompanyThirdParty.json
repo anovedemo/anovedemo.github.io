@@ -1,0 +1,22 @@
+[
+  {
+    "type": "meta",
+    "message": "This file is managed by Tracepaper"
+  },
+  {
+    "name": "arn",
+    "title": "Arn",
+    "type": "String",
+    "pattern": "^[a-z]+:company:[a-z]+:thirdparty:[^\\s]+$",
+    "placeholder": "",
+    "default": ""
+  },
+  {
+    "name": "assetArn",
+    "title": "Assetarn",
+    "type": "String",
+    "pattern": "^[a-z]+:company:[a-z]+:asset:[^\\s]+$",
+    "placeholder": "",
+    "default": ""
+  }
+]

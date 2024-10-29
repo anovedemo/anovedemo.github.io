@@ -1,0 +1,26 @@
+<!-- This file is managed by Tracepaper -->
+<template x-component="UnlinkAssetCompanyThirdParty">
+    <div x-import="basic-form;tables">
+
+        <!-- The command object -->
+        <draftsman-mutation command="UnlinkAssetCompanyThirdParty" x-include="/prepared-statements/commands/UnlinkAssetCompanyThirdParty.txt" authenticated>
+        </draftsman-mutation>
+
+        <!-- The form definition -->
+        <div  style="display:none;" id="UnlinkAssetCompanyThirdParty"
+              x-include="/form-definitions/UnlinkAssetCompanyThirdParty.json"></div>
+
+        <!-- The trace table -->
+        <ui-trace-table></ui-trace-table>
+
+        <!-- The form -->
+        <ui-basic-form alias="UnlinkAssetCompanyThirdParty"></ui-basic-form>
+
+        <draftsman-trace command="UnlinkAssetCompanyThirdParty"
+              status="success"
+              @trace="
+                setTimeout(Draftsman.empty_track_and_trace_log,5000);
+                $dispatch('setdata', { command: 'UnlinkAssetCompanyThirdParty', data: {} });">
+        </draftsman-trace>
+    </div>
+</template>

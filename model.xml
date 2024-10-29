@@ -288,6 +288,10 @@
 				<field name="assessorLink" type="String" pattern="{{EmployeeArn}}"></field>
 			</nested-object>
 		</event>
+		<event graphql-namespace="Company.ThirdParty" graphql-name="unlinkAsset" name="UnlinkAssetCompanyThirdPartyRequested" authorization="role" role="#global.isThirdPartyAdministrator(arn)" type="ActorEvent">
+			<field name="arn" type="String" pattern="{{ThirdPartyArn}}"></field>
+			<field name="assetArn" type="String" pattern="{{AssetArn}}"></field>
+		</event>
 		<event graphql-namespace="Company.ThirdParty" graphql-name="delete" name="DeleteCompanyThirdPartyRequested" authorization="role" role="#global.isThirdPartyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ThirdPartyArn}}"></field>
 		</event>
@@ -307,6 +311,10 @@
 			<field name="isCritical" type="Boolean"></field>
 			<field name="isDirectThirdParty" type="Boolean"></field>
 			<field name="owner" type="String" pattern="{{EmployeeArn}}"></field>
+		</event>
+		<event graphql-namespace="Company.ThirdParty" graphql-name="linkAsset" name="LinkAssetCompanyThirdPartyRequested" type="ActorEvent" authorization="role" role="#global.isThirdPartyAdministrator(arn)">
+			<field name="arn" type="String" pattern="{{ThirdPartyArn}}"></field>
+			<field name="assetArn" type="String" pattern="{{AssetArn}}"></field>
 		</event>
 		<event graphql-namespace="Company.ThirdParty" graphql-name="create" name="CreateCompanyThirdPartyRequested" authorization="role" role="#global.isThirdPartyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ThirdPartyArn}}"></field>
@@ -517,6 +525,10 @@
 		</event>
 		<event graphql-namespace="Company.ProcessingActivity" graphql-name="delete" name="DeleteCompanyProcessingActivityRequested" authorization="role" role="#global.isProcessingActivityAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ProcessingActivityArn}}"></field>
+		</event>
+		<event graphql-namespace="Company.ProcessingActivity" graphql-name="linkAsset" name="LinkAssetCompanyProcessingActivityRequested" authorization="role" role="#global.isProcessingActivityAdministrator(arn)" type="ActorEvent">
+			<field name="arn" type="String" pattern="{{ProcessingActivityArn}}"></field>
+			<field name="assetArn" type="String" pattern="{{AssetArn}}"></field>
 		</event>
 		<event graphql-namespace="Company.ProcessingActivity.Task" graphql-name="update" name="UpdateCompanyProcessingActivityTaskRequested" authorization="role" role="#global.isProcessingActivityAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ProcessingActivityTaskArn}}"></field>
@@ -1016,6 +1028,9 @@
 			<field name="completeDate" type="String"></field>
 			<field name="arn" type="String"></field>
 		</event>
+		<event name="AssetLinkedToThirdparty" source="ThirdPartyManagement.ThirdParty" type="DomainEvent">
+			<field name="assetArn" type="String"></field>
+		</event>
 		<event name="SubprocessorLinkedToThirdParty" source="ThirdPartyManagement.ThirdParty" type="DomainEvent">
 			<field name="subprocessorArn" type="String"></field>
 		</event>
@@ -1026,6 +1041,9 @@
 			<field name="dueDate" type="String"></field>
 			<field name="notes" type="String"></field>
 			<field name="arn" type="String"></field>
+		</event>
+		<event name="AssetUnlinkedFromThirdparty" source="ThirdPartyManagement.ThirdParty" type="DomainEvent">
+			<field name="assetArn" type="String"></field>
 		</event>
 		<event name="ThirdPartyDeleted" source="ThirdPartyManagement.ThirdParty" type="DomainEvent">
 			<field name="arn" type="String"></field>
@@ -2677,6 +2695,7 @@
 				<field name="owner" type="String"></field>
 				<field name="requiresDpia" type="Boolean"></field>
 				<field name="weight" type="Int"></field>
+				<field name="assetLinks" type="StringList"></field>
 				<command name="UpdateTask">
 					<trigger source="UpdateCompanyProcessingActivityTaskRequested" key-field="#global.truncateArn(arn,'5')">
 						<mapping target="arn" value="arn"></mapping>
@@ -4085,6 +4104,35 @@
 				<field name="isDirectThirdParty" type="Boolean"></field>
 				<field name="subprocessors" type="StringList"></field>
 				<field name="owner" type="String"></field>
+				<field name="assetLinks" type="StringList"></field>
+				<command name="LinkAsset">
+					<trigger source="LinkAssetCompanyThirdPartyRequested" key-field="arn">
+						<mapping target="arn" value="arn"></mapping>
+						<mapping target="assetArn" value="assetArn"></mapping>
+					</trigger>
+					<processor type="validator" condition="flow.entity.version != 0" id="C87zWt" exception="Thirdparty not found"></processor>
+					<processor condition="flow.entity.version != 0" type="emit-event" ref="AssetLinkedToThirdparty" id="3q5zEE">
+						<mapping target="assetArn" value="#flow.assetArn"></mapping>
+					</processor>
+					<test-case name="LinkAsset" trigger-event="LinkAssetCompanyThirdPartyRequested" expected-processing-status="success">
+						<input name="arn" type="String" value="dummy"></input>
+						<input name="assetArn" type="String" value="myLink"></input>
+						<expected domain-event="AssetLinkedToThirdparty" id="m4MqRX">
+							<field name="assetArn" type="String" value="myLink"></field>
+						</expected>
+						<state>{
+  "arn": "dummy",
+  "version": 1,
+  "assetLinks": []
+}</state>
+						<expected-state pk="dummy">{
+  "arn": "dummy",
+  "assetLinks": [
+    "myLink"
+  ]
+}</expected-state>
+					</test-case>
+				</command>
 				<command name="UpdateTask">
 					<trigger source="UpdateCompanyThirdPartyTaskRequested" key-field="#global.truncateArn(arn,'5')">
 						<mapping target="arn" value="arn"></mapping>
@@ -4507,6 +4555,32 @@
 }</expected-state>
 					</test-case>
 				</command>
+				<command name="UnlinkAsset">
+					<trigger source="UnlinkAssetCompanyThirdPartyRequested" key-field="arn">
+						<mapping target="arn" value="arn"></mapping>
+						<mapping target="assetArn" value="assetArn"></mapping>
+					</trigger>
+					<processor type="validator" condition="flow.assetArn in flow.entity.assetLinks" id="wVhkkQ" exception="Asset not linked"></processor>
+					<processor condition="flow.assetArn in flow.entity.assetLinks" type="emit-event" ref="AssetUnlinkedFromThirdparty" id="qFuQLB">
+						<mapping target="assetArn" value="#flow.assetArn"></mapping>
+					</processor>
+					<test-case name="UnlinkAsset" trigger-event="UnlinkAssetCompanyThirdPartyRequested" expected-processing-status="success">
+						<input name="arn" type="String" value="dummy"></input>
+						<input name="assetArn" type="String" value="myLink"></input>
+						<expected domain-event="AssetUnlinkedFromThirdparty" id="etuJD3">
+							<field name="assetArn" type="String" value="myLink"></field>
+						</expected>
+						<state>{
+  "arn": "dummy",
+  "assetLinks": [
+    "myLink"
+  ]
+}</state>
+						<expected-state pk="businessKey">{
+  "arn": "businessKey"
+}</expected-state>
+					</test-case>
+				</command>
 				<event-handler on="ThirdPartyTaskCreated" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|target["name"] = event.name|LB|target["description"] = event.description|LB|target["assignee"] = event.assignee|LB|target["dueDate"] = event.dueDate|LB|target["completeDate"] = ""|LB|target["notes"] = event.notes|LB|target["arn"] = event.arn|LB|self.task[event["arn"]] = target'></event-handler>
 				<event-handler on="ThirdPartyCreated">
 					<mapping target="arn" value="arn" operand="set"></mapping>
@@ -4522,8 +4596,10 @@
 					<mapping target="owner" value="owner" operand="set"></mapping>
 				</event-handler>
 				<event-handler on="ThirdPartyTaskCompleted" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|target["completeDate"] = event.completeDate|LB|self.task[event["arn"]] = target'></event-handler>
+				<event-handler on="AssetLinkedToThirdparty" code="if not event.assetArn in self.assetLinks:|LB|    self.assetLinks.append(event.assetArn)"></event-handler>
 				<event-handler on="SubprocessorLinkedToThirdParty" code="self.subprocessors.append(event.subprocessorArn)"></event-handler>
 				<event-handler on="ThirdPartyTaskUpdated" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|if event.name:|LB|    target["name"] = event.name|LB|if event.description:|LB|    target["description"] = event.description|LB|if event.assignee:|LB|    target["assignee"] = event.assignee|LB|if event.dueDate:|LB|    target["dueDate"] = event.dueDate|LB|if event.notes:|LB|    target["notes"] = event.notes|LB|self.task[event["arn"]] = target'></event-handler>
+				<event-handler on="AssetUnlinkedFromThirdparty" code="self.assetLinks = [x for x in self.assetLinks if x != event.assetArn]"></event-handler>
 				<event-handler on="ThirdPartyDeleted" code='self.isDeleted = "soft"'></event-handler>
 				<event-handler on="SubprocessorUnlinkedFromThirdParty" code="self.subprocessors.remove(event.subprocessorArn)"></event-handler>
 				<event-handler on="ThirdPartyUpdated">
@@ -6249,6 +6325,8 @@ if snapshot.isDeleted != '':
 			<field name="owner" type="String"></field>
 			<field name="subprocessors" type="OneToOne" ref="SubprocessorLink" authorization="authenticated" foreign-key="arn"></field>
 			<field name="assessments" type="OneToMany" ref="Questionaire" authorization="authenticated" foreign-key="#canonical"></field>
+			<field name="assetLinks" type="StringList"></field>
+			<field name="assets" type="ManyToMany" ref="Asset" authorization="authenticated" foreign-key="assetLinks"></field>
 			<snapshot-handler id="XOQmcv" processor="item" sub-domain="ThirdPartyManagement" aggregate="ThirdParty" key-mapping="arn">
 				<mapping target="arn" value="arn" operand="set"></mapping>
 				<mapping target="name" value="name" operand="set"></mapping>
@@ -6261,6 +6339,7 @@ if snapshot.isDeleted != '':
 				<mapping target="isCritical" value="isCritical" operand="set"></mapping>
 				<mapping target="isDirectThirdParty" value="isDirectThirdParty" operand="set"></mapping>
 				<mapping target="owner" value="owner" operand="set"></mapping>
+				<mapping operand="set" target="assetLinks" value="assetLinks"></mapping>
 				<delete id="mLCii1" condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="ThirdParty" field-name="get" type="get" authorization="role" use-canonical-search="false" role="#global.isCompanyViewer(key)"></query>
@@ -8153,6 +8232,16 @@ if snapshot.isDeleted != '':
 				<input name="arn" type="String" value="#assetArn#"></input>
 				<input name="thirdpartyArn" type="String" value="#tpOneArn#"></input>
 				<expected-trace command="Customer.Asset.UnlinkThirdparty" status="success"></expected-trace>
+			</activity>
+			<activity path="Company.ThirdParty.linkAsset" type="mutation" description="Link asset to TP" id="p6euI7">
+				<input name="arn" type="String" value="#tpOneArn#"></input>
+				<input name="assetArn" type="String" value="#assetArn#"></input>
+				<expected-trace command="ThirdPartyManagement.ThirdParty.LinkAsset" status="success"></expected-trace>
+			</activity>
+			<activity path="Company.ThirdParty.unlinkAsset" type="mutation" description="Unlink asset from TP" id="yqJGFM">
+				<input name="arn" type="String" value="#tpOneArn#"></input>
+				<input name="assetArn" type="String" value="#assetArn#"></input>
+				<expected-trace command="ThirdPartyManagement.ThirdParty.UnlinkAsset" status="success"></expected-trace>
 			</activity>
 		</scenario>
 		<scenario name="Risks" extends="InviteAndSwitchUser;RiskTemplate">
