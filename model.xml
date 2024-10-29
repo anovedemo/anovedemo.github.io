@@ -6766,7 +6766,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<field name="createdAt" type="Int"></field>
 			<field name="updatedAt" type="Int"></field>
 			<field name="thirdpartyLinks" type="StringList"></field>
-			<field name="thirdparties" type="ManyToMany" ref="ThirdParty" authorization="authenticated"></field>
+			<field name="thirdparties" type="ManyToMany" ref="ThirdParty" authorization="authenticated" foreign-key="thirdpartyLinks"></field>
 			<snapshot-handler id="92SsdD" processor="item" sub-domain="Customer" aggregate="Asset" key-mapping="arn">
 				<mapping target="arn" value="arn" operand="set"></mapping>
 				<mapping target="name" value="name" operand="set"></mapping>
