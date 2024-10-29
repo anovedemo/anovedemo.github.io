@@ -22,7 +22,7 @@
 		<pattern name="RiskTemplateArn" regex="^risktemplate:[a-z0-9]+$"></pattern>
 		<pattern name="GeoCode" regex="^[A-Z]+$"></pattern>
 		<pattern name="AssessmentArn" regex="^{{CompanyArn}}:thirdparty:[^\s]+:assessment:[^\s]+$"></pattern>
-		<pattern name="Reference" regex="^tenant:[a-z]+$"></pattern>
+		<pattern name="Reference" regex=""></pattern>
 		<pattern name="Date" regex="^(?:20)\d{2}-\d{2}-\d{2}$"></pattern>
 		<pattern name="ThirdPartyArn" regex="^{{CompanyArn}}:thirdparty:[^\s]+$"></pattern>
 		<pattern name="ProcessingActivityTaskArn" regex="^{{ProcessingActivityArn}}:[^\s]+$"></pattern>
