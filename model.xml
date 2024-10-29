@@ -22,7 +22,7 @@
 		<pattern name="RiskTemplateArn" regex="^risktemplate:[a-z0-9]+$"></pattern>
 		<pattern name="GeoCode" regex="^[A-Z]+$"></pattern>
 		<pattern name="AssessmentArn" regex="^{{CompanyArn}}:thirdparty:[^\s]+:assessment:[^\s]+$"></pattern>
-		<pattern name="Reference" regex=""></pattern>
+		<pattern name="Reference" regex="^tenant:[a-z]+$"></pattern>
 		<pattern name="Date" regex="^(?:20)\d{2}-\d{2}-\d{2}$"></pattern>
 		<pattern name="ThirdPartyArn" regex="^{{CompanyArn}}:thirdparty:[^\s]+$"></pattern>
 		<pattern name="ProcessingActivityTaskArn" regex="^{{ProcessingActivityArn}}:[^\s]+$"></pattern>
@@ -6912,7 +6912,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<field name="arn" type="String"></field>
 			<field name="role" type="String"></field>
 			<field name="thirdpartyArn" type="String"></field>
-			<field name="thirdparty" type="OneToMany" ref="ThirdParty" authorization="authenticated" foreign-key="thirdpartyArn"></field>
+			<field name="thirdparty" type="OneToOne" ref="ThirdParty" authorization="authenticated" foreign-key="thirdpartyArn"></field>
 		</view>
 		<view name="Requirement" data-retention-days="-1" exclude-notification="false">
 			<field name="name" type="String"></field>
@@ -7544,7 +7544,7 @@ if snapshot.isDeleted != '':
 				<expected-trace command="Customer.ProcessingActivity.UnlinkAsset" status="success"></expected-trace>
 			</activity>
 			<activity path="Company.ProcessingActivity.addStakeholder" type="mutation" description="Add stakeholder" id="EVvRpI">
-				<input name="arn" type="String" value="#activityArn#"></input>
+				<input name="arn" type="String" value="#"></input>
 				<input name="reference" type="String" value="st-1"></input>
 				<input name="role" type="String" value="processor"></input>
 				<input name="thirdpartyArn" type="String" value="#tpTwoArn#"></input>
