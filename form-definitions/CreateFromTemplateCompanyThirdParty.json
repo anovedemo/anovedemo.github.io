@@ -47,7 +47,7 @@
     "name": "templateArn",
     "title": "Templatearn",
     "type": "String",
-    "pattern": "^[a-z]+:company:[a-z]+:thirdparty:[^\\s]+$",
+    "pattern": "^thirdpartytemplate:[a-z0-9]+$",
     "placeholder": "",
     "default": ""
   }

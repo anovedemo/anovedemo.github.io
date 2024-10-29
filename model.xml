@@ -339,7 +339,7 @@
 			<field name="isCritical" type="Boolean"></field>
 			<field name="isDirectThirdParty" type="Boolean"></field>
 			<field name="owner" type="String" pattern="{{EmployeeArn}}"></field>
-			<field name="templateArn" type="String" pattern="{{ThirdPartyArn}}"></field>
+			<field name="templateArn" type="String" pattern="{{ThirdPartyTemplateArn}}"></field>
 		</event>
 		<event graphql-namespace="Company.ThirdParty.Assessment" graphql-name="create" name="CreateCompanyThirdPartyAssessmentRequested" authorization="role" role="#global.isThirdPartyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{AssessmentArn}}"></field>
@@ -522,6 +522,10 @@
 			<field name="owner" type="String" pattern="{{EmployeeArn}}"></field>
 			<field name="requiresDpia" type="Boolean"></field>
 			<field name="weight" type="Int"></field>
+		</event>
+		<event graphql-namespace="Company.ProcessingActivity" graphql-name="unlinkAsset" name="UnlinkAssetCompanyProcessingActivityRequested" authorization="role" role="#global.isProcessingActivityAdministrator(arn)" type="ActorEvent">
+			<field name="arn" type="String" pattern="{{ProcessingActivityArn}}"></field>
+			<field name="assetArn" type="String" pattern="{{AssetArn}}"></field>
 		</event>
 		<event graphql-namespace="Company.ProcessingActivity" graphql-name="delete" name="DeleteCompanyProcessingActivityRequested" authorization="role" role="#global.isProcessingActivityAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{ProcessingActivityArn}}"></field>
@@ -817,6 +821,12 @@
 			<field name="integrity" type="String"></field>
 			<field name="availability" type="String"></field>
 			<field name="privacy" type="String"></field>
+		</event>
+		<event name="LinkedAssetToProcessingActivity" source="Customer.ProcessingActivity" type="DomainEvent">
+			<field name="assetArn" type="String"></field>
+		</event>
+		<event name="UnlinkedAssetFromProcessingActivity" source="Customer.ProcessingActivity" type="DomainEvent">
+			<field name="assetArn" type="String"></field>
 		</event>
 		<event name="ProcessingActivityTaskCreated" source="Customer.ProcessingActivity" type="DomainEvent">
 			<field name="name" type="String"></field>
@@ -2696,6 +2706,30 @@
 				<field name="requiresDpia" type="Boolean"></field>
 				<field name="weight" type="Int"></field>
 				<field name="assetLinks" type="StringList"></field>
+				<command name="LinkAsset">
+					<trigger source="LinkAssetCompanyProcessingActivityRequested" key-field="arn">
+						<mapping target="arn" value="arn"></mapping>
+						<mapping target="assetArn" value="assetArn"></mapping>
+					</trigger>
+					<processor type="validator" condition="flow.entity.version != 0" id="Eey8r8" exception="Activity does not exist"></processor>
+					<processor condition="flow.entity.version != 0" type="emit-event" ref="LinkedAssetToProcessingActivity" id="zg58rW">
+						<mapping target="assetArn" value="#flow.assetArn"></mapping>
+					</processor>
+					<test-case name="LinkAsset" trigger-event="LinkAssetCompanyProcessingActivityRequested" expected-processing-status="success">
+						<input name="arn" type="String" value="dummy"></input>
+						<input name="assetArn" type="String" value="myLink"></input>
+						<expected domain-event="LinkedAssetToProcessingActivity" id="ylGCuG">
+							<field name="assetArn" type="String" value="myLink"></field>
+						</expected>
+						<state>{
+  "arn": "dummy",
+  "version": 1
+}</state>
+						<expected-state pk="dummy">{
+  "arn": "dummy"
+}</expected-state>
+					</test-case>
+				</command>
 				<command name="UpdateTask">
 					<trigger source="UpdateCompanyProcessingActivityTaskRequested" key-field="#global.truncateArn(arn,'5')">
 						<mapping target="arn" value="arn"></mapping>
@@ -3066,6 +3100,35 @@
 }</expected-state>
 					</test-case>
 				</command>
+				<command name="UnlinkAsset">
+					<trigger source="UnlinkAssetCompanyProcessingActivityRequested" key-field="arn">
+						<mapping target="arn" value="arn"></mapping>
+						<mapping target="assetArn" value="assetArn"></mapping>
+					</trigger>
+					<processor type="validator" condition="flow.assetArn in flow.entity.assetLinks" id="gHkmIp" exception="Asset is not linked"></processor>
+					<processor type="emit-event" ref="UnlinkedAssetFromProcessingActivity" id="4n9xzj">
+						<mapping target="assetArn" value="#flow.assetArn"></mapping>
+					</processor>
+					<test-case name="UnlinkAsset" trigger-event="UnlinkAssetCompanyProcessingActivityRequested" expected-processing-status="success">
+						<input name="arn" type="String" value="dummy"></input>
+						<input name="assetArn" type="String" value="myLink"></input>
+						<expected domain-event="UnlinkedAssetFromProcessingActivity" id="slFQfO">
+							<field name="assetArn" type="String" value="myLink"></field>
+						</expected>
+						<state>{
+  "arn": "dummy",
+  "assetLinks": [
+    "myLink"
+  ]
+}</state>
+						<expected-state pk="dummy">{
+  "arn": "dummy",
+  "assetLinks": []
+}</expected-state>
+					</test-case>
+				</command>
+				<event-handler on="LinkedAssetToProcessingActivity" code="if not event.assetArn in self.assetLinks:|LB|    self.assetLinks.append(event.assetArn)"></event-handler>
+				<event-handler on="UnlinkedAssetFromProcessingActivity" code="self.assetLinks = [x for x in self.assetLinks if x != event.assetArn]"></event-handler>
 				<event-handler on="ProcessingActivityTaskCreated" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|target["name"] = event.name|LB|target["description"] = event.description|LB|target["assignee"] = event.assignee|LB|target["dueDate"] = event.dueDate|LB|target["completeDate"] = ""|LB|target["notes"] = event.notes|LB|target["arn"] = event.arn|LB|self.task[event["arn"]] = target'></event-handler>
 				<event-handler on="ProcessingActivityTaskCompleted" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|target["completeDate"] = event.completeDate|LB|self.task[event["arn"]] = target'></event-handler>
 				<event-handler on="ProcessingActivityUpdated">
@@ -6698,6 +6761,8 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<field name="requiresDpia" type="Boolean"></field>
 			<field name="weight" type="Int"></field>
 			<field name="tasks" type="OneToMany" ref="ProcessingActivityTask" authorization="authenticated" foreign-key="#canonical"></field>
+			<field name="assetLinks" type="StringList"></field>
+			<field name="assets" type="ManyToMany" ref="Asset" authorization="authenticated" foreign-key="assetLinks"></field>
 			<snapshot-handler id="DSVogu" processor="item" sub-domain="Customer" aggregate="ProcessingActivity" key-mapping="arn">
 				<mapping target="arn" value="arn" operand="set"></mapping>
 				<mapping target="name" value="name" operand="set"></mapping>
@@ -6705,6 +6770,7 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping target="owner" value="owner" operand="set"></mapping>
 				<mapping target="requiresDpia" value="requiresDpia" operand="set"></mapping>
 				<mapping target="weight" value="weight" operand="set"></mapping>
+				<mapping operand="set" target="assetLinks" value="assetLinks"></mapping>
 				<delete id="Kmp21v" condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="ProcessingActivity" field-name="get" type="get" authorization="role" use-canonical-search="false" role="#global.isCompanyViewer(key)"></query>
@@ -7118,7 +7184,7 @@ if snapshot.isDeleted != '':
 			</trigger>
 			<activity id="pa6G5b" type="call-internal-api" name="template" query='query MyQuery {   ThirdPartyTemplate {     get(key: "{{flow.templateArn}}") {       address       companyRegistrationNumber       countryArn       description       knownCertification       name     }   } }'></activity>
 			<activity id="pZl1cV" name="template" type="code" code='flow.template = flow.template["data"]["ThirdPartyTemplate"]["get"]'></activity>
-			<activity id="XqnuXQ" type="call-internal-api" query='mutation MyMutation {   Company {     ThirdParty {       create(input: {          arn: "{{flow.arn}}",           name: "{{template.name}}",           description: "{{template.description}}",           role: "{{flow.role}}",           address: "{{template.addres}}",           companyRegistrationNumber: "{{template.companyRegistrationNumber}}",           country: "{{template.country}}",           knownCertification: "{{template.knownCertification}}",           isCritical: {{flow.isCritical}},            isDirectThirdParty: {{flow.isDirectThirdParty}},              owner: "{{flow.owner}}"}) {         correlationId       }     }   } }' name="result"></activity>
+			<activity id="XqnuXQ" type="call-internal-api" query='mutation MyMutation {|LB|  Company {|LB|    ThirdParty {|LB|      create(input: {|LB|         arn: "{{flow.arn}}", |LB|         name: "{{flow.template.name}}", |LB|         description: "{{flow.template.description}}", |LB|         role: "{{flow.role}}", |LB|         address: "{{flow.template.addres}}", |LB|         companyRegistrationNumber: "{{flow.template.companyRegistrationNumber}}", |LB|         country: "{{flow.template.countryArn}}", |LB|         knownCertification: "{{flow.template.knownCertification}}", |LB|         isCritical: {{flow.isCritical}}, |LB|            isDirectThirdParty: {{flow.isDirectThirdParty}}, |LB|            owner: "{{flow.owner}}"}) {|LB|        correlationId|LB|      }|LB|    }|LB|  }|LB|}' name="result"></activity>
 		</notifier>
 		<notifier name="CleanupTenant">
 			<trigger source="TenantDeleted">
@@ -7288,7 +7354,7 @@ if snapshot.isDeleted != '':
 			</activity>
 			<activity path="-select-" type="refresh-token" id="m5kMxl" description="refresh token"></activity>
 		</scenario>
-		<scenario extends="Controls" name="ProcessingActivity">
+		<scenario extends="Controls;Assets" name="ProcessingActivity">
 			<activity path="-select-" type="set-variables" description="Prepare processing activity" id="Hu3hDi">
 				<input name="activityArn" type="String" value="anove:company:gate:processingactivity:qga"></input>
 				<input name="activityTaskArn" type="String" value="anove:company:gate:processingactivity:qga:task"></input>
@@ -7348,6 +7414,11 @@ if snapshot.isDeleted != '':
 			<activity path="Company.ProcessingActivity.Task.complete" type="mutation" description="Complete task" id="s8BZmy">
 				<input name="arn" type="String" value="#activityTaskArn#"></input>
 				<expected-trace command="Customer.ProcessingActivity.CompleteTask" status="success"></expected-trace>
+			</activity>
+			<activity path="Company.ProcessingActivity.linkAsset" type="mutation" description="Link asset to pa" id="1N1yVG">
+				<input name="arn" type="String" value="#activityArn#"></input>
+				<input name="assetArn" type="String" value="#assetArn#"></input>
+				<expected-trace command="Customer.ProcessingActivity.LinkAsset" status="success"></expected-trace>
 			</activity>
 		</scenario>
 		<scenario name="Objectives" extends="Controls">
