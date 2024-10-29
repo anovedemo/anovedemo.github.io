@@ -331,6 +331,7 @@
 			<field name="isCritical" type="Boolean"></field>
 			<field name="isDirectThirdParty" type="Boolean"></field>
 			<field name="owner" type="String" pattern="{{EmployeeArn}}"></field>
+			<field name="templateArn" type="String" pattern="{{ThirdPartyArn}}"></field>
 		</event>
 		<event graphql-namespace="Company.ThirdParty.Assessment" graphql-name="create" name="CreateCompanyThirdPartyAssessmentRequested" authorization="role" role="#global.isThirdPartyAdministrator(arn)" type="ActorEvent">
 			<field name="arn" type="String" pattern="{{AssessmentArn}}"></field>

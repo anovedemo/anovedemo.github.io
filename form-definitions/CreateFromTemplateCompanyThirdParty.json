@@ -42,5 +42,13 @@
     "pattern": "^[a-z]+:company:[a-z]+:employee:[^\\s]+$",
     "placeholder": "",
     "default": ""
+  },
+  {
+    "name": "templateArn",
+    "title": "Templatearn",
+    "type": "String",
+    "pattern": "^[a-z]+:company:[a-z]+:thirdparty:[^\\s]+$",
+    "placeholder": "",
+    "default": ""
   }
 ]
