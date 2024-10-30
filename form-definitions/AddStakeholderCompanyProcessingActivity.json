@@ -15,7 +15,7 @@
     "name": "reference",
     "title": "Reference",
     "type": "String",
-    "pattern": "^tenant:[a-z]+$",
+    "pattern": "^[a-z0-9-]{1,16}$",
     "placeholder": "",
     "default": ""
   },
