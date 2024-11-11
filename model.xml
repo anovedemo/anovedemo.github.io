@@ -1643,16 +1643,7 @@
 					<mapping target="controlOwner" operand="set" value="controlOwner"></mapping>
 				</event-handler>
 				<event-handler on="LinkedRequirements" code='self.requirementArns = list(dict.fromkeys(event.requirements.split(";")))'></event-handler>
-				<event-handler on="AssessmentStarted">
-					<nested-mapping source="assessment" target="assessment" business-key="arn">
-						<mapping target="dueDate" operand="set" value="dueDate"></mapping>
-						<mapping target="category" operand="set" value="category"></mapping>
-						<mapping target="arn" operand="set" value="arn"></mapping>
-						<mapping target="assessorLink" operand="set" value="assessorLink"></mapping>
-					</nested-mapping>
-					<mapping target="hasPendingSelfAssessment" operand="set" value="hasPendingSelfAssessment"></mapping>
-					<mapping target="nextAssessmentDate" operand="set" value="nextAssessmentDate"></mapping>
-				</event-handler>
+				<event-handler on="AssessmentStarted" code='self.arn = event.arn|LB|self.nextAssessmentDate = event.nextAssessmentDate|LB|self.hasPendingSelfAssessment = event.hasPendingSelfAssessment|LB|for item in event.assessment:|LB| target = retrieve_nested_target(item["arn"], self.assessment, {})|LB| target["dueDate"] = item["dueDate"]|LB| target["category"] = item["category"]|LB| target["arn"] = item["arn"]|LB| target["assessorLink"] = item["assessorLink"]|LB| target["createdAt"] = event.published_at|LB| self.assessment[item["arn"]] = target|LB|#self.isDeleted = "soft/hard/delayed"'></event-handler>
 				<event-handler on="ControlDeleted" code='self.isDeleted = "soft"|LB|'></event-handler>
 				<event-handler on="ControlCreated">
 					<mapping target="name" operand="set" value="name"></mapping>
@@ -3240,7 +3231,7 @@
 				<event-handler on="ProcessingActivityStakeholderRemoved" code='del self.stakeholder[event["arn"]]'></event-handler>
 				<event-handler on="LinkedAssetToProcessingActivity" code="if not event.assetArn in self.assetLinks:|LB|    self.assetLinks.append(event.assetArn)"></event-handler>
 				<event-handler on="UnlinkedAssetFromProcessingActivity" code="self.assetLinks = [x for x in self.assetLinks if x != event.assetArn]"></event-handler>
-				<event-handler on="ProcessingActivityTaskCreated" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|target["name"] = event.name|LB|target["description"] = event.description|LB|target["assignee"] = event.assignee|LB|target["dueDate"] = event.dueDate|LB|target["completeDate"] = ""|LB|target["notes"] = event.notes|LB|target["arn"] = event.arn|LB|self.task[event["arn"]] = target'></event-handler>
+				<event-handler on="ProcessingActivityTaskCreated" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|target["name"] = event.name|LB|target["description"] = event.description|LB|target["assignee"] = event.assignee|LB|target["dueDate"] = event.dueDate|LB|target["completeDate"] = ""|LB|target["notes"] = event.notes|LB|target["arn"] = event.arn|LB|target["createdAt"] = event.published_at|LB|self.task[event["arn"]] = target'></event-handler>
 				<event-handler on="ProcessingActivityTaskCompleted" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|target["completeDate"] = event.completeDate|LB|self.task[event["arn"]] = target'></event-handler>
 				<event-handler on="ProcessingActivityStakeholderAdded" code='target = retrieve_nested_target(event.arn, self.stakeholder, {})|LB|target["arn"] = event.arn|LB|target["role"] = event.role|LB|target["thirdpartyArn"] = event.thirdpartyArn|LB|self.stakeholder[event.arn] = target'></event-handler>
 				<event-handler on="ProcessingActivityUpdated">
@@ -4180,18 +4171,7 @@
 						<mapping target="notes" operand="set" value="notes"></mapping>
 					</nested-mapping>
 				</event-handler>
-				<event-handler on="RiskActionCreated">
-					<nested-mapping source="actions" target="actions" business-key="id">
-						<mapping target="id" operand="set" value="id"></mapping>
-						<mapping target="name" operand="set" value="name"></mapping>
-						<mapping target="description" operand="set" value="description"></mapping>
-						<mapping target="assignee" operand="set" value="assignee"></mapping>
-						<mapping target="dueDate" operand="set" value="dueDate"></mapping>
-						<mapping target="arn" operand="set" value="arn"></mapping>
-						<mapping target="category" operand="set" value="category"></mapping>
-					</nested-mapping>
-					<mapping target="hasPendingSelfAssessment" operand="set" value="hasPendingSelfAssessment"></mapping>
-				</event-handler>
+				<event-handler on="RiskActionCreated" code='self.arn = event.arn|LB|self.hasPendingSelfAssessment = event.hasPendingSelfAssessment|LB|for item in event.actions:|LB| target = retrieve_nested_target(item["id"], self.actions, {})|LB| target["id"] = item["id"]|LB| target["name"] = item["name"]|LB| target["description"] = item["description"]|LB| target["assignee"] = item["assignee"]|LB| target["dueDate"] = item["dueDate"]|LB| target["arn"] = item["arn"]|LB| target["category"] = item["category"]|LB| target["createdAt"] = event.published_at|LB| self.actions[item["id"]] = target|LB|#self.isDeleted = "soft/hard/delayed"'></event-handler>
 				<event-handler on="RiskUpdated">
 					<mapping target="description" operand="set" value="description"></mapping>
 					<mapping target="grossLikelihood" operand="set" value="grossLikelihood"></mapping>
