@@ -6419,6 +6419,8 @@
 			<field name="templateVersion" type="String"></field>
 			<field name="linkedRequirements" type="OneToMany" ref="Requirement" authorization="authenticated" foreign-key="requirementArns"></field>
 			<field name="reference" type="String" pk="true"></field>
+			<field name="createdAt" type="Int"></field>
+			<field name="updatedAt" type="Int"></field>
 			<snapshot-handler id="IkHDvC" processor="item" sub-domain="Admin" aggregate="ControlTemplate" key-mapping="reference">
 				<mapping target="name" value="name" operand="set"></mapping>
 				<mapping target="description" value="description" operand="set"></mapping>
@@ -6427,6 +6429,8 @@
 				<mapping target="arn" value="arn" operand="set"></mapping>
 				<mapping target="templateVersion" value="templateVersion" operand="set"></mapping>
 				<mapping operand="set" target="reference" value="reference"></mapping>
+				<mapping operand="set" target="createdAt" value="created_at"></mapping>
+				<mapping operand="set" target="updatedAt" value="updated_at"></mapping>
 				<delete id="uO40BX" condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
 			<snapshot-handler id="dVygCe" processor="item" sub-domain="Admin" aggregate="ControlTemplate" key-mapping="previousVersion">
@@ -6464,6 +6468,8 @@ if snapshot.isDeleted != '':
 			<field name="controlOwner" type="String"></field>
 			<field name="assesments" type="OneToMany" ref="ControlAssessment" authorization="authenticated" foreign-key="#canonical"></field>
 			<field name="hasPendingSelfAssessment" type="Boolean"></field>
+			<field name="createdAt" type="Int"></field>
+			<field name="updatedAt" type="Int"></field>
 			<snapshot-handler id="DtgdXj" sub-domain="Customer" aggregate="Control" key-mapping="arn" processor="item">
 				<mapping target="name" operand="set" value="name"></mapping>
 				<mapping target="description" operand="set" value="description"></mapping>
@@ -6479,6 +6485,8 @@ if snapshot.isDeleted != '':
 				<mapping target="nextAssessmentDate" operand="set" value="nextAssessmentDate"></mapping>
 				<mapping target="controlOwner" operand="set" value="controlOwner"></mapping>
 				<mapping target="hasPendingSelfAssessment" operand="set" value="hasPendingSelfAssessment"></mapping>
+				<mapping operand="set" target="createdAt" value="created_at"></mapping>
+				<mapping operand="set" target="updatedAt" value="updated_at"></mapping>
 				<delete condition="#snapshot.isDeleted != ''" id="Dx89I3"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="Control" field-name="get" type="get" authorization="role" role="#global.isCompanyViewer(key)"></query>
@@ -6499,6 +6507,8 @@ if snapshot.isDeleted != '':
 			<field name="subprocessors" type="OneToOne" ref="SubprocessorLink" authorization="authenticated" foreign-key="arn"></field>
 			<field name="assessments" type="OneToMany" ref="Questionaire" authorization="authenticated" foreign-key="#canonical"></field>
 			<field name="assetLinks" type="StringList"></field>
+			<field name="createdAt" type="Int"></field>
+			<field name="updatedAt" type="Int"></field>
 			<field name="assets" type="ManyToMany" ref="Asset" authorization="authenticated" foreign-key="assetLinks"></field>
 			<snapshot-handler id="XOQmcv" processor="item" sub-domain="ThirdPartyManagement" aggregate="ThirdParty" key-mapping="arn">
 				<mapping target="arn" value="arn" operand="set"></mapping>
@@ -6513,6 +6523,8 @@ if snapshot.isDeleted != '':
 				<mapping target="isDirectThirdParty" value="isDirectThirdParty" operand="set"></mapping>
 				<mapping target="owner" value="owner" operand="set"></mapping>
 				<mapping operand="set" target="assetLinks" value="assetLinks"></mapping>
+				<mapping operand="set" target="createdAt" value="created_at"></mapping>
+				<mapping operand="set" target="updatedAt" value="updated_at"></mapping>
 				<delete id="mLCii1" condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="ThirdParty" field-name="get" type="get" authorization="role" use-canonical-search="false" role="#global.isCompanyViewer(key)"></query>
@@ -6542,9 +6554,13 @@ if snapshot.isDeleted != '':
 			<field name="arn" type="String" pk="true"></field>
 			<field name="links" type="StringList"></field>
 			<field name="thirdparties" type="ManyToMany" ref="ThirdParty" authorization="authenticated" foreign-key="links"></field>
+			<field name="createdAt" type="Int"></field>
+			<field name="updatedAt" type="Int"></field>
 			<snapshot-handler id="Z8MqBc" processor="item" sub-domain="ThirdPartyManagement" aggregate="ThirdParty" key-mapping="arn">
 				<mapping target="arn" value="arn" operand="set"></mapping>
 				<mapping operand="set" target="links" value="subprocessors"></mapping>
+				<mapping operand="set" target="createdAt" value="created_at"></mapping>
+				<mapping operand="set" target="updatedAt" value="updated_at"></mapping>
 				<delete id="prEzQ7" condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
 		</view>
@@ -6604,10 +6620,14 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<field name="username" type="String" pk="true"></field>
 			<field name="firstName" type="String"></field>
 			<field name="lastName" type="String"></field>
+			<field name="createdAt" type="Int"></field>
+			<field name="updatedAt" type="Int"></field>
 			<snapshot-handler id="71tqcg" sub-domain="Admin" aggregate="User" key-mapping="username" processor="item">
 				<mapping target="username" operand="set" value="username"></mapping>
 				<mapping target="firstName" operand="set" value="firstName"></mapping>
 				<mapping target="lastName" operand="set" value="lastName"></mapping>
+				<mapping operand="set" target="createdAt" value="created_at"></mapping>
+				<mapping operand="set" target="updatedAt" value="updated_at"></mapping>
 				<delete condition="#snapshot.isDeleted != '' or snapshot.active == False" id="q76aYg"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="Profile" field-name="get" type="get" authorization="authenticated"></query>
@@ -6623,6 +6643,8 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<field name="templateVersion" type="String"></field>
 			<field name="reference" type="String" pk="true"></field>
 			<field name="previousVersion" type="String"></field>
+			<field name="createdAt" type="Int"></field>
+			<field name="updatedAt" type="Int"></field>
 			<snapshot-handler id="HgnMBm" processor="item" sub-domain="Admin" aggregate="RiskTemplate" key-mapping="reference">
 				<mapping target="arn" value="arn" operand="set"></mapping>
 				<mapping target="name" value="name" operand="set"></mapping>
@@ -6633,6 +6655,8 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping target="templateVersion" value="templateVersion" operand="set"></mapping>
 				<mapping target="reference" value="reference" operand="set"></mapping>
 				<mapping target="previousVersion" value="previousVersion" operand="set"></mapping>
+				<mapping operand="set" target="createdAt" value="created_at"></mapping>
+				<mapping operand="set" target="updatedAt" value="updated_at"></mapping>
 				<delete id="aAUs0H" condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
 			<snapshot-handler id="WngJJg" processor="item" sub-domain="Admin" aggregate="RiskTemplate" key-mapping="previousVersion">
@@ -6656,6 +6680,8 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<field name="countryArn" type="String"></field>
 			<field name="knownCertification" type="String"></field>
 			<field name="country" type="OneToOne" ref="Country" authorization="authenticated" foreign-key="countryArn"></field>
+			<field name="createdAt" type="Int"></field>
+			<field name="updatedAt" type="Int"></field>
 			<snapshot-handler id="P2oBme" processor="item" sub-domain="Admin" aggregate="ThirdPartyTemplate" key-mapping="arn">
 				<mapping target="arn" value="arn" operand="set"></mapping>
 				<mapping target="name" value="name" operand="set"></mapping>
@@ -6664,6 +6690,8 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping target="companyRegistrationNumber" value="companyRegistrationNumber" operand="set"></mapping>
 				<mapping target="knownCertification" value="knownCertification" operand="set"></mapping>
 				<mapping operand="set" target="countryArn" value="country"></mapping>
+				<mapping operand="set" target="createdAt" value="created_at"></mapping>
+				<mapping operand="set" target="updatedAt" value="updated_at"></mapping>
 				<delete id="8lJkAF" condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="ThirdPartyTemplate" field-name="get" type="get" authorization="authenticated" use-canonical-search="false"></query>
@@ -6674,11 +6702,15 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<field name="name" type="String"></field>
 			<field name="logoPath" type="String"></field>
 			<field name="description" type="String"></field>
+			<field name="createdAt" type="Int"></field>
+			<field name="updatedAt" type="Int"></field>
 			<snapshot-handler id="M4nClo" processor="item" sub-domain="Admin" aggregate="Integrations" key-mapping="arn">
 				<mapping target="arn" value="arn" operand="set"></mapping>
 				<mapping target="name" value="name" operand="set"></mapping>
 				<mapping target="logoPath" value="logoPath" operand="set"></mapping>
 				<mapping target="description" value="description" operand="set"></mapping>
+				<mapping operand="set" target="createdAt" value="created_at"></mapping>
+				<mapping operand="set" target="updatedAt" value="updated_at"></mapping>
 				<delete id="NPJmBs" condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="Integration" field-name="get" type="get" authorization="authenticated" use-canonical-search="false"></query>
@@ -6693,6 +6725,8 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<field name="unit" type="String"></field>
 			<field name="acronym" type="String"></field>
 			<field name="active" type="Boolean"></field>
+			<field name="createdAt" type="Int"></field>
+			<field name="updatedAt" type="Int"></field>
 			<field name="requirements" type="OneToMany" ref="Requirement" authorization="authenticated" foreign-key="#canonical"></field>
 			<snapshot-handler id="1xTQuT" sub-domain="Admin" aggregate="ControlFramework" key-mapping="arn" processor="item">
 				<mapping target="arn" operand="set" value="arn"></mapping>
@@ -6703,6 +6737,8 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping target="unit" operand="set" value="unit"></mapping>
 				<mapping target="acronym" operand="set" value="acronym"></mapping>
 				<mapping target="active" operand="set" value="active"></mapping>
+				<mapping operand="set" target="createdAt" value="created_at"></mapping>
+				<mapping operand="set" target="updatedAt" value="updated_at"></mapping>
 				<delete condition="#snapshot.isDeleted != ''" id="AFNsa4"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="ControlFramework" field-name="get" type="get" authorization="authenticated"></query>
@@ -6743,6 +6779,8 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<field name="completionPercentage" type="Int"></field>
 			<field name="tasks" type="OneToMany" ref="ObjectiveTask" authorization="authenticated" foreign-key="#canonical"></field>
 			<field name="name" type="String"></field>
+			<field name="createdAt" type="Int"></field>
+			<field name="updatedAt" type="Int"></field>
 			<snapshot-handler id="UhHRig" processor="item" sub-domain="Customer" aggregate="Objective" key-mapping="arn">
 				<mapping target="arn" value="arn" operand="set"></mapping>
 				<mapping target="owner" value="owner" operand="set"></mapping>
@@ -6751,6 +6789,8 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping target="definitionOfDone" value="definitionOfDone" operand="set"></mapping>
 				<mapping target="completionPercentage" value="completionPercentage" operand="set"></mapping>
 				<mapping operand="set" target="name" value="name"></mapping>
+				<mapping operand="set" target="createdAt" value="created_at"></mapping>
+				<mapping operand="set" target="updatedAt" value="updated_at"></mapping>
 				<delete id="Hz8due" condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="Objective" field-name="get" type="get" authorization="role" use-canonical-search="false" role="#global.isCompanyViewer(key)"></query>
@@ -6840,11 +6880,15 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<field name="css" type="String"></field>
 			<field name="reference" type="String" pk="true"></field>
 			<field name="logoPath" type="String"></field>
+			<field name="createdAt" type="Int"></field>
+			<field name="updatedAt" type="Int"></field>
 			<snapshot-handler id="4c3beB" sub-domain="Admin" aggregate="Tenant" key-mapping="reference" processor="item">
 				<mapping target="name" operand="set" value="name"></mapping>
 				<mapping target="css" operand="set" value="css"></mapping>
 				<mapping operand="set" target="reference" value="reference"></mapping>
 				<mapping operand="set" target="logoPath" value="logoPath"></mapping>
+				<mapping operand="set" target="createdAt" value="created_at"></mapping>
+				<mapping operand="set" target="updatedAt" value="updated_at"></mapping>
 				<delete condition="#snapshot.isDeleted != ''" id="YxYxmV"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="Tenant" field-name="get" type="get" authorization="authenticated"></query>
@@ -6854,10 +6898,14 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<field name="arn" type="String" pk="true"></field>
 			<field name="name" type="String"></field>
 			<field name="formBricksId" type="String"></field>
+			<field name="createdAt" type="Int"></field>
+			<field name="updatedAt" type="Int"></field>
 			<snapshot-handler id="JvjbBh" processor="item" sub-domain="ThirdPartyManagement" aggregate="Assessment" key-mapping="arn">
 				<mapping target="arn" value="arn" operand="set"></mapping>
 				<mapping target="name" value="name" operand="set"></mapping>
 				<mapping target="formBricksId" value="formBricksId" operand="set"></mapping>
+				<mapping operand="set" target="createdAt" value="created_at"></mapping>
+				<mapping operand="set" target="updatedAt" value="updated_at"></mapping>
 				<delete id="xzNL5C" condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="Questionaire" field-name="get" type="get" authorization="role" use-canonical-search="false" role="#global.isCompanyViewer(key)"></query>
@@ -6874,6 +6922,8 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<field name="assetLinks" type="StringList"></field>
 			<field name="assets" type="ManyToMany" ref="Asset" authorization="authenticated" foreign-key="assetLinks"></field>
 			<field name="stakeholders" type="ObjectList" ref="ProcessingActivityStakeholder" authorization="authenticated"></field>
+			<field name="createdAt" type="Int"></field>
+			<field name="updatedAt" type="Int"></field>
 			<snapshot-handler id="DSVogu" processor="item" sub-domain="Customer" aggregate="ProcessingActivity" key-mapping="arn">
 				<mapping target="arn" value="arn" operand="set"></mapping>
 				<mapping target="name" value="name" operand="set"></mapping>
@@ -6882,6 +6932,8 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping target="requiresDpia" value="requiresDpia" operand="set"></mapping>
 				<mapping target="weight" value="weight" operand="set"></mapping>
 				<mapping operand="set" target="assetLinks" value="assetLinks"></mapping>
+				<mapping operand="set" target="createdAt" value="created_at"></mapping>
+				<mapping operand="set" target="updatedAt" value="updated_at"></mapping>
 				<mapping operand="convert_items" target="stakeholders" value="stakeholder" template='{ "arn": value["arn"] if "arn" in value else "", "role": value["role"] if "role" in value else "", "thirdpartyArn": value["thirdpartyArn"] if "thirdpartyArn" in value else "", "thirdparty": value["arn"] if "arn" in value else "", }'></mapping>
 				<delete id="Kmp21v" condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
@@ -6920,12 +6972,16 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<field name="mandatory" type="Boolean"></field>
 			<field name="summary" type="String"></field>
 			<field name="arn" type="String" pk="true"></field>
+			<field name="createdAt" type="Int"></field>
+			<field name="updatedAt" type="Int"></field>
 			<snapshot-handler id="73vD0z" sub-domain="Admin" aggregate="Requirement" key-mapping="arn" processor="item">
 				<mapping target="name" operand="set" value="name"></mapping>
 				<mapping target="description" operand="set" value="description"></mapping>
 				<mapping target="mandatory" operand="set" value="mandatory"></mapping>
 				<mapping target="summary" operand="set" value="summary"></mapping>
 				<mapping target="arn" operand="set" value="arn"></mapping>
+				<mapping operand="set" target="createdAt" value="created_at"></mapping>
+				<mapping operand="set" target="updatedAt" value="updated_at"></mapping>
 				<delete condition="#snapshot.isDeleted != ''" id="GNnhcI"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="Requirement" field-name="get" type="get" authorization="authenticated"></query>
@@ -6952,6 +7008,8 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<field name="processingActivities" type="OneToMany" ref="ProcessingActivity" authorization="authenticated" foreign-key="#canonical"></field>
 			<field name="thirdParties" type="OneToMany" ref="ThirdParty" authorization="authenticated" foreign-key="#canonical"></field>
 			<field name="integrations" type="OneToMany" ref="IntegrationImplementation" authorization="authenticated" foreign-key="#canonical"></field>
+			<field name="createdAt" type="Int"></field>
+			<field name="updatedAt" type="Int"></field>
 			<query graphql-namespace="Company" field-name="get" type="get" authorization="role" role="#global.isCompanyViewer(key)"></query>
 			<query graphql-namespace="Company" field-name="filter" type="filter" authorization="role" role="administrator" use-canonical-search="true"></query>
 			<custom-handler id="LCvx9K" sub-domain="Customer" aggregate="Company">#Your custom logic, you have access to:
@@ -6968,6 +7026,8 @@ entity.industryLink = list(set(snapshot.industryLink))
 entity.countryArn = snapshot.countryArn
 entity.controlFrameworkLink = list(set(snapshot.controlFrameworkLinks))
 entity.logoPath = snapshot.logoPath
+entity.createdAt = snapshot.created_at
+entity.updatedAt = snapshot.updated_at
 entity.businessUnits = [{
 		"name": value["name"],
 		"description": value["description"]
@@ -7003,11 +7063,15 @@ if snapshot.isDeleted != '':
 			<field name="reference" type="String"></field>
 			<field name="integration" type="OneToOne" ref="Integration" authorization="authenticated" foreign-key="reference"></field>
 			<field name="notes" type="ObjectList" ref="ImplementationNote" authorization="authenticated"></field>
+			<field name="createdAt" type="Int"></field>
+			<field name="updatedAt" type="Int"></field>
 			<snapshot-handler id="aMI4Dz" processor="item" sub-domain="Customer" aggregate="IntegrationImplementation" key-mapping="arn">
 				<mapping target="arn" value="arn" operand="set"></mapping>
 				<mapping target="status" value="status" operand="set"></mapping>
 				<mapping target="requirements" value="requirements" operand="set"></mapping>
 				<mapping target="reference" value="reference" operand="set"></mapping>
+				<mapping operand="set" target="createdAt" value="created_at"></mapping>
+				<mapping operand="set" target="updatedAt" value="updated_at"></mapping>
 				<mapping operand="convert_items" target="notes" value="note" template='{ "uuid": value["uuid"] if "uuid" in value else "", "message": value["message"] if "message" in value else "", "user": value["user"] if "user" in value else "", "order": value["order"] if "order" in value else "", }'></mapping>
 				<delete id="tCh4B3" condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
@@ -7024,10 +7088,14 @@ if snapshot.isDeleted != '':
 			<field name="arn" type="String" pk="true"></field>
 			<field name="name" type="String"></field>
 			<field name="description" type="String"></field>
+			<field name="createdAt" type="Int"></field>
+			<field name="updatedAt" type="Int"></field>
 			<snapshot-handler id="RLB0hK" sub-domain="Admin" aggregate="Industry" key-mapping="arn" processor="item">
 				<mapping target="arn" operand="set" value="arn"></mapping>
 				<mapping target="name" operand="set" value="name"></mapping>
 				<mapping target="description" operand="set" value="description"></mapping>
+				<mapping operand="set" target="createdAt" value="created_at"></mapping>
+				<mapping operand="set" target="updatedAt" value="updated_at"></mapping>
 				<delete condition="#snapshot.isDeleted != ''" id="VM09RE"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="Industry" field-name="get" type="get" authorization="authenticated"></query>
@@ -7037,11 +7105,15 @@ if snapshot.isDeleted != '':
 			<field name="arn" type="String" pk="true"></field>
 			<field name="name" type="String"></field>
 			<field name="code" type="String"></field>
+			<field name="createdAt" type="Int"></field>
+			<field name="updatedAt" type="Int"></field>
 			<field name="countries" type="OneToMany" ref="Country" authorization="authenticated" foreign-key="#canonical"></field>
 			<snapshot-handler id="niRRoc" sub-domain="Admin" aggregate="Region" key-mapping="arn" processor="item">
 				<mapping target="arn" operand="set" value="arn"></mapping>
 				<mapping target="name" operand="set" value="name"></mapping>
 				<mapping target="code" operand="set" value="code"></mapping>
+				<mapping operand="set" target="createdAt" value="created_at"></mapping>
+				<mapping operand="set" target="updatedAt" value="updated_at"></mapping>
 				<delete condition="#snapshot.isDeleted != ''" id="BiHRJq"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="Region" field-name="get" type="get" authorization="authenticated"></query>
@@ -7138,6 +7210,8 @@ if snapshot.isDeleted != '':
 			<field name="actions" type="OneToMany" ref="RiskAction" authorization="authenticated" foreign-key="#canonical"></field>
 			<field name="hasPendingSelfAssessment" type="Boolean"></field>
 			<field name="owner" type="String"></field>
+			<field name="createdAt" type="Int"></field>
+			<field name="updatedAt" type="Int"></field>
 			<snapshot-handler id="W1dR2k" processor="item" sub-domain="Customer" aggregate="Risk" key-mapping="arn">
 				<mapping target="arn" value="arn" operand="set"></mapping>
 				<mapping target="name" value="name" operand="set"></mapping>
@@ -7149,6 +7223,8 @@ if snapshot.isDeleted != '':
 				<mapping target="reviewPeriodicity" value="reviewPeriodicity" operand="set"></mapping>
 				<mapping target="lastReviewDate" value="lastReviewDate" operand="set"></mapping>
 				<mapping target="nextReviewDate" value="nextReviewDate" operand="set"></mapping>
+				<mapping operand="set" target="createdAt" value="created_at"></mapping>
+				<mapping operand="set" target="updatedAt" value="updated_at"></mapping>
 				<mapping target="hasPendingSelfAssessment" value="hasPendingSelfAssessment" operand="set"></mapping>
 				<mapping target="changeLog" value="changeLog" operand="convert_items" template='{ "timestamp": value["timestamp"] if "timestamp" in value else "", "description": value["description"] if "description" in value else "", "user": value["user"] if "user" in value else "", "userProfile": value[""] if "" in value else "", }'></mapping>
 				<mapping target="controlLinks" value="controlLinks" operand="convert_items" template='{ "arn": value["arn"] if "arn" in value else "", "impactOnRisk": value["impactOnRisk"] if "impactOnRisk" in value else "", "control": value[""] if "" in value else "", }'></mapping>
