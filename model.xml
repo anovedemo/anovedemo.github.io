@@ -1372,7 +1372,8 @@
       "arn": "anove:company:draftsman:control:test:2024-08-01",
       "assessorLink": "anove:company:draftsman:employee:j.doe"
     }
-  }
+  },
+  "arn": "anove:company:draftsman:control:test"
 }</expected-state>
 					</test-case>
 				</command>
@@ -1677,6 +1678,9 @@
 					<field name="assessedMaturityDescription" type="String"></field>
 					<field name="linkToEvidence" type="String"></field>
 					<field name="assessorLink" type="String" default=""></field>
+					<field name="createdAt" type="Int"></field>
+					<field name="updatedAt" type="Int"></field>
+					<field name="completedAt" type="Int"></field>
 				</nested-object>
 			</aggregate>
 			<aggregate name="IntegrationImplementation" business-key="arn" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
@@ -2703,7 +2707,7 @@
 					<mapping operand="set" target="privacy" value="privacy"></mapping>
 				</event-handler>
 				<event-handler on="AssetTaskCompleted" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|target["completeDate"] = event.completeDate|LB|self.task[event["arn"]] = target'></event-handler>
-				<event-handler on="AssetTaskCreated" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|target["name"] = event.name|LB|target["description"] = event.description|LB|target["assignee"] = event.assignee|LB|target["dueDate"] = event.dueDate|LB|target["notes"] = event.notes|LB|target["arn"] = event.arn|LB|target["completeDate"] = ""|LB|self.task[event["arn"]] = target'></event-handler>
+				<event-handler on="AssetTaskCreated" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|target["name"] = event.name|LB|target["description"] = event.description|LB|target["assignee"] = event.assignee|LB|target["dueDate"] = event.dueDate|LB|target["notes"] = event.notes|LB|target["arn"] = event.arn|LB|target["completeDate"] = ""|LB|target["createdAt"] = event.published_at|LB|self.task[event["arn"]] = target'></event-handler>
 				<event-handler on="AssetDeleted" code='self.isDeleted = "soft"'></event-handler>
 				<event-handler on="ThirdpartyUnlinkedFromAsset" code="self.thirdpartyLink = [x for x in self.thirdpartyLink if x != event.thirdpartyArn]"></event-handler>
 				<event-handler on="AssetUpdated" code="if event.name:|LB|    self.name = event.name|LB|if event.description:|LB|    self.description = event.description|LB|if event.owner:|LB|    self.owner = event.owner|LB|if event.confidentiality:|LB|    self.confidentiality = event.confidentiality|LB|if event.integrity:|LB|    self.integrity = event.integrity|LB|if event.availability:|LB|    self.availability = event.availability|LB|if event.privacy:|LB|    self.privacy = event.privacy|LB|"></event-handler>
@@ -2715,6 +2719,9 @@
 					<field name="completeDate" type="String"></field>
 					<field name="notes" type="String"></field>
 					<field name="arn" type="String"></field>
+					<field name="createdAt" type="Int"></field>
+					<field name="updatedAt" type="Int"></field>
+					<field name="completedAt" type="Int"></field>
 				</nested-object>
 			</aggregate>
 			<aggregate name="ProcessingActivity" business-key="arn" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
@@ -3267,6 +3274,9 @@
 					<field name="completeDate" type="String"></field>
 					<field name="notes" type="String"></field>
 					<field name="arn" type="String"></field>
+					<field name="createdAt" type="Int"></field>
+					<field name="updatedAt" type="Int"></field>
+					<field name="completedAt" type="Int"></field>
 				</nested-object>
 			</aggregate>
 			<aggregate name="Company" business-key="arn" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
@@ -4252,6 +4262,9 @@
 					<field name="notes" type="String"></field>
 					<field name="arn" type="String"></field>
 					<field name="category" type="String"></field>
+					<field name="createdAt" type="Int"></field>
+					<field name="updatedAt" type="Int"></field>
+					<field name="completedAt" type="Int"></field>
 				</nested-object>
 				<nested-object name="controlLinks" business-key="newField">
 					<field name="arn" type="String"></field>
