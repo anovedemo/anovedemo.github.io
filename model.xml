@@ -1614,25 +1614,8 @@
 						<state>{}</state>
 					</test-case>
 				</command>
-				<event-handler on="AssessmentUpdated">
-					<nested-mapping source="assessment" target="assessment" business-key="arn">
-						<mapping target="dueDate" operand="set" value="dueDate"></mapping>
-						<mapping target="notes" operand="set" value="notes"></mapping>
-						<mapping target="arn" operand="set" value="arn"></mapping>
-						<mapping target="assessedMaturityLevel" operand="set" value="assessedMaturityLevel"></mapping>
-						<mapping target="assessedMaturityDescription" operand="set" value="assessedMaturityDescription"></mapping>
-						<mapping target="linkToEvidence" operand="set" value="linkToEvidence"></mapping>
-						<mapping target="assessorLink" operand="set" value="assessorLink"></mapping>
-					</nested-mapping>
-				</event-handler>
-				<event-handler on="AssessmentCompleted">
-					<mapping target="lastAssessmentDate" operand="set" value="lastAssessmentDate"></mapping>
-					<mapping target="nextAssessmentDate" operand="set" value="nextAssessmentDate"></mapping>
-					<mapping target="hasPendingSelfAssessment" operand="set" value="hasPendingSelfAssessment"></mapping>
-					<nested-mapping source="assessment" target="assessment" business-key="arn">
-						<mapping target="completeDate" operand="set" value="completeDate"></mapping>
-					</nested-mapping>
-				</event-handler>
+				<event-handler on="AssessmentUpdated" code='self.arn = event.arn|LB|for item in event.assessment:|LB| target = retrieve_nested_target(item["arn"], self.assessment, {})|LB| target["dueDate"] = item["dueDate"]|LB| target["notes"] = item["notes"]|LB| target["arn"] = item["arn"]|LB| target["assessedMaturityLevel"] = item["assessedMaturityLevel"]|LB| target["assessedMaturityDescription"] = item["assessedMaturityDescription"]|LB| target["linkToEvidence"] = item["linkToEvidence"]|LB| target["assessorLink"] = item["assessorLink"]|LB| target["updatedAt"] = event.published_at|LB| self.assessment[item["arn"]] = target|LB|#self.isDeleted = "soft/hard/delayed"'></event-handler>
+				<event-handler on="AssessmentCompleted" code='self.lastAssessmentDate = event.lastAssessmentDate|LB|self.nextAssessmentDate = event.nextAssessmentDate|LB|self.hasPendingSelfAssessment = event.hasPendingSelfAssessment|LB|for item in event.assessment:|LB| target = retrieve_nested_target(item["arn"], self.assessment, {})|LB| target["completeDate"] = item["completeDate"]|LB| target["arn"] = item["arn"]|LB| target["completedAt"] = event.published_at|LB| self.assessment[item["arn"]] = target|LB|#self.isDeleted = "soft/hard/delayed"'></event-handler>
 				<event-handler on="ControlUpdated">
 					<mapping target="description" operand="set" value="description"></mapping>
 					<mapping target="controlTemplateArn" operand="set" value="controlTemplateArn"></mapping>
@@ -2685,7 +2668,7 @@
 }</expected-state>
 					</test-case>
 				</command>
-				<event-handler on="AssetTaskUpdated" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|if event.name:|LB|    target["name"] = event.name|LB|if event.description:|LB|    target["description"] = event.description|LB|if event.assignee:|LB|    target["assignee"] = event.assignee|LB|if event.dueDate:|LB|    target["dueDate"] = event.dueDate|LB|if event.notes:|LB|    target["notes"] = event.notes|LB|self.task[event["arn"]] = target'></event-handler>
+				<event-handler on="AssetTaskUpdated" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|if event.name:|LB|    target["name"] = event.name|LB|if event.description:|LB|    target["description"] = event.description|LB|if event.assignee:|LB|    target["assignee"] = event.assignee|LB|if event.dueDate:|LB|    target["dueDate"] = event.dueDate|LB|if event.notes:|LB|    target["notes"] = event.notes|LB|target["updatedAt"] = event.published_at|LB|self.task[event["arn"]] = target'></event-handler>
 				<event-handler on="ThirdpartyLinkedToAsset" code="if not event.thirdpartyArn in self.thirdpartyLink:|LB|    self.thirdpartyLink.append(event.thirdpartyArn)"></event-handler>
 				<event-handler on="AssetCreated">
 					<mapping operand="set" target="arn" value="arn"></mapping>
@@ -2697,7 +2680,7 @@
 					<mapping operand="set" target="availability" value="availability"></mapping>
 					<mapping operand="set" target="privacy" value="privacy"></mapping>
 				</event-handler>
-				<event-handler on="AssetTaskCompleted" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|target["completeDate"] = event.completeDate|LB|self.task[event["arn"]] = target'></event-handler>
+				<event-handler on="AssetTaskCompleted" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|target["completeDate"] = event.completeDate|LB|target["completedAt"] = event.published_at|LB|self.task[event["arn"]] = target'></event-handler>
 				<event-handler on="AssetTaskCreated" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|target["name"] = event.name|LB|target["description"] = event.description|LB|target["assignee"] = event.assignee|LB|target["dueDate"] = event.dueDate|LB|target["notes"] = event.notes|LB|target["arn"] = event.arn|LB|target["completeDate"] = ""|LB|target["createdAt"] = event.published_at|LB|self.task[event["arn"]] = target'></event-handler>
 				<event-handler on="AssetDeleted" code='self.isDeleted = "soft"'></event-handler>
 				<event-handler on="ThirdpartyUnlinkedFromAsset" code="self.thirdpartyLink = [x for x in self.thirdpartyLink if x != event.thirdpartyArn]"></event-handler>
@@ -3232,7 +3215,7 @@
 				<event-handler on="LinkedAssetToProcessingActivity" code="if not event.assetArn in self.assetLinks:|LB|    self.assetLinks.append(event.assetArn)"></event-handler>
 				<event-handler on="UnlinkedAssetFromProcessingActivity" code="self.assetLinks = [x for x in self.assetLinks if x != event.assetArn]"></event-handler>
 				<event-handler on="ProcessingActivityTaskCreated" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|target["name"] = event.name|LB|target["description"] = event.description|LB|target["assignee"] = event.assignee|LB|target["dueDate"] = event.dueDate|LB|target["completeDate"] = ""|LB|target["notes"] = event.notes|LB|target["arn"] = event.arn|LB|target["createdAt"] = event.published_at|LB|self.task[event["arn"]] = target'></event-handler>
-				<event-handler on="ProcessingActivityTaskCompleted" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|target["completeDate"] = event.completeDate|LB|self.task[event["arn"]] = target'></event-handler>
+				<event-handler on="ProcessingActivityTaskCompleted" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|target["completeDate"] = event.completeDate|LB|target["completedAt"] = event.published_at|LB|self.task[event["arn"]] = target'></event-handler>
 				<event-handler on="ProcessingActivityStakeholderAdded" code='target = retrieve_nested_target(event.arn, self.stakeholder, {})|LB|target["arn"] = event.arn|LB|target["role"] = event.role|LB|target["thirdpartyArn"] = event.thirdpartyArn|LB|self.stakeholder[event.arn] = target'></event-handler>
 				<event-handler on="ProcessingActivityUpdated">
 					<mapping target="arn" value="arn" operand="set"></mapping>
@@ -3251,7 +3234,7 @@
 					<mapping target="requiresDpia" value="requiresDpia" operand="set"></mapping>
 					<mapping target="weight" value="weight" operand="set"></mapping>
 				</event-handler>
-				<event-handler on="ProcessingActivityTaskUpdated" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|if event.name:|LB|    target["name"] = event.name|LB|if event.description:|LB|    target["description"] = event.description|LB|if event.assignee:|LB|    target["assignee"] = event.assignee|LB|if event.dueDate:|LB|    target["dueDate"] = event.dueDate|LB|if event.notes:|LB|    target["notes"] = event.notes|LB|target["arn"] = event.arn|LB|self.task[event["arn"]] = target'></event-handler>
+				<event-handler on="ProcessingActivityTaskUpdated" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|if event.name:|LB|    target["name"] = event.name|LB|if event.description:|LB|    target["description"] = event.description|LB|if event.assignee:|LB|    target["assignee"] = event.assignee|LB|if event.dueDate:|LB|    target["dueDate"] = event.dueDate|LB|if event.notes:|LB|    target["notes"] = event.notes|LB|target["arn"] = event.arn|LB|target["updatedAt"] = event.published_at|LB|self.task[event["arn"]] = target'></event-handler>
 				<nested-object name="stakeholder" business-key="arn">
 					<field name="arn" type="String"></field>
 					<field name="role" type="String"></field>
@@ -4162,15 +4145,7 @@
 }</expected-state>
 					</test-case>
 				</command>
-				<event-handler on="RiskActionUpdated">
-					<nested-mapping source="actions" target="actions" business-key="id">
-						<mapping target="name" operand="set" value="name"></mapping>
-						<mapping target="description" operand="set" value="description"></mapping>
-						<mapping target="assignee" operand="set" value="assignee"></mapping>
-						<mapping target="dueDate" operand="set" value="dueDate"></mapping>
-						<mapping target="notes" operand="set" value="notes"></mapping>
-					</nested-mapping>
-				</event-handler>
+				<event-handler on="RiskActionUpdated" code='self.arn = event.arn|LB|for item in event.actions:|LB| target = retrieve_nested_target(item["id"], self.actions, {})|LB| target["id"] = item["id"]|LB| target["name"] = item["name"]|LB| target["description"] = item["description"]|LB| target["assignee"] = item["assignee"]|LB| target["dueDate"] = item["dueDate"]|LB| target["notes"] = item["notes"]|LB| target["updatedAt"] = event.published_at|LB| self.actions[item["id"]] = target|LB|#self.isDeleted = "soft/hard/delayed"'></event-handler>
 				<event-handler on="RiskActionCreated" code='self.arn = event.arn|LB|self.hasPendingSelfAssessment = event.hasPendingSelfAssessment|LB|for item in event.actions:|LB| target = retrieve_nested_target(item["id"], self.actions, {})|LB| target["id"] = item["id"]|LB| target["name"] = item["name"]|LB| target["description"] = item["description"]|LB| target["assignee"] = item["assignee"]|LB| target["dueDate"] = item["dueDate"]|LB| target["arn"] = item["arn"]|LB| target["category"] = item["category"]|LB| target["createdAt"] = event.published_at|LB| self.actions[item["id"]] = target|LB|#self.isDeleted = "soft/hard/delayed"'></event-handler>
 				<event-handler on="RiskUpdated">
 					<mapping target="description" operand="set" value="description"></mapping>
@@ -4194,14 +4169,7 @@
 						<mapping target="description" operand="set" value="description"></mapping>
 					</nested-mapping>
 				</event-handler>
-				<event-handler on="RiskActionCompleted">
-					<mapping target="hasPendingSelfAssessment" operand="set" value="hasPendingSelfAssessment"></mapping>
-					<mapping target="lastReviewDate" operand="set" value="lastReviewDate"></mapping>
-					<mapping target="nextReviewDate" operand="set" value="nextReviewDate"></mapping>
-					<nested-mapping source="actions" target="actions" business-key="id">
-						<mapping target="completeDate" operand="set" value="completeDate"></mapping>
-					</nested-mapping>
-				</event-handler>
+				<event-handler on="RiskActionCompleted" code='self.arn = event.arn|LB|self.lastReviewDate = event.lastReviewDate|LB|self.nextReviewDate = event.nextReviewDate|LB|self.hasPendingSelfAssessment = event.hasPendingSelfAssessment|LB|for item in event.actions:|LB| target = retrieve_nested_target(item["id"], self.actions, {})|LB| target["id"] = item["id"]|LB| target["completeDate"] = item["completeDate"]|LB| target["completedAt"] = event.published_at|LB| self.actions[item["id"]] = target|LB|#self.isDeleted = "soft/hard/delayed"'></event-handler>
 				<event-handler on="RiskDeleted" code='self.isDeleted = "soft"|LB|'></event-handler>
 				<event-handler on="RiskCreated">
 					<mapping target="arn" operand="set" value="arn"></mapping>
@@ -4747,7 +4715,7 @@
 }</expected-state>
 					</test-case>
 				</command>
-				<event-handler on="ThirdPartyTaskCreated" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|target["name"] = event.name|LB|target["description"] = event.description|LB|target["assignee"] = event.assignee|LB|target["dueDate"] = event.dueDate|LB|target["completeDate"] = ""|LB|target["notes"] = event.notes|LB|target["arn"] = event.arn|LB|self.task[event["arn"]] = target'></event-handler>
+				<event-handler on="ThirdPartyTaskCreated" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|target["name"] = event.name|LB|target["description"] = event.description|LB|target["assignee"] = event.assignee|LB|target["dueDate"] = event.dueDate|LB|target["completeDate"] = ""|LB|target["notes"] = event.notes|LB|target["arn"] = event.arn|LB|target["createdAt"] = event.published_at|LB|self.task[event["arn"]] = target'></event-handler>
 				<event-handler on="ThirdPartyCreated">
 					<mapping target="arn" value="arn" operand="set"></mapping>
 					<mapping target="name" value="name" operand="set"></mapping>
@@ -4761,10 +4729,10 @@
 					<mapping target="isDirectThirdParty" value="isDirectThirdParty" operand="set"></mapping>
 					<mapping target="owner" value="owner" operand="set"></mapping>
 				</event-handler>
-				<event-handler on="ThirdPartyTaskCompleted" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|target["completeDate"] = event.completeDate|LB|self.task[event["arn"]] = target'></event-handler>
+				<event-handler on="ThirdPartyTaskCompleted" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|target["completeDate"] = event.completeDate|LB|target["completedAt"] = event.published_at|LB|self.task[event["arn"]] = target'></event-handler>
 				<event-handler on="AssetLinkedToThirdparty" code="if not event.assetArn in self.assetLinks:|LB|    self.assetLinks.append(event.assetArn)"></event-handler>
 				<event-handler on="SubprocessorLinkedToThirdParty" code="self.subprocessors.append(event.subprocessorArn)"></event-handler>
-				<event-handler on="ThirdPartyTaskUpdated" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|if event.name:|LB|    target["name"] = event.name|LB|if event.description:|LB|    target["description"] = event.description|LB|if event.assignee:|LB|    target["assignee"] = event.assignee|LB|if event.dueDate:|LB|    target["dueDate"] = event.dueDate|LB|if event.notes:|LB|    target["notes"] = event.notes|LB|self.task[event["arn"]] = target'></event-handler>
+				<event-handler on="ThirdPartyTaskUpdated" code='target = retrieve_nested_target(event["arn"], self.task, {})|LB|if event.name:|LB|    target["name"] = event.name|LB|if event.description:|LB|    target["description"] = event.description|LB|if event.assignee:|LB|    target["assignee"] = event.assignee|LB|if event.dueDate:|LB|    target["dueDate"] = event.dueDate|LB|if event.notes:|LB|    target["notes"] = event.notes|LB|target["updatedAt"] = event.published_at|LB|self.task[event["arn"]] = target'></event-handler>
 				<event-handler on="AssetUnlinkedFromThirdparty" code="self.assetLinks = [x for x in self.assetLinks if x != event.assetArn]"></event-handler>
 				<event-handler on="ThirdPartyDeleted" code='self.isDeleted = "soft"'></event-handler>
 				<event-handler on="SubprocessorUnlinkedFromThirdParty" code="self.subprocessors.remove(event.subprocessorArn)"></event-handler>
@@ -4788,6 +4756,9 @@
 					<field name="completeDate" type="String"></field>
 					<field name="notes" type="String"></field>
 					<field name="arn" type="String"></field>
+					<field name="createdAt" type="Int"></field>
+					<field name="updatedAt" type="Int"></field>
+					<field name="completedAt" type="Int"></field>
 				</nested-object>
 			</aggregate>
 			<aggregate name="Assessment" business-key="arn" event-ttl="-1" snapshot-interval="100" backup-interval-days="0" backup-ttl-days="0">
@@ -6748,6 +6719,9 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<field name="linkToEvidence" type="String"></field>
 			<field name="assessorLink" type="String" default=""></field>
 			<field name="assesor" type="ManyToMany" ref="Employee" authorization="authenticated" foreign-key="assessorLink"></field>
+			<field name="createdAt" type="Int"></field>
+			<field name="updatedAt" type="Int"></field>
+			<field name="completedAt" type="Int"></field>
 			<snapshot-handler id="e7tBLN" sub-domain="Customer" aggregate="Control" key-mapping="arn" processor="dictionary" dictionary="assessment">
 				<mapping target="arn" operand="set" value="arn"></mapping>
 				<mapping target="dueDate" operand="set" value="dueDate"></mapping>
@@ -6758,6 +6732,9 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping target="assessedMaturityDescription" operand="set" value="assessedMaturityDescription"></mapping>
 				<mapping target="linkToEvidence" operand="set" value="linkToEvidence"></mapping>
 				<mapping target="assessorLink" operand="set" value="assessorLink"></mapping>
+				<mapping operand="set" target="createdAt" value="createdAt"></mapping>
+				<mapping operand="set" target="updatedAt" value="updatedAt"></mapping>
+				<mapping operand="set" target="completedAt" value="completedAt"></mapping>
 				<delete condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="ControlAssessment" field-name="get" type="get" authorization="role" role="#global.isCompanyViewer(key)"></query>
@@ -6826,6 +6803,9 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<field name="completeDate" type="String"></field>
 			<field name="notes" type="String"></field>
 			<field name="arn" type="String" pk="true"></field>
+			<field name="createdAt" type="Int"></field>
+			<field name="updatedAt" type="Int"></field>
+			<field name="completedAt" type="Int"></field>
 			<snapshot-handler id="mfqXSZ" processor="dictionary" sub-domain="Customer" aggregate="Asset" dictionary="task" key-mapping="arn">
 				<mapping target="arn" value="arn" operand="set"></mapping>
 				<mapping target="name" value="name" operand="set"></mapping>
@@ -6834,6 +6814,9 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping operand="set" target="dueDate" value="dueDate"></mapping>
 				<mapping operand="set" target="completeDate" value="completeDate"></mapping>
 				<mapping operand="set" target="notes" value="notes"></mapping>
+				<mapping operand="set" target="createdAt" value="createdAt"></mapping>
+				<mapping operand="set" target="updatedAt" value="updatedAt"></mapping>
+				<mapping operand="set" target="completedAt" value="completedAt"></mapping>
 				<delete id="kxA0ps" condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="Asset" field-name="getTasks" type="query" authorization="role" use-canonical-search="true" role="#global.isCompanyViewer(key_begins_with)"></query>
@@ -6941,6 +6924,9 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 			<field name="completeDate" type="String"></field>
 			<field name="notes" type="String"></field>
 			<field name="arn" type="String" pk="true"></field>
+			<field name="createdAt" type="Int"></field>
+			<field name="updatedAt" type="Int"></field>
+			<field name="completedAt" type="Int"></field>
 			<snapshot-handler id="8eC5rN" processor="dictionary" sub-domain="Customer" aggregate="ProcessingActivity" dictionary="task" key-mapping="arn">
 				<mapping target="arn" value="arn" operand="set"></mapping>
 				<mapping target="name" value="name" operand="set"></mapping>
@@ -6949,6 +6935,9 @@ if snapshot.isDeleted != '' or snapshot.active == False:
 				<mapping operand="set" target="dueDate" value="dueDate"></mapping>
 				<mapping operand="set" target="completeDate" value="completeDate"></mapping>
 				<mapping operand="set" target="notes" value="notes"></mapping>
+				<mapping operand="set" target="createdAt" value="createdAt"></mapping>
+				<mapping operand="set" target="updatedAt" value="updatedAt"></mapping>
+				<mapping operand="set" target="completedAt" value="completedAt"></mapping>
 				<delete id="AAxdxf" condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="ProcessingActivity" field-name="getTasks" type="query" authorization="role" use-canonical-search="true" role="#global.isCompanyViewer(key_begins_with)"></query>
@@ -7125,12 +7114,18 @@ if snapshot.isDeleted != '':
 			<field name="assetTask" type="OneToOne" ref="AssetTask" authorization="authenticated" foreign-key="arn"></field>
 			<field name="processingActivityTask" type="OneToOne" ref="ProcessingActivityTask" authorization="authenticated" foreign-key="arn"></field>
 			<field name="thirdPartyTask" type="OneToOne" ref="ThirdPartyTask" authorization="authenticated" foreign-key="arn"></field>
+			<field name="createdAt" type="Int"></field>
+			<field name="updatedAt" type="Int"></field>
+			<field name="completedAt" type="Int"></field>
 			<snapshot-handler id="EW0V9R" sub-domain="Customer" aggregate="Control" key-mapping="arn" processor="dictionary" dictionary="assessment">
 				<mapping target="arn" operand="set" value="arn"></mapping>
 				<mapping target="dueDate" operand="set" value="dueDate"></mapping>
 				<mapping target="notes" operand="set" value="notes"></mapping>
 				<mapping target="completeDate" operand="set" value="completeDate"></mapping>
 				<mapping target="owner" operand="set" value="assessorLink"></mapping>
+				<mapping operand="set" target="createdAt" value="createdAt"></mapping>
+				<mapping operand="set" target="updatedAt" value="updatedAt"></mapping>
+				<mapping operand="set" target="completedAt" value="completedAt"></mapping>
 				<delete condition="#'completeDate' in item and item.completeDate != ''" id="XsPPOZ"></delete>
 				<delete id="odxWpo" condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
@@ -7140,6 +7135,9 @@ if snapshot.isDeleted != '':
 				<mapping target="notes" operand="set" value="notes"></mapping>
 				<mapping target="completeDate" operand="set" value="completeDate"></mapping>
 				<mapping target="owner" operand="set" value="assignee"></mapping>
+				<mapping operand="set" target="createdAt" value="createdAt"></mapping>
+				<mapping operand="set" target="updatedAt" value="updatedAt"></mapping>
+				<mapping operand="set" target="completedAt" value="completedAt"></mapping>
 				<delete condition="#'completeDate' in item and item.completeDate != ''" id="8GNMz6"></delete>
 				<delete id="NO9YmL" condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
@@ -7149,6 +7147,9 @@ if snapshot.isDeleted != '':
 				<mapping target="dueDate" value="dueDate" operand="set"></mapping>
 				<mapping operand="set" target="completeDate" value="completeDate"></mapping>
 				<mapping operand="set" target="notes" value="notes"></mapping>
+				<mapping operand="set" target="createdAt" value="createdAt"></mapping>
+				<mapping operand="set" target="updatedAt" value="updatedAt"></mapping>
+				<mapping operand="set" target="completedAt" value="completedAt"></mapping>
 				<delete id="58FLKq" condition="#'completeDate' in item and item.completeDate != ''"></delete>
 				<delete id="fnui1T" condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
@@ -7158,6 +7159,9 @@ if snapshot.isDeleted != '':
 				<mapping operand="set" target="completeDate" value="completeDate"></mapping>
 				<mapping operand="set" target="notes" value="notes"></mapping>
 				<mapping operand="set" target="dueDate" value="dueDate"></mapping>
+				<mapping operand="set" target="createdAt" value="createdAt"></mapping>
+				<mapping operand="set" target="updatedAt" value="updatedAt"></mapping>
+				<mapping operand="set" target="completedAt" value="completedAt"></mapping>
 				<delete id="KOn1z5" condition="#'completeDate' in item and item.completeDate != ''"></delete>
 				<delete id="Uwyg7a" condition="#snapshot.isDeleted != ''"></delete>
 			</snapshot-handler>
@@ -7167,6 +7171,9 @@ if snapshot.isDeleted != '':
 				<mapping operand="set" target="dueDate" value="dueDate"></mapping>
 				<mapping operand="set" target="notes" value="notes"></mapping>
 				<mapping operand="set" target="completeDate" value="completeDate"></mapping>
+				<mapping operand="set" target="createdAt" value="createdAt"></mapping>
+				<mapping operand="set" target="updatedAt" value="updatedAt"></mapping>
+				<mapping operand="set" target="completedAt" value="completedAt"></mapping>
 				<delete id="vfn7Cb" condition="#snapshot.isDeleted != ''"></delete>
 				<delete id="vXemOW" condition="#'completeDate' in item and item.completeDate != ''"></delete>
 			</snapshot-handler>
@@ -7176,6 +7183,9 @@ if snapshot.isDeleted != '':
 				<mapping operand="set" target="dueDate" value="dueDate"></mapping>
 				<mapping operand="set" target="notes" value="notes"></mapping>
 				<mapping operand="set" target="completeDate" value="completeDate"></mapping>
+				<mapping operand="set" target="createdAt" value="createdAt"></mapping>
+				<mapping operand="set" target="updatedAt" value="updatedAt"></mapping>
+				<mapping operand="set" target="completedAt" value="completedAt"></mapping>
 				<delete id="HCBHpE" condition="#snapshot.isDeleted != ''"></delete>
 				<delete id="Sru7Uy" condition="#'completeDate' in item and item.completeDate != ''"></delete>
 			</snapshot-handler>
@@ -7248,6 +7258,9 @@ if snapshot.isDeleted != '':
 			<field name="completeDate" type="String"></field>
 			<field name="arn" type="String" pk="true"></field>
 			<field name="notes" type="String"></field>
+			<field name="createdAt" type="Int"></field>
+			<field name="updatedAt" type="Int"></field>
+			<field name="completedAt" type="Int"></field>
 			<snapshot-handler id="bjg9nZ" sub-domain="Customer" aggregate="Risk" key-mapping="arn" processor="dictionary" dictionary="actions">
 				<mapping target="name" operand="set" value="name"></mapping>
 				<mapping target="description" operand="set" value="description"></mapping>
@@ -7257,6 +7270,9 @@ if snapshot.isDeleted != '':
 				<mapping target="dueDate" operand="set" value="dueDate"></mapping>
 				<mapping target="completeDate" operand="set" value="completeDate"></mapping>
 				<mapping operand="set" target="notes" value="notes"></mapping>
+				<mapping operand="set" target="createdAt" value="createdAt"></mapping>
+				<mapping operand="set" target="updatedAt" value="updatedAt"></mapping>
+				<mapping operand="set" target="completedAt" value="completedAt"></mapping>
 				<delete condition="#snapshot.isDeleted != ''" id="cVkGGO"></delete>
 			</snapshot-handler>
 			<query graphql-namespace="Risk" field-name="getActions" type="query" authorization="role" use-canonical-search="true" role="#global.isCompanyViewer(key_begins_with)"></query>
